@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Livro Histórico do S41 - Humaitá</title>
+  <meta name="theme-color" content="#012544" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Livro Histórico" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="./icon-192.png" />
+  <style>
+    :root{--bg:#03192c;--bg-2:#04233d;--panel:#183c6b;--panel-2:#20487b;--panel-3:#0e2f54;--line:#2d5b90;--gold:#f0c419;--text:#f3f7fb;--muted:#b5c6da;--danger:#ff8f8f;--success:#66d58a;--info:#69b7ff;--shadow:0 16px 35px rgba(0,0,0,.34);--radius:18px;--print-border:#2b2b2b}
+    *{box-sizing:border-box}html,body{margin:0;padding:0}body{font-family:Arial,Helvetica,sans-serif;background:linear-gradient(180deg,#031522 0%,#031b2f 100%);color:var(--text);min-height:100vh}button,input,select,textarea{font:inherit}button{cursor:pointer}
+    .app{max-width:720px;margin:0 auto;min-height:100vh;background:linear-gradient(180deg,rgba(1,28,51,.96),rgba(2,23,42,.98));box-shadow:0 0 0 1px rgba(255,255,255,.04)}
+    .topbar{position:sticky;top:0;z-index:30;background:linear-gradient(180deg,#032547 0%,#03203d 100%);border-bottom:1px solid rgba(255,255,255,.14);padding:18px 16px}.topbar h1{margin:0;font-size:2rem;letter-spacing:.06em;text-transform:uppercase;text-align:center}.topbar .sub{margin-top:8px;text-align:center;font-size:1rem;color:var(--muted)}.topbar-small{display:flex;align-items:center;gap:10px}.back-btn{width:42px;height:42px;border-radius:12px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:#fff;font-size:1.2rem;display:flex;align-items:center;justify-content:center;flex:0 0 auto}.screen-title{font-size:1.1rem;font-weight:800;letter-spacing:.02em}.gold-line{height:4px;background:var(--gold)}.content{padding:18px 16px 92px}.hidden{display:none !important}
+    .menu-grid{display:grid;gap:16px;margin-top:18px}.menu-card{background:linear-gradient(180deg,#0b4c95 0%,#083f7a 100%);border-radius:24px;padding:18px;display:flex;align-items:center;gap:16px;box-shadow:var(--shadow);border:1px solid rgba(255,255,255,.08);position:relative;overflow:hidden}.menu-card.secondary{background:linear-gradient(180deg,#355f97 0%,#315688 100%)}.menu-card.tertiary{background:linear-gradient(180deg,#59657a 0%,#4e586c 100%)}.menu-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--gold)}.menu-icon{width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:1.7rem;flex:0 0 auto}.menu-text h2{margin:0;font-size:1.6rem}.menu-text p{margin:8px 0 0;color:#d6e1ee;font-size:1.05rem}
+    .section{display:grid;gap:14px}.card{background:linear-gradient(180deg,rgba(24,60,107,.98),rgba(18,52,92,.98));border-radius:22px;padding:16px;box-shadow:var(--shadow);border:1px solid rgba(255,255,255,.08)}.card h2,.card h3{margin:0 0 8px}.card p{margin:0;color:var(--muted)}.field{display:grid;gap:6px}.field label{font-weight:800;font-size:1rem}.field small{color:var(--muted);line-height:1.35}.grid-2,.grid-3{display:grid;gap:14px}.grid-2{grid-template-columns:1fr}.grid-3{grid-template-columns:1fr}@media(min-width:560px){.grid-2{grid-template-columns:1fr 1fr}.grid-3{grid-template-columns:1fr 1fr 1fr}}
+    input,select,textarea{width:100%;background:#203f70;border:1px solid rgba(255,255,255,.12);color:var(--text);border-radius:16px;padding:14px;min-height:52px;outline:none}textarea{min-height:130px;resize:vertical;line-height:1.45}input::placeholder,textarea::placeholder{color:#9bb0c8}input:focus,select:focus,textarea:focus{border-color:#8dc5ff;box-shadow:0 0 0 3px rgba(105,183,255,.15)}
+    .btn{border:none;border-radius:18px;padding:14px 16px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;min-height:52px}.btn-primary{background:#0c4d96;color:#fff}.btn-secondary{background:#476997;color:#fff}.btn-ghost{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.12)}.btn-danger{background:#9f5360;color:#fff}.btn-success{background:#3ea96b;color:#fff}.btn-row{display:grid;grid-template-columns:1fr;gap:10px}@media(min-width:560px){.btn-row{grid-template-columns:1fr 1fr}}.toolbar{display:flex;gap:10px;flex-wrap:wrap}
+    .chip{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.08);color:#eaf3ff;font-weight:700;font-size:.88rem;border:1px solid rgba(255,255,255,.08)}
+    .record-list{display:grid;gap:16px}.record-card{background:linear-gradient(180deg,rgba(31,67,116,.98),rgba(28,63,109,.98));border-radius:22px;padding:16px;box-shadow:var(--shadow);position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.08)}.record-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--gold)}.record-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}.record-head-left{display:flex;align-items:flex-start;gap:12px;min-width:0}.sigla{min-width:58px;height:52px;padding:0 8px;border-radius:14px;background:#114d97;color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:800;flex:0 0 auto}.record-title{min-width:0}.record-title .date{font-size:1rem;font-weight:800;color:var(--gold);margin-bottom:6px}.record-title .equip{font-size:1.1rem;font-weight:700;color:#d5e2f0;white-space:normal;word-break:break-word}.record-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}.icon-btn{width:42px;height:42px;border:none;border-radius:12px;background:rgba(255,255,255,.09);color:#fff;font-size:1.12rem;display:flex;align-items:center;justify-content:center}.icon-btn.view{color:#7dc4ff}.icon-btn.edit{color:#7fe38b}.icon-btn.done{color:#5ade84}.icon-btn.delete{color:#ff9292}.record-body{margin-top:16px;display:grid;gap:10px}.label-block b{display:block;margin-bottom:4px}.muted{color:var(--muted)}.status-open{color:#ffd976}.status-closed{color:#7cf09a}
+    .floating{position:fixed;right:22px;bottom:26px;width:68px;height:68px;border-radius:50%;border:none;background:#0b4c95;color:#fff;font-size:2.1rem;box-shadow:0 12px 28px rgba(0,0,0,.4);z-index:50}.empty{padding:26px 16px;border-radius:18px;background:rgba(255,255,255,.05);text-align:center;color:var(--muted);border:1px dashed rgba(255,255,255,.14)}.banner{padding:14px 16px;border-radius:16px;background:rgba(255,255,255,.08);color:#dbe8f6;font-size:.95rem;line-height:1.45}.status-msg{min-height:1.2em;color:var(--success);font-weight:700}
+    .pill-list{display:grid;gap:14px}.pill-card{background:linear-gradient(180deg,rgba(31,67,116,.98),rgba(28,63,109,.98));border-radius:22px;padding:16px;box-shadow:var(--shadow);position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.08)}.pill-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--gold)}.pill-row{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}.pill-left{display:flex;gap:12px;align-items:flex-start}.pill-badge{min-width:62px;height:52px;border-radius:14px;background:#114d97;display:flex;align-items:center;justify-content:center;font-size:1.55rem;font-weight:800}.pill-name{font-size:1.35rem;font-weight:800;line-height:1.25;margin-top:4px}.record-preview{background:rgba(255,255,255,.06);border-radius:18px;padding:14px;border:1px solid rgba(255,255,255,.08);display:grid;gap:10px}
+    .doc-controls{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}.print-note{font-size:.92rem;line-height:1.45;color:var(--muted)}.official-sheet{background:#fff;color:#111;padding:18mm 12mm 18mm 12mm;width:210mm;min-height:297mm;margin:0 auto 18px;box-shadow:0 10px 25px rgba(0,0,0,.28);page-break-after:always;font-family:"Times New Roman",Times,serif;position:relative}.sheet-top-right{text-align:right;font-size:11pt;line-height:1.2;margin-bottom:8px}.page-code{text-align:center;font-size:12pt;margin:10px 0;letter-spacing:.16em}.doc-title-table,.meta-table,.hist-table{width:100%;border-collapse:collapse;table-layout:fixed}.doc-title-table td,.meta-table td,.hist-table td,.hist-table th{border:1px solid var(--print-border);padding:5px 7px;vertical-align:top;font-size:10.5pt}.doc-title{font-weight:700;font-size:13pt !important;text-align:center;line-height:1.15}.box-label{font-weight:700}.meta-table td{min-height:28px}.hist-table th{font-weight:700;text-align:center;background:#f2f2f2;vertical-align:middle}.left-col{width:30%;text-align:center;vertical-align:middle !important;font-size:10.5pt;padding:10px 6px !important}.right-col{width:70%;padding:10px !important}.rh-block{line-height:1.35;min-height:84px}.rh-block b{font-weight:700}.signature-bar{position:absolute;left:12mm;right:12mm;bottom:10mm;display:flex;justify-content:space-between;align-items:flex-end;gap:20mm}.signature-box{width:44%;text-align:center;font-size:10pt}.signature-line{border-top:1px solid #222;margin-bottom:4px;height:0}@media (max-width:900px){.official-sheet{width:100%;min-height:auto;padding:16px}.signature-bar{position:static;margin-top:18px}}@media print{body{background:#fff}.app{max-width:none;background:#fff;box-shadow:none}.topbar,.gold-line,.content > :not(.print-host), .floating{display:none !important}.content{padding:0}.print-host{display:block !important}.official-sheet{margin:0;box-shadow:none;width:210mm;min-height:297mm}}
+  
+    .modal-overlay{
+      position:fixed; inset:0; background:rgba(0,0,0,.55);
+      display:none; align-items:center; justify-content:center;
+      z-index:1000; padding:20px;
+    }
+    .modal-overlay.show{ display:flex; }
+    .modal-box{
+      width:min(520px, 100%);
+      background:linear-gradient(180deg, rgba(24,60,107,.99), rgba(18,52,92,.99));
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:22px;
+      box-shadow:var(--shadow);
+      padding:18px;
+    }
+    .modal-box h3{
+      margin:0 0 10px;
+      font-size:1.2rem;
+    }
+    .modal-box p{
+      margin:0 0 16px;
+      color:var(--muted);
+      line-height:1.45;
+    }
+    .modal-actions{
+      display:grid;
+      gap:10px;
+      grid-template-columns:1fr;
+    }
+    @media(min-width:560px){
+      .modal-actions{
+        grid-template-columns:1fr 1fr;
+      }
+    }
+
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div id="homeHeader" class="topbar"><h1>Livro Histórico</h1><div class="sub">Sistema de registro histórico de equipamentos de máquinas</div></div>
+    <div id="subHeader" class="topbar hidden"><div class="topbar-small"><button class="back-btn" onclick="goHome()">←</button><div class="screen-title" id="screenTitle">Tela</div></div></div>
+    <div class="gold-line"></div>
+    <div class="content">
+      <section id="screen-home">
+        <div class="menu-grid">
+          <button class="menu-card" onclick="showScreen('novo')"><div class="menu-icon">📝</div><div class="menu-text"><h2>Novo Registro</h2><p>Lançar nova avaria, manutenção ou ocorrência.</p></div></button>
+          <button class="menu-card secondary" onclick="showScreen('historico')"><div class="menu-icon">📚</div><div class="menu-text"><h2>Ver Histórico</h2><p>Visualizar, filtrar, editar, concluir e exportar registros.</p></div></button>
+          <button class="menu-card tertiary" onclick="showScreen('bigramas')"><div class="menu-icon">⚙️</div><div class="menu-text"><h2>Gerenciar Bigramas</h2><p>Adicionar, editar ou excluir sistemas.</p></div></button>
+          <button class="menu-card secondary" onclick="showScreen('ficha')"><div class="menu-icon">🗂️</div><div class="menu-text"><h2>Dados da Ficha</h2><p>Configurar campos fixos do modelo oficial.</p></div></button>
+          <button class="menu-card tertiary" onclick="showScreen('documento')"><div class="menu-icon">🖨️</div><div class="menu-text"><h2>Documento Oficial</h2><p>Gerar visualização pronta para impressão ou PDF.</p></div></button>
+        </div>
+      </section>
+      <section id="screen-novo" class="hidden section">
+        <div class="banner">Fluxo operacional: lançar ocorrência no celular e depois gerar o documento oficial já padronizado no modelo do livro histórico.</div>
+        <div class="card"><h2 id="formHeading">Novo Registro</h2><p style="margin-bottom:14px;">Campos marcados com * são obrigatórios.</p>
+          <form id="recordForm" class="section">
+            <div class="grid-2"><div class="field"><label for="dataInicio">Data de Início *</label><input id="dataInicio" type="date" required /></div><div class="field"><label for="dataFim">Data de Fechamento</label><input id="dataFim" type="date" /></div></div>
+            <div class="grid-2"><div class="field"><label for="horasFunc">Horas de Funcionamento</label><input id="horasFunc" type="text" placeholder="Ex.: 1500" /></div><div class="field"><label for="bigramaSelect">Bigrama (Sistema) *</label><select id="bigramaSelect" required></select></div></div>
+            <div class="field"><label for="equipamento">Equipamento</label><input id="equipamento" type="text" placeholder="Nome do equipamento (ex.: Bomba DA00002)" /></div>
+            <div class="field"><label for="tipoRegistro">Tipo de Registro</label><select id="tipoRegistro"><option value="avaria">Avaria</option><option value="manutencao">Manutenção</option><option value="rotina">Rotina de manutenção</option><option value="ocorrencia">Ocorrência</option><option value="anotacao">Anotação</option></select></div>
+            <div class="field"><label for="avaria">Avaria / Registro *</label><textarea id="avaria" placeholder="Descreva a avaria ocorrida ou o fato histórico." required></textarea></div>
+            <div class="field"><label for="solucao">Solução</label><textarea id="solucao" placeholder="Descreva a solução aplicada"></textarea></div>
+            <div class="field"><label for="observacao">Observação</label><textarea id="observacao" placeholder="Observações adicionais"></textarea></div>
+            <div class="btn-row"><button type="submit" class="btn btn-primary" id="submitRecordBtn">Salvar Registro</button><button type="button" class="btn btn-secondary" onclick="resetRecordForm()">Limpar</button></div>
+            <div class="status-msg" id="recordStatus"></div>
+          </form>
+        </div>
+        </section>
+      <section id="screen-historico" class="hidden section">
+        <div class="card"><h2>Filtros</h2>
+          <div class="grid-2" style="margin-top:14px;"><div class="field"><label for="filtroBigrama">Filtrar por Bigrama</label><select id="filtroBigrama"></select></div><div class="field"><label for="filtroBusca">Busca livre</label><input id="filtroBusca" type="text" placeholder="Buscar por equipamento, avaria, solução..." /></div></div>
+          <div class="grid-2"><div class="field"><label for="filtroDataInicio">Data inicial</label><input id="filtroDataInicio" type="date" /></div><div class="field"><label for="filtroDataFim">Data final</label><input id="filtroDataFim" type="date" /></div></div>
+          <div class="toolbar" style="margin-top:6px;"><button class="btn btn-secondary" onclick="clearFilters()">Limpar filtros</button><button class="btn btn-ghost" onclick="showScreen('documento')">Ir para documento oficial</button></div>
+        </div>
+        <div id="historyStats" class="banner"></div><div id="recordList" class="record-list"></div>
+      </section>
+      <section id="screen-bigramas" class="hidden section">
+        <div class="card"><h2>Novo / Editar Bigrama</h2><p style="margin-bottom:14px;">Os dados aqui alimentam o seletor do formulário e o documento oficial.</p>
+          <form id="bigramaForm" class="section">
+            <div class="grid-2"><div class="field"><label for="siglaInput">Sigla *</label><input id="siglaInput" type="text" maxlength="4" placeholder="Ex.: DA" required /></div><div class="field"><label for="nomeSistemaInput">Nome do sistema *</label><input id="nomeSistemaInput" type="text" placeholder="Ex.: Esgoto" required /></div></div>
+            <div class="btn-row"><button class="btn btn-primary" type="submit" id="saveBigramaBtn">Salvar Bigrama</button><button class="btn btn-secondary" type="button" onclick="resetBigramaForm()">Limpar</button></div>
+            <div class="status-msg" id="bigramaStatus"></div>
+          </form>
+        </div>
+        <div id="bigramaList" class="pill-list"></div>
+      </section>
+      <section id="screen-ficha" class="hidden section">
+        <div class="card"><h2>Dados da Ficha Oficial</h2><p style="margin-bottom:14px;">Esses campos preenchem a primeira folha do modelo. O sistema e o nome da ficha podem ser definidos manualmente.</p>
+          <form id="fichaForm" class="section">
+            <div class="grid-2"><div class="field"><label for="navio">Navio</label><input id="navio" type="text" /></div><div class="field"><label for="fichaNumero">Ficha Nº</label><input id="fichaNumero" type="text" placeholder="Ex.: 01" /></div></div>
+            <div class="grid-2"><div class="field"><label for="folhaInicial">Folha Inicial</label><input id="folhaInicial" type="number" min="1" step="1" /></div><div class="field"><label for="anexoPrimeiraPagina">Anexo da 1ª página</label><select id="anexoPrimeiraPagina"><option value="A">Anexo A</option><option value="B">Anexo B</option></select></div></div>
+            <div class="grid-2"><div class="field"><label for="sistemaFicha">Sistema</label><input id="sistemaFicha" type="text" placeholder="Ex.: SISTEMAS DE ESGOTO (DA)" /></div><div class="field"><label for="equipamentoFicha">Equipamento</label><input id="equipamentoFicha" type="text" placeholder="Equipamento principal da ficha" /></div></div>
+            <div class="field"><label for="manualPlano">Manual e/ou Plano</label><input id="manualPlano" type="text" /></div>
+            <div class="grid-2"><div class="field"><label for="fabricante">Fabricante</label><input id="fabricante" type="text" /></div><div class="field"><label for="dadosPlaca">Dados de Placa</label><input id="dadosPlaca" type="text" /></div></div>
+            <div class="grid-2"><div class="field"><label for="localizacao">Localização</label><input id="localizacao" type="text" /></div><div class="field"><label for="numeroSerie">Nº de Série</label><input id="numeroSerie" type="text" /></div></div>
+            <div class="btn-row"><button class="btn btn-primary" type="submit">Salvar Dados da Ficha</button><button class="btn btn-secondary" type="button" onclick="aplicarPadraoFicha()">Restaurar padrão</button></div><div class="status-msg" id="fichaStatus"></div>
+          </form>
+        </div>
+      </section>
+      <section id="screen-documento" class="hidden section">
+        <div class="card"><h2>Documento Oficial</h2><p style="margin-bottom:14px;">Renderização preparada para impressão/PDF no formato do livro histórico.</p><div class="doc-controls"><button class="btn btn-primary" onclick="openPrintChoiceModal()">Imprimir / Exportar PDF</button><button class="btn btn-secondary" onclick="exportBackup()">Exportar Backup</button><label class="btn btn-ghost" for="importBackup">Importar Backup</label><input id="importBackup" class="hidden" type="file" accept=".json" /></div><div class="print-note">A renderização abaixo usa os filtros ativos do histórico, mas somente inclui registros marcados como "Em aberto". Registros "Fechados" ficam fora do PDF porque já são considerados impressos. O layout foi estruturado com base no modelo enviado do livro histórico. fileciteturn0file0</div></div>
+        <div id="printHost" class="print-host"></div>
+      </section>
+    </div>
+    <button id="fabAdd" class="floating hidden" onclick="showScreen(currentScreen === 'bigramas' ? 'bigramas' : 'novo')">+</button>
+  
+    <div id="printChoiceModal" class="modal-overlay" onclick="handlePrintModalBackdrop(event)">
+      <div class="modal-box" onclick="event.stopPropagation()">
+        <h3>Imprimir / Exportar PDF</h3>
+        <p>Escolha se os registros que forem para o PDF devem ser marcados como fechados após a abertura da visualização de impressão.</p>
+        <div class="modal-actions">
+          <button class="btn btn-primary" type="button" onclick="confirmPrintAndClose()">Marcar registros como "fechado"</button>
+          <button class="btn btn-secondary" type="button" onclick="previewPdfOnly()">Apenas visualizar PDF</button>
+        </div>
+        <div class="toolbar" style="margin-top:10px;">
+          <button class="btn btn-ghost" type="button" onclick="closePrintChoiceModal()">Cancelar</button>
+        </div>
+      </div>
+    </div>
+
+</div>
+<script>
+const STORAGE_KEY='s41_humaita_livro_historico_v2';
+const defaultBigramas=[{id:'b1',sigla:'EJ',nome:'Água Potável'},{id:'b2',sigla:'EW',nome:'Auxiliar de Água Salgada'},{id:'b3',sigla:'DA',nome:'Esgoto'},{id:'b4',sigla:'EM',nome:'Resfriamento AS AR'},{id:'b5',sigla:'ES',nome:'Resfriamento Água tratada AR'}];
+const defaultFicha={navio:'SUBMARINO HUMAITÁ',fichaNumero:'',folhaInicial:1,anexoPrimeiraPagina:'A',sistemaFicha:'SISTEMAS DE ESGOTO (DA)',equipamentoFicha:'',manualPlano:'SBR-STM-SERV6M0001 BILDGE DRAINNG SYSTEM (DA).',fabricante:'',dadosPlaca:'',localizacao:'',numeroSerie:''};
+let state={bigramas:[...defaultBigramas],registros:[],ficha:{...defaultFicha},filtros:{bigrama:'TODOS',busca:'',dataInicio:'',dataFim:''}};let currentScreen='home';let editingRecordId=null;let editingBigramaId=null;const $=id=>document.getElementById(id);const uid=(p='id')=>p+'_'+Math.random().toString(36).slice(2)+Date.now().toString(36);
+function saveState(){localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}
+function loadState(){try{const raw=localStorage.getItem(STORAGE_KEY);if(raw){const parsed=JSON.parse(raw);state.bigramas=Array.isArray(parsed.bigramas)&&parsed.bigramas.length?parsed.bigramas:[...defaultBigramas];state.registros=Array.isArray(parsed.registros)?parsed.registros:[];state.ficha=parsed.ficha?{...defaultFicha,...parsed.ficha}:{...defaultFicha};state.filtros=parsed.filtros?{...state.filtros,...parsed.filtros}:state.filtros}}catch(e){console.error(e)}}
+function setStatus(id,msg,isError=false){const el=$(id);if(!el)return;el.textContent=msg;el.style.color=isError?'var(--danger)':'var(--success)';clearTimeout(el._timer);el._timer=setTimeout(()=>{el.textContent=''},2600)}
+function formatDateBR(date){if(!date)return'';const [y,m,d]=date.split('-');if(!y||!m||!d)return date;return `${d}/${m}/${y}`}
+function dateRangeLabel(rec){const ini=formatDateBR(rec.dataInicio);const fim=formatDateBR(rec.dataFim);const horas=(rec.horasFunc||'').trim();let base=ini;if(fim&&fim!==ini)base+=' à '+fim;if(horas)base+='\n'+horas+' h';return base}
+function escapeHtml(str){return String(str??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;')}
+function nl2br(str){return escapeHtml(str).replaceAll('\n','<br>')}
+function getBigramaById(id){return state.bigramas.find(b=>b.id===id)}
+function getBigramaLabel(id){const b=getBigramaById(id);return b?`${b.sigla} - ${b.nome}`:'—'}
+function renderSelectors(){const bigramaSelect=$('bigramaSelect');const filtroBigrama=$('filtroBigrama');bigramaSelect.innerHTML=['<option value="">Selecione um bigrama</option>',...state.bigramas.map(b=>`<option value="${b.id}">${escapeHtml(b.sigla)} - ${escapeHtml(b.nome)}</option>`)].join('');filtroBigrama.innerHTML=['<option value="TODOS">Todos os sistemas</option>',...state.bigramas.map(b=>`<option value="${b.id}">${escapeHtml(b.sigla)} - ${escapeHtml(b.nome)}</option>`)].join('');filtroBigrama.value=state.filtros.bigrama||'TODOS'}
+function renderBigramaList(){const list=$('bigramaList');if(!state.bigramas.length){list.innerHTML='<div class="empty">Nenhum bigrama cadastrado.</div>';return}list.innerHTML=state.bigramas.map(b=>`<div class="pill-card"><div class="pill-row"><div class="pill-left"><div class="pill-badge">${escapeHtml(b.sigla)}</div><div class="pill-name">${escapeHtml(b.nome)}</div></div><div class="record-actions"><button class="icon-btn edit" title="Editar" onclick="editBigrama('${b.id}')">✎</button><button class="icon-btn delete" title="Excluir" onclick="deleteBigrama('${b.id}')">🗑</button></div></div></div>`).join('')}
+
+function renderRecordPreview(){return}
+function getFilteredRecords(){const f=state.filtros;const busca=(f.busca||'').trim().toLowerCase();return [...state.registros].filter(r=>{const matchB=f.bigrama==='TODOS'||r.bigramaId===f.bigrama;const matchBusca=!busca||[r.equipamento,r.avaria,r.solucao,r.observacao,r.horasFunc,getBigramaLabel(r.bigramaId)].join(' ').toLowerCase().includes(busca);const matchIni=!f.dataInicio||r.dataInicio>=f.dataInicio;const compareDate=r.dataFim||r.dataInicio;const matchFim=!f.dataFim||compareDate<=f.dataFim;return matchB&&matchBusca&&matchIni&&matchFim}).sort((a,b)=>{const da=b.dataInicio.localeCompare(a.dataInicio);if(da!==0)return da;return (b.createdAt||0)-(a.createdAt||0)})}
+function renderHistory(){const records=getFilteredRecords();const registrosAbertos=records.filter(r=>r.status!=='fechado').length;$('historyStats').innerHTML=`<b>Total filtrado:</b> ${records.length} registro(s)<br><b>Abertos aptos para PDF:</b> ${registrosAbertos}<br><b>Bigrama:</b> ${state.filtros.bigrama==='TODOS'?'Todos os sistemas':escapeHtml(getBigramaLabel(state.filtros.bigrama))}`;const list=$('recordList');if(!records.length){list.innerHTML='<div class="empty">Nenhum registro encontrado com os filtros atuais.</div>';renderDocument();return}list.innerHTML=records.map(r=>{const b=getBigramaById(r.bigramaId);const sigla=b?b.sigla:'??';return `<div class="record-card"><div class="record-head"><div class="record-head-left"><div class="sigla">${escapeHtml(sigla)}</div><div class="record-title"><div class="date">${escapeHtml(formatDateBR(r.dataInicio))}${r.dataFim?' à '+escapeHtml(formatDateBR(r.dataFim)):''}</div><div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;"><span class="chip ${r.status==='fechado'?'status-closed':'status-open'}">${r.status==='fechado'?'Fechado':'Em aberto'}</span></div></div></div><div class="record-actions"><button class="icon-btn view" title="Visualizar" onclick="previewSingleRecord('${r.id}')">👁</button><button class="icon-btn edit" title="Editar" onclick="editRecord('${r.id}')">✎</button><button class="icon-btn done" title="${r.status==='fechado'?'Marcar como aberto':'Marcar como fechado'}" onclick="toggleRecordStatus('${r.id}')">${r.status==='fechado'?'✖':'✔'}</button><button class="icon-btn delete" title="Excluir" onclick="deleteRecord('${r.id}')">🗑</button></div></div><div class="record-body"><div class="label-block"><b>Equipamento:</b> ${escapeHtml(r.equipamento||'Sem equipamento')}</div><div class="label-block"><b>${r.tipoRegistroLabel||'Avaria'}:</b>${nl2br(r.avaria||'—')}</div><div class="label-block"><b>Solução:</b>${nl2br(r.solucao||'—')}</div><div class="label-block"><b>Observação:</b>${nl2br(r.observacao||'—')}</div></div></div>`}).join('');renderDocument()}
+function buildRowsHtml(records){const typeMap={avaria:'Avaria',manutencao:'Manutenção',rotina:'Rotina de manutenção',ocorrencia:'Ocorrência',anotacao:'Anotação'};return records.map(r=>`<tr><td class="left-col">${nl2br(dateRangeLabel(r))||'&nbsp;'}</td><td class="right-col"><div class="rh-block"><b>${escapeHtml(r.tipoRegistroLabel||typeMap[r.tipoRegistro]||'Avaria')}:</b> ${nl2br(r.avaria||'')}<br><br><b>Solução:</b> ${nl2br(r.solucao||'')}<br><br><b>Observação:</b> ${nl2br(r.observacao||'')}</div></td></tr>`).join('')}
+function makePage(pageNumber,rowsHtml,isFirst){const ficha=state.ficha;const pageCode=isFirst?`- ${ficha.anexoPrimeiraPagina} - ${pageNumber} -`:`- B - ${pageNumber} -`;const titleTable=`<table class="doc-title-table"><tr><td class="doc-title" style="width:68%;">REGISTRO HISTÓRICO DE EQUIPAMENTOS DE<br>MÁQUINAS</td><td style="width:14%;text-align:center;"><span class="box-label">FICHA Nº</span><br>${escapeHtml(ficha.fichaNumero||'')}</td><td style="width:18%;text-align:center;"><span class="box-label">FOLHA Nº</span><br>${pageNumber}</td></tr></table>`;const metaTable=isFirst?`<table class="meta-table"><tr><td colspan="2"><span class="box-label">NAVIO:</span> ${escapeHtml(ficha.navio||'')}</td></tr><tr><td colspan="2"><span class="box-label">SISTEMA:</span> ${escapeHtml(ficha.sistemaFicha||'')}</td></tr><tr><td colspan="2"><span class="box-label">EQUIPAMENTO:</span> ${escapeHtml(ficha.equipamentoFicha||'')}</td></tr><tr><td colspan="2"><span class="box-label">MANUAL E/OU PLANO:</span> ${escapeHtml(ficha.manualPlano||'')}</td></tr><tr><td colspan="2"><span class="box-label">FABRICANTE:</span> ${escapeHtml(ficha.fabricante||'')}</td></tr><tr><td colspan="2"><span class="box-label">DADOS DE PLACA:</span> ${escapeHtml(ficha.dadosPlaca||'')}</td></tr><tr><td><span class="box-label">LOCALIZAÇÃO:</span> ${escapeHtml(ficha.localizacao||'')}</td><td><span class="box-label">Nº DE SÉRIE:</span> ${escapeHtml(ficha.numeroSerie||'')}</td></tr></table>`:'';return `<div class="official-sheet"><div class="sheet-top-right">ENGENALMARINST Nº 85-13A<br>${isFirst?'Anexo '+escapeHtml(ficha.anexoPrimeiraPagina):'Anexo B'}</div><div class="page-code">${pageCode}</div>${titleTable}${metaTable}<table class="hist-table" style="margin-top:${isFirst?'0':'8px'};"><thead><tr><th style="width:30%;">DATA E Nº DE HORAS DE FUNCIONAMENTO</th><th style="width:70%;">REGISTRO HISTÓRICO</th></tr></thead><tbody>${rowsHtml||`<tr><td class="left-col">&nbsp;</td><td class="right-col"><div class="rh-block"><b>Avaria:</b><br><br><b>Solução:</b><br><br><b>Observação:</b></div></td></tr>`}</tbody></table><div class="signature-bar"><div class="signature-box"><div class="signature-line"></div>Encarregado do Sistema MO-1</div><div class="signature-box"><div class="signature-line"></div>Encarregado da Divisão de Máquinas</div></div></div>`}
+function renderDocument(){const host=$('printHost');const records=getPrintableOpenRecords();const perPage=4;const pages=[];const initialPage=Math.max(1,parseInt(state.ficha.folhaInicial||1,10)||1);if(!records.length){pages.push(makePage(initialPage,'',true))}else{for(let i=0;i<records.length;i+=perPage){const chunk=records.slice(i,i+perPage);const pageNumber=initialPage+(i/perPage);pages.push(makePage(pageNumber,buildRowsHtml(chunk),i===0))}}host.innerHTML=pages.join('')}
+
+
+function getPrintableOpenRecords(){
+  return getFilteredRecords().filter(r=>r.status!=='fechado');
+}
+
+function openPrintChoiceModal(){
+  $('printChoiceModal').classList.add('show');
+}
+
+function closePrintChoiceModal(){
+  $('printChoiceModal').classList.remove('show');
+}
+
+function handlePrintModalBackdrop(event){
+  if(event.target && event.target.id === 'printChoiceModal'){
+    closePrintChoiceModal();
+  }
+}
+
+function previewPdfOnly(){
+  closePrintChoiceModal();
+  printOfficialDocument(false);
+}
+
+function confirmPrintAndClose(){
+  closePrintChoiceModal();
+  printOfficialDocument(true);
+}
+
+
+
+function printOfficialDocument(markPrinted=false){
+  renderDocument();
+  const printableRecords = getPrintableOpenRecords();
+  const content = $('printHost').innerHTML;
+  if(!content || !content.trim()){
+    alert('Não há conteúdo para imprimir.');
+    return;
+  }
+
+  const printableIds = printableRecords.map(r=>r.id);
+
+  const styles = `
+    <style>
+      @page { size: A4; margin: 0; }
+      html, body { margin:0; padding:0; background:#fff; }
+      body { font-family: "Times New Roman", Times, serif; }
+      .official-sheet{
+        background:#fff;
+        color:#111;
+        padding:18mm 12mm 18mm 12mm;
+        width:210mm;
+        min-height:297mm;
+        margin:0 auto;
+        box-sizing:border-box;
+        page-break-after:always;
+        position:relative;
+        font-family:"Times New Roman", Times, serif;
+      }
+      .sheet-top-right{
+        text-align:right;
+        font-size:11pt;
+        line-height:1.2;
+        margin-bottom:8px;
+      }
+      .page-code{
+        text-align:center;
+        font-size:12pt;
+        margin:10px 0 10px;
+        letter-spacing:.16em;
+      }
+      .doc-title-table, .meta-table, .hist-table{
+        width:100%;
+        border-collapse:collapse;
+        table-layout:fixed;
+      }
+      .doc-title-table td, .meta-table td, .hist-table td, .hist-table th{
+        border:1px solid #2b2b2b;
+        padding:5px 7px;
+        vertical-align:top;
+        font-size:10.5pt;
+      }
+      .doc-title{
+        font-weight:700;
+        font-size:13pt !important;
+        text-align:center;
+        line-height:1.15;
+      }
+      .box-label{ font-weight:700; }
+      .hist-table th{
+        font-weight:700;
+        text-align:center;
+        background:#f2f2f2;
+        vertical-align:middle;
+      }
+      .left-col{
+        width:30%;
+        text-align:center;
+        vertical-align:middle !important;
+        font-size:10.5pt;
+        padding:10px 6px !important;
+      }
+      .right-col{
+        width:70%;
+        padding:10px !important;
+      }
+      .rh-block{
+        line-height:1.35;
+        min-height:84px;
+      }
+      .rh-block b{ font-weight:700; }
+      .signature-bar{
+        position:absolute;
+        left:12mm;
+        right:12mm;
+        bottom:10mm;
+        display:flex;
+        justify-content:space-between;
+        align-items:flex-end;
+        gap:20mm;
+      }
+      .signature-box{
+        width:44%;
+        text-align:center;
+        font-size:10pt;
+      }
+      .signature-line{
+        border-top:1px solid #222;
+        margin-bottom:4px;
+        height:0;
+      }
+    </style>
+  `;
+
+  let iframe = document.getElementById('printFrame');
+  if(iframe) iframe.remove();
+
+  iframe = document.createElement('iframe');
+  iframe.id = 'printFrame';
+  iframe.style.position = 'fixed';
+  iframe.style.width = '1px';
+  iframe.style.height = '1px';
+  iframe.style.right = '0';
+  iframe.style.bottom = '0';
+  iframe.style.opacity = '0';
+  iframe.style.border = '0';
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentWindow.document;
+  doc.open();
+  doc.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Livro Histórico - Impressão</title>${styles}</head><body>${content}
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./service-worker.js").catch(err => {
+          console.error("Falha ao registrar service worker:", err);
+        });
+      });
+    }
+  </script>
+
+</body></html>`);
+  doc.close();
+
+  let statusApplied = false;
+  const applyClosedStatus = () => {
+    if(statusApplied || !markPrinted) return;
+    statusApplied = true;
+    state.registros.forEach(r => {
+      if(printableIds.includes(r.id)) {
+        r.status = 'fechado';
+        r.updatedAt = Date.now();
+      }
+    });
+    saveState();
+    renderHistory();
+    renderDocument();
+  };
+
+  const doPrint = () => {
+    try{
+      iframe.contentWindow.focus();
+      iframe.contentWindow.print();
+      if(markPrinted){
+        setTimeout(applyClosedStatus, 300);
+      }
+    }catch(e){
+      alert('O navegador não permitiu abrir a impressão.');
+    }
+  };
+
+  iframe.onload = () => setTimeout(doPrint, 250);
+  setTimeout(doPrint, 700);
+}
+
+
+function showScreen(screen){currentScreen=screen;['home','novo','historico','bigramas','ficha','documento'].forEach(s=>$('screen-'+s).classList.toggle('hidden',s!==screen));$('homeHeader').classList.toggle('hidden',screen!=='home');$('subHeader').classList.toggle('hidden',screen==='home');$('fabAdd').classList.toggle('hidden',!['novo','historico','bigramas'].includes(screen));const titles={novo:'Novo Registro',historico:'Histórico',bigramas:'Gerenciar Bigramas',ficha:'Dados da Ficha',documento:'Documento Oficial'};if(screen!=='home')$('screenTitle').textContent=titles[screen]||'Tela';if(screen==='historico')renderHistory();if(screen==='bigramas')renderBigramaList();if(screen==='documento')renderDocument();if(screen==='novo')renderRecordPreview()}
+function goHome(){showScreen('home')}
+function resetRecordForm(){editingRecordId=null;$('recordForm').reset();$('dataInicio').value=new Date().toISOString().slice(0,10);$('submitRecordBtn').textContent='Salvar Registro';$('formHeading').textContent='Novo Registro';renderRecordPreview()}
+function recordTypeLabel(v){return {avaria:'Avaria',manutencao:'Manutenção',rotina:'Rotina de manutenção',ocorrencia:'Ocorrência',anotacao:'Anotação'}[v]||'Avaria'}
+function handleRecordSubmit(e){e.preventDefault();const dataInicio=$('dataInicio').value,dataFim=$('dataFim').value,horasFunc=$('horasFunc').value.trim(),bigramaId=$('bigramaSelect').value,equipamento=$('equipamento').value.trim(),tipoRegistro=$('tipoRegistro').value,avaria=$('avaria').value.trim(),solucao=$('solucao').value.trim(),observacao=$('observacao').value.trim();if(!dataInicio||!bigramaId||!avaria){setStatus('recordStatus','Preencha data de início, bigrama e avaria/registro.',true);return}if(dataFim&&dataFim<dataInicio){setStatus('recordStatus','A data de fechamento não pode ser menor que a data de início.',true);return}const payload={dataInicio,dataFim,horasFunc,bigramaId,equipamento,tipoRegistro,tipoRegistroLabel:recordTypeLabel(tipoRegistro),avaria,solucao,observacao,status:'aberto'};if(editingRecordId){const idx=state.registros.findIndex(r=>r.id===editingRecordId);if(idx>=0){state.registros[idx]={...state.registros[idx],...payload,updatedAt:Date.now()};setStatus('recordStatus','Registro atualizado.')}}else{state.registros.push({id:uid('rec'),...payload,createdAt:Date.now()});setStatus('recordStatus','Registro salvo.')}saveState();resetRecordForm();renderHistory();renderDocument()}
+function editRecord(id){const r=state.registros.find(x=>x.id===id);if(!r)return;editingRecordId=id;$('dataInicio').value=r.dataInicio||'';$('dataFim').value=r.dataFim||'';$('horasFunc').value=r.horasFunc||'';$('bigramaSelect').value=r.bigramaId||'';$('equipamento').value=r.equipamento||'';$('tipoRegistro').value=r.tipoRegistro||'avaria';$('avaria').value=r.avaria||'';$('solucao').value=r.solucao||'';$('observacao').value=r.observacao||'';$('submitRecordBtn').textContent='Salvar Edição';$('formHeading').textContent='Editar Registro';showScreen('novo');renderRecordPreview();window.scrollTo({top:0,behavior:'smooth'})}
+function deleteRecord(id){if(!confirm('Excluir este registro?'))return;state.registros=state.registros.filter(x=>x.id!==id);if(editingRecordId===id)resetRecordForm();saveState();renderHistory()}
+function toggleRecordStatus(id){const r=state.registros.find(x=>x.id===id);if(!r)return;r.status=r.status==='fechado'?'aberto':'fechado';r.updatedAt=Date.now();saveState();renderHistory();renderDocument()}
+function previewSingleRecord(id){const r=state.registros.find(x=>x.id===id);if(!r)return;alert(`${getBigramaLabel(r.bigramaId)}\n${dateRangeLabel(r).replaceAll('\\n',' | ')}\n\n${r.tipoRegistroLabel||'Avaria'}:\n${r.avaria||'—'}\n\nSolução:\n${r.solucao||'—'}\n\nObservação:\n${r.observacao||'—'}`)}
+function handleBigramaSubmit(e){e.preventDefault();const sigla=$('siglaInput').value.trim().toUpperCase(),nome=$('nomeSistemaInput').value.trim();if(!sigla||!nome){setStatus('bigramaStatus','Informe sigla e nome do sistema.',true);return}const exists=state.bigramas.find(b=>b.sigla===sigla&&b.id!==editingBigramaId);if(exists){setStatus('bigramaStatus','Já existe um bigrama com essa sigla.',true);return}if(editingBigramaId){const idx=state.bigramas.findIndex(b=>b.id===editingBigramaId);if(idx>=0){state.bigramas[idx]={...state.bigramas[idx],sigla,nome};setStatus('bigramaStatus','Bigrama atualizado.')}}else{state.bigramas.push({id:uid('big'),sigla,nome});setStatus('bigramaStatus','Bigrama salvo.')}saveState();resetBigramaForm();renderSelectors();renderBigramaList();renderHistory()}
+function editBigrama(id){const b=state.bigramas.find(x=>x.id===id);if(!b)return;editingBigramaId=id;$('siglaInput').value=b.sigla||'';$('nomeSistemaInput').value=b.nome||'';$('saveBigramaBtn').textContent='Salvar Edição';window.scrollTo({top:0,behavior:'smooth'})}
+function deleteBigrama(id){const inUse=state.registros.some(r=>r.bigramaId===id);if(inUse){alert('Não é possível excluir este bigrama porque existem registros vinculados a ele.');return}if(!confirm('Excluir este bigrama?'))return;state.bigramas=state.bigramas.filter(x=>x.id!==id);saveState();renderSelectors();renderBigramaList()}
+function resetBigramaForm(){editingBigramaId=null;$('bigramaForm').reset();$('saveBigramaBtn').textContent='Salvar Bigrama'}
+function aplicarPadraoFicha(){state.ficha={...defaultFicha};fillFichaForm();saveState();renderDocument();setStatus('fichaStatus','Padrão restaurado.')}
+function fillFichaForm(){Object.entries(state.ficha).forEach(([k,v])=>{const el=$(k);if(el)el.value=v??''})}
+function handleFichaSubmit(e){e.preventDefault();state.ficha={navio:$('navio').value.trim(),fichaNumero:$('fichaNumero').value.trim(),folhaInicial:parseInt($('folhaInicial').value||'1',10),anexoPrimeiraPagina:$('anexoPrimeiraPagina').value,sistemaFicha:$('sistemaFicha').value.trim(),equipamentoFicha:$('equipamentoFicha').value.trim(),manualPlano:$('manualPlano').value.trim(),fabricante:$('fabricante').value.trim(),dadosPlaca:$('dadosPlaca').value.trim(),localizacao:$('localizacao').value.trim(),numeroSerie:$('numeroSerie').value.trim()};saveState();renderDocument();setStatus('fichaStatus','Dados da ficha salvos.')}
+function clearFilters(){state.filtros={bigrama:'TODOS',busca:'',dataInicio:'',dataFim:''};$('filtroBigrama').value='TODOS';$('filtroBusca').value='';$('filtroDataInicio').value='';$('filtroDataFim').value='';saveState();renderHistory()}
+function bindFilterInputs(){$('filtroBigrama').addEventListener('change',e=>{state.filtros.bigrama=e.target.value;saveState();renderHistory()});$('filtroBusca').addEventListener('input',e=>{state.filtros.busca=e.target.value;saveState();renderHistory()});$('filtroDataInicio').addEventListener('input',e=>{state.filtros.dataInicio=e.target.value;saveState();renderHistory()});$('filtroDataFim').addEventListener('input',e=>{state.filtros.dataFim=e.target.value;saveState();renderHistory()})}
+function exportBackup(){const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`livro_historico_s41_backup_${new Date().toISOString().slice(0,10)}.json`;a.click();URL.revokeObjectURL(url)}
+function importBackup(file){const reader=new FileReader();reader.onload=()=>{try{const parsed=JSON.parse(reader.result);state={bigramas:Array.isArray(parsed.bigramas)&&parsed.bigramas.length?parsed.bigramas:[...defaultBigramas],registros:Array.isArray(parsed.registros)?parsed.registros:[],ficha:parsed.ficha?{...defaultFicha,...parsed.ficha}:{...defaultFicha},filtros:parsed.filtros?{bigrama:'TODOS',busca:'',dataInicio:'',dataFim:'',...parsed.filtros}:{bigrama:'TODOS',busca:'',dataInicio:'',dataFim:''}};saveState();bootstrapUI();alert('Backup importado com sucesso.')}catch(e){alert('Arquivo de backup inválido.')}};reader.readAsText(file)}
+function bootstrapUI(){renderSelectors();renderBigramaList();fillFichaForm();$('filtroBusca').value=state.filtros.busca||'';$('filtroDataInicio').value=state.filtros.dataInicio||'';$('filtroDataFim').value=state.filtros.dataFim||'';$('filtroBigrama').value=state.filtros.bigrama||'TODOS';renderRecordPreview();renderHistory();renderDocument()}
+document.addEventListener('DOMContentLoaded',()=>{document.addEventListener('keydown',e=>{if(e.key==='Escape')closePrintChoiceModal()});loadState();renderSelectors();$('recordForm').addEventListener('submit',handleRecordSubmit);$('bigramaForm').addEventListener('submit',handleBigramaSubmit);$('fichaForm').addEventListener('submit',handleFichaSubmit);$('importBackup').addEventListener('change',e=>{const file=e.target.files?.[0];if(file)importBackup(file);e.target.value=''});bindFilterInputs();['dataInicio','dataFim','horasFunc','equipamento','tipoRegistro','avaria','solucao','observacao'].forEach(id=>$(id)&&$(id).addEventListener('input',renderRecordPreview));$('bigramaSelect')&&$('bigramaSelect').addEventListener('change',renderRecordPreview);resetRecordForm();fillFichaForm();bootstrapUI();showScreen('home')});
+</script>
+
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./service-worker.js").catch(err => {
+          console.error("Falha ao registrar service worker:", err);
+        });
+      });
+    }
+  </script>
+
+</body>
+</html>

@@ -1,13 +1,18 @@
-Como instalar o app como PWA
+Publicação com instalação obrigatória
 
-1. Extraia este ZIP em uma pasta.
-2. Hospede os arquivos em um servidor estático ou abra com um servidor local.
-   Exemplos:
-   - Python: python -m http.server 8000
-   - Node: npx serve
-3. Abra o endereço no Chrome.
-4. No menu do navegador, use "Instalar app" ou "Adicionar à tela inicial".
+Arquivos:
+- index.html -> página de instalação obrigatória
+- app.html -> aplicativo real
+- manifest.webmanifest
+- service-worker.js
 
-Ponto crítico:
-PWA não funciona corretamente abrindo o arquivo HTML como file://.
-Ele precisa rodar em http:// ou https:// para o service worker funcionar.
+Comportamento:
+- abrindo pelo navegador: mostra só a página "Instalar aplicativo"
+- abrindo já instalado como PWA: entra direto no app
+
+Para publicar:
+1. apague os arquivos antigos do repositório
+2. envie estes arquivos novos
+3. aguarde o GitHub Pages atualizar
+4. se o app antigo já estiver instalado, remova e instale de novo
+5. se o navegador insistir em cache antigo, abra em aba anônima

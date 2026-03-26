@@ -1,7 +1,8 @@
-const CACHE_NAME = 'livro-historico-s41-v1';
+const CACHE_NAME = 'livro-historico-s41-install-gate-v1';
 const APP_ASSETS = [
   './',
   './index.html',
+  './app.html',
   './manifest.webmanifest',
   './icon-192.png',
   './icon-512.png'
@@ -38,7 +39,7 @@ self.addEventListener('fetch', event => {
           }
           return response;
         })
-        .catch(() => caches.match('./index.html'));
-    })
+        .catch(() => caches.match('./index.html'))
+    )
   );
 });
