@@ -125,6 +125,33 @@
       .print-zone{display:block!important}
       .official-sheet{margin:0;box-shadow:none;width:210mm;min-height:297mm}
     }
+  
+    .report-list{
+      display:grid;
+      gap:10px;
+      margin-top:10px;
+    }
+    .report-item{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:12px 14px;
+      border-radius:14px;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.10);
+      color:#f3f7fb;
+      font-weight:700;
+    }
+    .report-item span:last-child{color:#f0c419;font-size:1.05rem;}
+    .conflict-grid{display:grid;gap:12px;grid-template-columns:1fr;margin-top:10px;}
+    @media(min-width:700px){.conflict-grid{grid-template-columns:1fr 1fr;}}
+    .conflict-col{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10);border-radius:18px;padding:14px;}
+    .conflict-col h4{margin:0 0 10px;font-size:1rem;color:#fff;}
+    .conflict-field{margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.08);}
+    .conflict-field:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none;}
+    .conflict-field b{display:block;margin-bottom:4px;color:#fff;}
+    .conflict-diff{outline:2px solid rgba(240,196,25,.75);border-radius:10px;padding:6px 8px;background:rgba(240,196,25,.08);}
   </style>
 </head>
 <body>
@@ -262,7 +289,7 @@
 
   <div id="manageBigramasModal" class="modal-overlay" onclick="if(event.target.id==='manageBigramasModal')closeManageBigramas()">
     <div class="modal-box" onclick="event.stopPropagation()">
-      <h3>Gerenciar Bigramas</h3>
+      <h3>Adicionar Bigrama</h3>
       <p>Adicione, edite ou exclua sistemas.</p>
       <form id="bigramaForm" class="section">
         <div class="grid-2">
@@ -347,7 +374,10 @@ const AppState = {
   load(){
     try{
       const raw = localStorage.getItem(STORAGE_KEY);
-      if(!raw) return;
+      if(!raw){
+        this.data.bigramas = [...DEFAULT_BIGRAMAS];
+        return;
+      }
       const parsed = JSON.parse(raw);
       this.data = {
         bigramas:Array.isArray(parsed.bigramas)&&parsed.bigramas.length?parsed.bigramas:[...DEFAULT_BIGRAMAS],
@@ -356,12 +386,57 @@ const AppState = {
         filtros:parsed.filtros?{busca:'',status:'TODOS',dataInicio:'',dataFim:'',...parsed.filtros}:{busca:'',status:'TODOS',dataInicio:'',dataFim:''},
         selectedBigramaId:parsed.selectedBigramaId||null
       };
-    }catch(e){ console.error(e); }
+      ensureBigramasIntegrity(false);
+    }catch(e){
+      console.error(e);
+      this.data = {bigramas:[...DEFAULT_BIGRAMAS], registros:[], fichas:{}, filtros:{busca:'',status:'TODOS',dataInicio:'',dataFim:''}, selectedBigramaId:null};
+    }
   },
   save(){
+    ensureBigramasIntegrity(false);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(this.data));
   }
 };
+
+
+const STRUCTURAL_DEFAULT_BIGRAMAS = [...DEFAULT_BIGRAMAS];
+
+function ensureBigramasIntegrity(forceSave=false){
+  try{
+    const valid = Array.isArray(AppState.data.bigramas) && AppState.data.bigramas.length > 0 &&
+      AppState.data.bigramas.every(b => b && typeof b === 'object' && String(b.sigla || '').trim() && String(b.nome || '').trim());
+    if(!valid){
+      AppState.data.bigramas = [...STRUCTURAL_DEFAULT_BIGRAMAS];
+      if(forceSave) AppState.save();
+      return true;
+    }
+  }catch(e){
+    AppState.data.bigramas = [...STRUCTURAL_DEFAULT_BIGRAMAS];
+    if(forceSave) AppState.save();
+    return true;
+  }
+  return false;
+}
+
+function ensureHomeFoldersRendered(){
+  try{
+    const wrap = $('homeFolders');
+    if(!wrap) return;
+    renderHomeFolders();
+    const hasButtons = wrap.querySelector('.folder-btn');
+    if(!hasButtons){
+      AppState.data.bigramas = [...STRUCTURAL_DEFAULT_BIGRAMAS];
+      AppState.save();
+      renderHomeFolders();
+    }
+  }catch(e){
+    try{
+      AppState.data.bigramas = [...STRUCTURAL_DEFAULT_BIGRAMAS];
+      AppState.save();
+      renderHomeFolders();
+    }catch(err){}
+  }
+}
 
 const UI = { currentScreen:'home', editingRecordId:null, editingBigramaId:null, pendingImportReport:null, conflictQueue:[], confirmResolver:null };
 const $ = (id)=>document.getElementById(id);
@@ -403,7 +478,12 @@ function saveFichaForSelected(data){ const b=getSelectedBigrama(); if(!b) return
 
 function renderHomeFolders(){
   const wrap = $('homeFolders');
-  if(!AppState.data.bigramas.length){ wrap.innerHTML='<div class="empty" style="grid-column:1/-1;">Nenhum bigrama cadastrado.</div>'; return; }
+  if(!wrap) return;
+  ensureBigramasIntegrity(false);
+  if(!AppState.data.bigramas.length){
+    AppState.data.bigramas = [...STRUCTURAL_DEFAULT_BIGRAMAS];
+    AppState.save();
+  }
   wrap.innerHTML = AppState.data.bigramas.map(b => `
     <button class="folder-btn" type="button" onclick="selectBigrama('${b.id}')">
       <div class="folder-icon"><div class="folder-paw">📁</div></div>
@@ -544,12 +624,13 @@ function editRecord(id){
   $('submitRecordBtn').textContent='Salvar Edição'; $('formHeading').textContent='Editar Registro';
   AppState.save(); showScreen('novo'); window.scrollTo({top:0,behavior:'smooth'});
 }
-async function deleteRecord(id){
-  const ok=await showAppConfirm('Excluir registro','Deseja realmente excluir este registro?');
+async async function deleteRecord(id){
+  const ok = await showAppConfirm('Excluir registro', 'Deseja realmente excluir este registro?');
   if(!ok) return;
-  AppState.data.registros=AppState.data.registros.filter(x=>x.id!==id);
-  if(UI.editingRecordId===id) resetRecordForm();
-  AppState.save(); renderHistory();
+  state.registros = state.registros.filter(x => x.id !== id);
+  if(editingRecordId === id) resetRecordForm();
+  saveState();
+  renderHistory();
 }
 function toggleRecordStatus(id){
   const r=AppState.data.registros.find(x=>x.id===id); if(!r) return;
@@ -609,15 +690,24 @@ function editBigrama(id){
   UI.editingBigramaId=id; $('siglaInput').value=b.sigla||''; $('nomeSistemaInput').value=b.nome||''; $('saveBigramaBtn').textContent='Salvar Edição';
 }
 function resetBigramaForm(){ UI.editingBigramaId=null; $('bigramaForm').reset(); $('saveBigramaBtn').textContent='Salvar Bigrama'; }
-async function deleteBigrama(id){
-  const inUse=AppState.data.registros.some(r=>r.bigramaId===id);
-  if(inUse){ showAppMessage('Excluir bigrama','Não é possível excluir este bigrama porque existem registros vinculados a ele.'); return; }
-  const ok=await showAppConfirm('Excluir bigrama','Deseja realmente excluir este bigrama?');
+async async function deleteBigrama(id){
+  const inUse = state.registros.some(r => r.bigramaId === id);
+  if(inUse){
+    showAppMessage('Excluir bigrama', 'Não é possível excluir este bigrama porque existem registros vinculados a ele.');
+    return;
+  }
+  const ok = await showAppConfirm('Excluir bigrama', 'Deseja realmente excluir este bigrama?');
   if(!ok) return;
-  AppState.data.bigramas=AppState.data.bigramas.filter(x=>x.id!==id);
-  delete AppState.data.fichas[id];
-  if(AppState.data.selectedBigramaId===id){ AppState.data.selectedBigramaId=null; showScreen('home'); }
-  AppState.save(); renderBigramaList(); renderHomeFolders(); updateTopbar();
+  state.bigramas = state.bigramas.filter(x => x.id !== id);
+  delete state.fichas[id];
+  if(state.selectedBigramaId === id){
+    state.selectedBigramaId = null;
+    showScreen('home');
+  }
+  saveState();
+  renderBigramaList();
+  renderHomeFolders();
+  updateTopbar();
 }
 
 function fillFichaForm(){
@@ -652,14 +742,41 @@ function renderDocument(){
 }
 function openPrintChoiceModal(){ $('printChoiceModal').classList.add('show'); }
 function closePrintChoiceModal(){ $('printChoiceModal').classList.remove('show'); }
-function previewPdfOnly(){ closePrintChoiceModal(); printOfficialDocument(false); }
-function confirmPrintAndClose(){ closePrintChoiceModal(); printOfficialDocument(true); }
+function previewPdfOnly(){ closePrintChoiceModal(); closeConflictModal(); closeImportReportModal(); closeAppMessageModal(); resolveAppConfirm(false); printOfficialDocument(false); }
+function confirmPrintAndClose(){ closePrintChoiceModal(); closeConflictModal(); closeImportReportModal(); closeAppMessageModal(); resolveAppConfirm(false); printOfficialDocument(true); }
 function printOfficialDocument(markPrinted=false){
   renderDocument();
   const printableRecords=getPrintableOpenRecords(), content=$('printHost').innerHTML;
   if(!content||!content.trim()){ showAppMessage('Documento oficial','Não há conteúdo para imprimir.'); return; }
   const printableIds=printableRecords.map(r=>r.id);
-  const styles=`<style>@page { size: A4; margin: 0; } html, body { margin:0; padding:0; background:#fff; } body { font-family: "Times New Roman", Times, serif; } .official-sheet{background:#fff;color:#111;padding:18mm 12mm 18mm 12mm;width:210mm;min-height:297mm;margin:0 auto;box-sizing:border-box;page-break-after:always;position:relative;font-family:"Times New Roman", Times, serif} .sheet-top-right{text-align:right;font-size:11pt;line-height:1.2;margin-bottom:8px} .page-code{text-align:center;font-size:12pt;margin:10px 0;letter-spacing:.16em} .doc-title-table,.meta-table,.hist-table{width:100%;border-collapse:collapse;table-layout:fixed} .doc-title-table td,.meta-table td,.hist-table td,.hist-table th{border:1px solid #2b2b2b;padding:5px 7px;vertical-align:top;font-size:10.5pt} .doc-title{font-weight:700;font-size:13pt!important;text-align:center;line-height:1.15}.box-label{font-weight:700}.hist-table th{font-weight:700;text-align:center;background:#f2f2f2;vertical-align:middle}.left-col{width:30%;text-align:center;vertical-align:middle!important;font-size:10.5pt;padding:10px 6px!important}.right-col{width:70%;padding:10px!important}.rh-block{line-height:1.35;min-height:84px}.signature-bar{position:absolute;left:12mm;right:12mm;bottom:10mm;display:flex;justify-content:space-between;align-items:flex-end;gap:20mm}.signature-box{width:44%;text-align:center;font-size:10pt}.signature-line{border-top:1px solid #222;margin-bottom:4px;height:0}</style>`;
+  const styles=`<style>@page { size: A4; margin: 0; } html, body { margin:0; padding:0; background:#fff; } body { font-family: "Times New Roman", Times, serif; } .official-sheet{background:#fff;color:#111;padding:18mm 12mm 18mm 12mm;width:210mm;min-height:297mm;margin:0 auto;box-sizing:border-box;page-break-after:always;position:relative;font-family:"Times New Roman", Times, serif} .sheet-top-right{text-align:right;font-size:11pt;line-height:1.2;margin-bottom:8px} .page-code{text-align:center;font-size:12pt;margin:10px 0;letter-spacing:.16em} .doc-title-table,.meta-table,.hist-table{width:100%;border-collapse:collapse;table-layout:fixed} .doc-title-table td,.meta-table td,.hist-table td,.hist-table th{border:1px solid #2b2b2b;padding:5px 7px;vertical-align:top;font-size:10.5pt} .doc-title{font-weight:700;font-size:13pt!important;text-align:center;line-height:1.15}.box-label{font-weight:700}.hist-table th{font-weight:700;text-align:center;background:#f2f2f2;vertical-align:middle}.left-col{width:30%;text-align:center;vertical-align:middle!important;font-size:10.5pt;padding:10px 6px!important}.right-col{width:70%;padding:10px!important}.rh-block{line-height:1.35;min-height:84px}.signature-bar{position:absolute;left:12mm;right:12mm;bottom:10mm;display:flex;justify-content:space-between;align-items:flex-end;gap:20mm}.signature-box{width:44%;text-align:center;font-size:10pt}.signature-line{border-top:1px solid #222;margin-bottom:4px;height:0}
+    .report-list{
+      display:grid;
+      gap:10px;
+      margin-top:10px;
+    }
+    .report-item{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:12px 14px;
+      border-radius:14px;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.10);
+      color:#f3f7fb;
+      font-weight:700;
+    }
+    .report-item span:last-child{color:#f0c419;font-size:1.05rem;}
+    .conflict-grid{display:grid;gap:12px;grid-template-columns:1fr;margin-top:10px;}
+    @media(min-width:700px){.conflict-grid{grid-template-columns:1fr 1fr;}}
+    .conflict-col{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10);border-radius:18px;padding:14px;}
+    .conflict-col h4{margin:0 0 10px;font-size:1rem;color:#fff;}
+    .conflict-field{margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.08);}
+    .conflict-field:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none;}
+    .conflict-field b{display:block;margin-bottom:4px;color:#fff;}
+    .conflict-diff{outline:2px solid rgba(240,196,25,.75);border-radius:10px;padding:6px 8px;background:rgba(240,196,25,.08);}
+  </style>`;
   let iframe=document.getElementById('printFrame'); if(iframe) iframe.remove();
   iframe=document.createElement('iframe'); iframe.id='printFrame'; iframe.style.position='fixed'; iframe.style.width='1px'; iframe.style.height='1px'; iframe.style.right='0'; iframe.style.bottom='0'; iframe.style.opacity='0'; iframe.style.border='0'; document.body.appendChild(iframe);
   const doc=iframe.contentWindow.document; doc.open(); doc.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Livro Histórico - Impressão</title>${styles}</head><body>${content}</body></html>`); doc.close();
@@ -736,37 +853,73 @@ function finalizeImportReport(){
   AppState.save(); bootstrapUI(); showImportReportModal(report);
 }
 function importBackup(file){
-  const reader=new FileReader();
-  reader.onload=()=>{
+  const reader = new FileReader();
+  reader.onload = () => {
     try{
-      const parsed=JSON.parse(reader.result);
-      const incoming=Array.isArray(parsed.registros)?parsed.registros:[];
-      const incomingBigramas=Array.isArray(parsed.bigramas)?parsed.bigramas:[];
-      const incomingFichas=parsed.fichas&&typeof parsed.fichas==='object'?parsed.fichas:{};
-      const report={added:0,updated:0,ignored:0,conflicts:0,totalIncoming:incoming.length};
-      const compareKeys=['dataInicio','dataFim','horasFunc','equipamento','tipoRegistro','tipoRegistroLabel','avaria','solucao','observacao','status','bigramaId'];
+      const parsed = JSON.parse(reader.result);
+      const incoming = Array.isArray(parsed.registros) ? parsed.registros : [];
+      const incomingBigramas = Array.isArray(parsed.bigramas) ? parsed.bigramas : [];
+      const incomingFichas = parsed.fichas && typeof parsed.fichas === 'object' ? parsed.fichas : {};
+      const report = { added:0, updated:0, ignored:0, conflicts:0, totalIncoming: incoming.length };
+      const compareKeys = ['dataInicio','dataFim','horasFunc','equipamento','tipoRegistro','tipoRegistroLabel','avaria','solucao','observacao','status','bigramaId'];
 
-      incomingBigramas.forEach(extB=>{ const byId=AppState.data.bigramas.find(b=>b.id===extB.id); const bySigla=AppState.data.bigramas.find(b=>b.sigla===extB.sigla); if(!byId&&!bySigla) AppState.data.bigramas.push(extB); });
-      Object.keys(incomingFichas).forEach(key=>{ if(!AppState.data.fichas[key]) AppState.data.fichas[key]=incomingFichas[key]; });
-
-      UI.conflictQueue=[]; UI.pendingImportReport=report;
-      incoming.forEach(ext=>{
-        const local=AppState.data.registros.find(r=>r.id===ext.id);
-        if(!local){ AppState.data.registros.push(ext); report.added++; return; }
-        const different=compareKeys.some(k=>String(local[k]??'')!==String(ext[k]??''));
-        if(!different){ report.ignored++; return; }
-        UI.conflictQueue.push({localId:local.id, backupRecord:ext}); report.conflicts++;
+      incomingBigramas.forEach(extB => {
+        const byId = state.bigramas.find(b => b.id === extB.id);
+        const bySigla = state.bigramas.find(b => b.sigla === extB.sigla);
+        if(!byId && !bySigla){
+          state.bigramas.push(extB);
+        }
       });
-      AppState.save(); bootstrapUI();
-      if(UI.conflictQueue.length>0) openNextConflict(); else finalizeImportReport();
-    }catch(e){ showAppMessage('Importação de backup','Arquivo de backup inválido.'); }
+
+      Object.keys(incomingFichas).forEach(key => {
+        if(!state.fichas[key]){
+          state.fichas[key] = incomingFichas[key];
+        }
+      });
+
+      __conflictQueue = [];
+      __pendingImportReport = report;
+
+      incoming.forEach(ext => {
+        const local = state.registros.find(r => r.id === ext.id);
+        if(!local){
+          state.registros.push(ext);
+          report.added++;
+          return;
+        }
+
+        const different = compareKeys.some(k => String(local[k] ?? '') !== String(ext[k] ?? ''));
+        if(!different){
+          report.ignored++;
+          return;
+        }
+
+        __conflictQueue.push({ localId: local.id, backupRecord: ext });
+        report.conflicts++;
+      });
+
+      saveState();
+      bootstrapUI();
+
+      if(__conflictQueue.length > 0){
+        openNextConflict();
+      }else{
+        finalizeImportReport();
+      }
+    }catch(e){
+      showAppMessage('Importação de backup', 'Arquivo de backup inválido.');
+    }
   };
-  reader.onerror=()=>showAppMessage('Importação de backup','Não foi possível ler o arquivo selecionado.');
+  reader.onerror = () => {
+    showAppMessage('Importação de backup', 'Não foi possível ler o arquivo selecionado.');
+  };
   reader.readAsText(file);
 }
 
 function bootstrapUI(){
-  renderHomeFolders(); if(AppState.data.selectedBigramaId) updateContextUI();
+  try{ ensureBigramasIntegrity(true); }catch(e){}
+  try{ ensureHomeFoldersRendered(); }catch(e){}
+  if(AppState.data.selectedBigramaId) updateContextUI();
   fillFichaForm();
   $('filtroBusca').value=AppState.data.filtros.busca||''; $('filtroStatus').value=AppState.data.filtros.status||'TODOS'; $('filtroDataInicio').value=AppState.data.filtros.dataInicio||''; $('filtroDataFim').value=AppState.data.filtros.dataFim||'';
   renderBigramaList(); renderHistory(); renderDocument(); updateTopbar();
@@ -774,13 +927,18 @@ function bootstrapUI(){
 
 document.addEventListener('DOMContentLoaded', ()=>{
   AppState.load();
+  ensureBigramasIntegrity(true);
   $('recordForm').addEventListener('submit', handleRecordSubmit);
   $('bigramaForm').addEventListener('submit', handleBigramaSubmit);
   $('fichaForm').addEventListener('submit', handleFichaSubmit);
   $('importBackup').addEventListener('change', e=>{ const file=e.target.files&&e.target.files[0]; if(file) importBackup(file); e.target.value=''; });
   bindFilterInputs();
-  document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeMainMenu(); closeManageBigramas(); closePrintChoiceModal(); closeConflictModal(); closeImportReportModal(); closeAppMessageModal(); resolveAppConfirm(false); } });
-  resetRecordForm(); bootstrapUI(); showScreen(AppState.data.selectedBigramaId?'dashboard':'home');
+  document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeMainMenu(); closeManageBigramas(); closePrintChoiceModal(); closeConflictModal(); closeImportReportModal(); closeAppMessageModal(); resolveAppConfirm(false); closeConflictModal(); closeImportReportModal(); closeAppMessageModal(); resolveAppConfirm(false); } });
+  resetRecordForm();
+  bootstrapUI();
+  showScreen(AppState.data.selectedBigramaId?'dashboard':'home');
+  setTimeout(ensureHomeFoldersRendered, 50);
+  setTimeout(ensureHomeFoldersRendered, 300);
 });
 </script>
 <script>
