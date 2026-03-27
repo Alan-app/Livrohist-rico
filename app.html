@@ -354,19 +354,17 @@
     <section id="screen-historico" class="section hidden">
       <div class="card">
         <h2>Filtros do Histórico</h2>
-        <div class="grid-2" style="margin-top:14px;">
-          <div class="field">
-            <label for="filtroBusca">Busca livre</label>
-            <input id="filtroBusca" type="text" placeholder="Buscar por equipamento, avaria, solução..." />
-          </div>
-          <div class="field">
-            <label for="filtroStatus">Status</label>
-            <select id="filtroStatus">
-              <option value="TODOS">Todos</option>
-              <option value="aberto">Em aberto</option>
-              <option value="fechado">Fechado</option>
-            </select>
-          </div>
+        <div class="field" style="margin-top:14px;">
+          <label for="filtroBusca">Busca livre</label>
+          <input id="filtroBusca" type="text" placeholder="Buscar por equipamento, avaria, solução..." />
+        </div>
+        <div class="field">
+          <label for="filtroStatus">Status</label>
+          <select id="filtroStatus">
+            <option value="TODOS">Todos</option>
+            <option value="aberto">Em aberto</option>
+            <option value="fechado">Fechado</option>
+          </select>
         </div>
         <div class="grid-2">
           <div class="field">
@@ -483,7 +481,7 @@
       <h3>Menu</h3>
       <p>Ações gerais do aplicativo.</p>
       <div class="toolbar">
-        <button class="btn btn-primary" type="button" onclick="openManageBigramas()">Gerenciar bigramas</button>
+        <button class="btn btn-primary" type="button" onclick="openManageBigramas()">Adicionar Bigrama</button>
         <button class="btn btn-secondary" type="button" onclick="exportBackup()">Exportar backup</button>
         <label class="btn btn-secondary" for="importBackup">Importar backup</label>
         <input id="importBackup" class="hidden" type="file" accept=".json" />
@@ -1245,7 +1243,10 @@ function exportBackup(){
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `livro_historico_backup_${new Date().toISOString().slice(0,10)}.json`;
+  const now = new Date();
+  const pad = n => String(n).padStart(2,'0');
+  const stamp = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}`;
+  a.download = `Livro H- Backup ${stamp}.json`;
   a.click();
   URL.revokeObjectURL(url);
 }
