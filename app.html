@@ -494,18 +494,34 @@ function renderHomeFolders(){
 }
 
 function updateTopbar(){
+  const backBtn = $('topBackBtn');
+  const title = $('topTitle');
+  const subtitle = $('topSubtitle');
   const b = getSelectedBigrama();
-  $('topBackBtn').classList.toggle('ghost', UI.currentScreen==='home');
-  if(UI.currentScreen==='home'){
-    $('topTitle').textContent='LIVRO HISTÓRICO';
-    $('topSubtitle').textContent='Sistema de registro histórico de equipamentos de máquinas';
-  }else if(UI.currentScreen==='dashboard'){
-    $('topTitle').textContent = b ? `${b.sigla} - ${b.nome}` : 'Sistema';
-    $('topSubtitle').textContent='Selecione uma opção abaixo';
+
+  title.style.fontSize = '';
+  subtitle.style.fontSize = '';
+
+  if(currentScreen === 'home'){
+    backBtn.classList.add('ghost');
+    title.textContent = 'LIVRO HISTÓRICO';
+    subtitle.textContent = 'Sistema de registro histórico de equipamentos de máquinas';
   }else{
-    const map={novo:'Novo Registro',historico:'Histórico',ficha:'Dados da Ficha',documento:'Documento Oficial'};
-    $('topTitle').textContent = map[UI.currentScreen] || 'Livro Histórico';
-    $('topSubtitle').textContent = b ? getBigramaLabel(b.id) : '';
+    backBtn.classList.remove('ghost');
+    if(currentScreen === 'dashboard'){
+      title.textContent = b ? (b.sigla || '') : 'Sistema';
+      subtitle.textContent = '';
+      title.style.fontSize = '2rem';
+    }else{
+      const map = {
+        novo:'Novo Registro',
+        historico:'Histórico',
+        ficha:'Dados da Ficha',
+        documento:'Documento Oficial'
+      };
+      title.textContent = map[currentScreen] || 'Livro Histórico';
+      subtitle.textContent = b ? getBigramaLabel(b.id) : '';
+    }
   }
 }
 function updateContextUI(){
