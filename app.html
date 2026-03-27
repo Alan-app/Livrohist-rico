@@ -54,8 +54,8 @@
     }
     .ghost{visibility:hidden}
     .brand{text-align:center}
-    .brand h1{margin:0;font-size:2rem;letter-spacing:.08em;text-transform:uppercase;line-height:1.08}
-    .brand p{margin:6px 0 0;color:var(--muted);font-size:.95rem;line-height:1.18;opacity:.85}
+    .brand h1{margin:0;font-size:1.18rem;letter-spacing:.01em;text-transform:none;line-height:1.08;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .brand p{margin:8px 0 0;color:var(--muted);font-size:.92rem;line-height:1.18}
     .gold-line{height:4px;background:var(--gold)}
     .content{padding:18px 16px 90px}
     .hidden{display:none !important}
@@ -730,51 +730,50 @@ function renderHomeFolders(){
 }
 
 function updateTopbar(){
-  const backBtn = $('topBackBtn');
-  const title = $('topTitle');
-  const subtitle = $('topSubtitle');
   const b = getSelectedBigrama();
+  const backBtn = $('topBackBtn');
+  const titleEl = $('topTitle');
+  const subtitleEl = $('topSubtitle');
 
-  // reset visual defaults every time
-  title.style.fontSize = '';
-  title.style.textTransform = '';
-  title.style.letterSpacing = '';
-  title.style.whiteSpace = '';
-  title.style.overflow = '';
-  title.style.textOverflow = '';
-  subtitle.style.fontSize = '';
+  backBtn.classList.toggle('ghost', UI.currentScreen==='home');
 
-  if(currentScreen === 'home'){
-    backBtn.classList.add('ghost');
-    title.textContent = 'LIVRO HISTÓRICO';
-    subtitle.textContent = 'Sistema de registro histórico de equipamentos de máquinas';
-  }else{
-    backBtn.classList.remove('ghost');
-    if(currentScreen === 'dashboard'){
-      if(b){
-        title.textContent = b.sigla || '';
-        subtitle.textContent = b.nome || '';
-      }else{
-        title.textContent = 'Sistema';
-        subtitle.textContent = 'Selecione uma opção abaixo';
-      }
-      title.style.fontSize = '1.5rem';
-      title.style.textTransform = 'uppercase';
-      title.style.letterSpacing = '.05em';
-      title.style.whiteSpace = 'nowrap';
-      subtitle.style.fontSize = '.95rem';
-    }else{
-      const map = {
-        novo:'Novo Registro',
-        historico:'Histórico',
-        ficha:'Dados da Ficha',
-        documento:'Documento Oficial'
-      };
-      title.textContent = map[currentScreen] || 'Livro Histórico';
-      subtitle.textContent = b ? getBigramaLabel(b.id) : '';
-    }
+  titleEl.style.whiteSpace = 'nowrap';
+  titleEl.style.overflow = 'hidden';
+  titleEl.style.textOverflow = 'ellipsis';
+  titleEl.style.textTransform = 'none';
+  titleEl.style.letterSpacing = '.01em';
+
+  if(UI.currentScreen==='home'){
+    titleEl.textContent='LIVRO HISTÓRICO';
+    subtitleEl.textContent='Sistema de registro histórico de equipamentos de máquinas';
+    titleEl.style.fontSize = '1.18rem';
+    return;
   }
+
+  if(UI.currentScreen==='dashboard'){
+    const titleText = b ? `${b.sigla} - ${b.nome}` : 'Sistema';
+    titleEl.textContent = titleText;
+    subtitleEl.textContent='Selecione uma opção abaixo';
+
+    const len = titleText.length;
+    if(len > 28){
+      titleEl.style.fontSize = '.72rem';
+    }else if(len > 22){
+      titleEl.style.fontSize = '.82rem';
+    }else if(len > 16){
+      titleEl.style.fontSize = '.94rem';
+    }else{
+      titleEl.style.fontSize = '1.05rem';
+    }
+    return;
+  }
+
+  const map={novo:'Novo Registro',historico:'Histórico',ficha:'Dados da Ficha',documento:'Documento Oficial'};
+  titleEl.textContent = map[UI.currentScreen] || 'Livro Histórico';
+  subtitleEl.textContent = b ? getBigramaLabel(b.id) : '';
+  titleEl.style.fontSize = '1.15rem';
 }
+
 
 function updateSelectedContextUI(){
   const b = getSelectedBigrama();
