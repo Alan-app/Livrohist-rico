@@ -54,8 +54,8 @@
     }
     .ghost{visibility:hidden}
     .brand{text-align:center}
-    .brand h1{margin:0;font-size:2rem;letter-spacing:.08em;text-transform:uppercase}
-    .brand p{margin:6px 0 0;color:var(--muted);font-size:.95rem;line-height:1.2;opacity:.85}
+    .brand h1{margin:0;font-size:2rem;letter-spacing:.08em;text-transform:uppercase;line-height:1.08}
+    .brand p{margin:6px 0 0;color:var(--muted);font-size:.95rem;line-height:1.18;opacity:.85}
     .gold-line{height:4px;background:var(--gold)}
     .content{padding:18px 16px 90px}
     .hidden{display:none !important}
@@ -735,8 +735,13 @@ function updateTopbar(){
   const subtitle = $('topSubtitle');
   const b = getSelectedBigrama();
 
-  // clear inline overrides first
+  // reset visual defaults every time
   title.style.fontSize = '';
+  title.style.textTransform = '';
+  title.style.letterSpacing = '';
+  title.style.whiteSpace = '';
+  title.style.overflow = '';
+  title.style.textOverflow = '';
   subtitle.style.fontSize = '';
 
   if(currentScreen === 'home'){
@@ -747,13 +752,16 @@ function updateTopbar(){
     backBtn.classList.remove('ghost');
     if(currentScreen === 'dashboard'){
       if(b){
-        title.textContent = b.sigla;
-        subtitle.textContent = b.nome;
+        title.textContent = b.sigla || '';
+        subtitle.textContent = b.nome || '';
       }else{
         title.textContent = 'Sistema';
         subtitle.textContent = 'Selecione uma opção abaixo';
       }
       title.style.fontSize = '1.5rem';
+      title.style.textTransform = 'uppercase';
+      title.style.letterSpacing = '.05em';
+      title.style.whiteSpace = 'nowrap';
       subtitle.style.fontSize = '.95rem';
     }else{
       const map = {

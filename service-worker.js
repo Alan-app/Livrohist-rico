@@ -1,4 +1,4 @@
-const CACHE_NAME = 'livro-historico-stable-header-name-20260327';
+const CACHE_NAME = 'livro-historico-patch-20260327-02';
 const APP_ASSETS = ['./','./index.html','./app.html','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_ASSETS)));
