@@ -1,4 +1,4 @@
-const CACHE_NAME = 'livro-historico-s41-install-gate-v1';
+const CACHE_NAME = 'livro-historico-s41-gate-v2';
 const APP_ASSETS = [
   './',
   './index.html',

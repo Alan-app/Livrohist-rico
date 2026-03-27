@@ -135,7 +135,7 @@
         <h3>Imprimir / Exportar PDF</h3>
         <p>Escolha se os registros que forem para o PDF devem ser marcados como fechados após a abertura da visualização de impressão.</p>
         <div class="modal-actions">
-          <button class="btn btn-primary" type="button" onclick="confirmPrintAndClose()">Marcar registros como "fechado"</button>
+          <button class="btn btn-primary" type="button" onclick="confirmPrintAndClose()">Marcar como "fechado"</button>
           <button class="btn btn-secondary" type="button" onclick="previewPdfOnly()">Apenas visualizar PDF</button>
         </div>
         <div class="toolbar" style="margin-top:10px;">
@@ -330,74 +330,4 @@ function printOfficialDocument(markPrinted=false){
     }
   </script>
 
-</body></html>`);
-  doc.close();
-
-  let statusApplied = false;
-  const applyClosedStatus = () => {
-    if(statusApplied || !markPrinted) return;
-    statusApplied = true;
-    state.registros.forEach(r => {
-      if(printableIds.includes(r.id)) {
-        r.status = 'fechado';
-        r.updatedAt = Date.now();
-      }
-    });
-    saveState();
-    renderHistory();
-    renderDocument();
-  };
-
-  const doPrint = () => {
-    try{
-      iframe.contentWindow.focus();
-      iframe.contentWindow.print();
-      if(markPrinted){
-        setTimeout(applyClosedStatus, 300);
-      }
-    }catch(e){
-      alert('O navegador não permitiu abrir a impressão.');
-    }
-  };
-
-  iframe.onload = () => setTimeout(doPrint, 250);
-  setTimeout(doPrint, 700);
-}
-
-
-function showScreen(screen){currentScreen=screen;['home','novo','historico','bigramas','ficha','documento'].forEach(s=>$('screen-'+s).classList.toggle('hidden',s!==screen));$('homeHeader').classList.toggle('hidden',screen!=='home');$('subHeader').classList.toggle('hidden',screen==='home');$('fabAdd').classList.toggle('hidden',!['novo','historico','bigramas'].includes(screen));const titles={novo:'Novo Registro',historico:'Histórico',bigramas:'Gerenciar Bigramas',ficha:'Dados da Ficha',documento:'Documento Oficial'};if(screen!=='home')$('screenTitle').textContent=titles[screen]||'Tela';if(screen==='historico')renderHistory();if(screen==='bigramas')renderBigramaList();if(screen==='documento')renderDocument();if(screen==='novo')renderRecordPreview()}
-function goHome(){showScreen('home')}
-function resetRecordForm(){editingRecordId=null;$('recordForm').reset();$('dataInicio').value=new Date().toISOString().slice(0,10);$('submitRecordBtn').textContent='Salvar Registro';$('formHeading').textContent='Novo Registro';renderRecordPreview()}
-function recordTypeLabel(v){return {avaria:'Avaria',manutencao:'Manutenção',rotina:'Rotina de manutenção',ocorrencia:'Ocorrência',anotacao:'Anotação'}[v]||'Avaria'}
-function handleRecordSubmit(e){e.preventDefault();const dataInicio=$('dataInicio').value,dataFim=$('dataFim').value,horasFunc=$('horasFunc').value.trim(),bigramaId=$('bigramaSelect').value,equipamento=$('equipamento').value.trim(),tipoRegistro=$('tipoRegistro').value,avaria=$('avaria').value.trim(),solucao=$('solucao').value.trim(),observacao=$('observacao').value.trim();if(!dataInicio||!bigramaId||!avaria){setStatus('recordStatus','Preencha data de início, bigrama e avaria/registro.',true);return}if(dataFim&&dataFim<dataInicio){setStatus('recordStatus','A data de fechamento não pode ser menor que a data de início.',true);return}const payload={dataInicio,dataFim,horasFunc,bigramaId,equipamento,tipoRegistro,tipoRegistroLabel:recordTypeLabel(tipoRegistro),avaria,solucao,observacao,status:'aberto'};if(editingRecordId){const idx=state.registros.findIndex(r=>r.id===editingRecordId);if(idx>=0){state.registros[idx]={...state.registros[idx],...payload,updatedAt:Date.now()};setStatus('recordStatus','Registro atualizado.')}}else{state.registros.push({id:uid('rec'),...payload,createdAt:Date.now()});setStatus('recordStatus','Registro salvo.')}saveState();resetRecordForm();renderHistory();renderDocument()}
-function editRecord(id){const r=state.registros.find(x=>x.id===id);if(!r)return;editingRecordId=id;$('dataInicio').value=r.dataInicio||'';$('dataFim').value=r.dataFim||'';$('horasFunc').value=r.horasFunc||'';$('bigramaSelect').value=r.bigramaId||'';$('equipamento').value=r.equipamento||'';$('tipoRegistro').value=r.tipoRegistro||'avaria';$('avaria').value=r.avaria||'';$('solucao').value=r.solucao||'';$('observacao').value=r.observacao||'';$('submitRecordBtn').textContent='Salvar Edição';$('formHeading').textContent='Editar Registro';showScreen('novo');renderRecordPreview();window.scrollTo({top:0,behavior:'smooth'})}
-function deleteRecord(id){if(!confirm('Excluir este registro?'))return;state.registros=state.registros.filter(x=>x.id!==id);if(editingRecordId===id)resetRecordForm();saveState();renderHistory()}
-function toggleRecordStatus(id){const r=state.registros.find(x=>x.id===id);if(!r)return;r.status=r.status==='fechado'?'aberto':'fechado';r.updatedAt=Date.now();saveState();renderHistory();renderDocument()}
-function previewSingleRecord(id){const r=state.registros.find(x=>x.id===id);if(!r)return;alert(`${getBigramaLabel(r.bigramaId)}\n${dateRangeLabel(r).replaceAll('\\n',' | ')}\n\n${r.tipoRegistroLabel||'Avaria'}:\n${r.avaria||'—'}\n\nSolução:\n${r.solucao||'—'}\n\nObservação:\n${r.observacao||'—'}`)}
-function handleBigramaSubmit(e){e.preventDefault();const sigla=$('siglaInput').value.trim().toUpperCase(),nome=$('nomeSistemaInput').value.trim();if(!sigla||!nome){setStatus('bigramaStatus','Informe sigla e nome do sistema.',true);return}const exists=state.bigramas.find(b=>b.sigla===sigla&&b.id!==editingBigramaId);if(exists){setStatus('bigramaStatus','Já existe um bigrama com essa sigla.',true);return}if(editingBigramaId){const idx=state.bigramas.findIndex(b=>b.id===editingBigramaId);if(idx>=0){state.bigramas[idx]={...state.bigramas[idx],sigla,nome};setStatus('bigramaStatus','Bigrama atualizado.')}}else{state.bigramas.push({id:uid('big'),sigla,nome});setStatus('bigramaStatus','Bigrama salvo.')}saveState();resetBigramaForm();renderSelectors();renderBigramaList();renderHistory()}
-function editBigrama(id){const b=state.bigramas.find(x=>x.id===id);if(!b)return;editingBigramaId=id;$('siglaInput').value=b.sigla||'';$('nomeSistemaInput').value=b.nome||'';$('saveBigramaBtn').textContent='Salvar Edição';window.scrollTo({top:0,behavior:'smooth'})}
-function deleteBigrama(id){const inUse=state.registros.some(r=>r.bigramaId===id);if(inUse){alert('Não é possível excluir este bigrama porque existem registros vinculados a ele.');return}if(!confirm('Excluir este bigrama?'))return;state.bigramas=state.bigramas.filter(x=>x.id!==id);saveState();renderSelectors();renderBigramaList()}
-function resetBigramaForm(){editingBigramaId=null;$('bigramaForm').reset();$('saveBigramaBtn').textContent='Salvar Bigrama'}
-function aplicarPadraoFicha(){state.ficha={...defaultFicha};fillFichaForm();saveState();renderDocument();setStatus('fichaStatus','Padrão restaurado.')}
-function fillFichaForm(){Object.entries(state.ficha).forEach(([k,v])=>{const el=$(k);if(el)el.value=v??''})}
-function handleFichaSubmit(e){e.preventDefault();state.ficha={navio:$('navio').value.trim(),fichaNumero:$('fichaNumero').value.trim(),folhaInicial:parseInt($('folhaInicial').value||'1',10),anexoPrimeiraPagina:$('anexoPrimeiraPagina').value,sistemaFicha:$('sistemaFicha').value.trim(),equipamentoFicha:$('equipamentoFicha').value.trim(),manualPlano:$('manualPlano').value.trim(),fabricante:$('fabricante').value.trim(),dadosPlaca:$('dadosPlaca').value.trim(),localizacao:$('localizacao').value.trim(),numeroSerie:$('numeroSerie').value.trim()};saveState();renderDocument();setStatus('fichaStatus','Dados da ficha salvos.')}
-function clearFilters(){state.filtros={bigrama:'TODOS',busca:'',dataInicio:'',dataFim:''};$('filtroBigrama').value='TODOS';$('filtroBusca').value='';$('filtroDataInicio').value='';$('filtroDataFim').value='';saveState();renderHistory()}
-function bindFilterInputs(){$('filtroBigrama').addEventListener('change',e=>{state.filtros.bigrama=e.target.value;saveState();renderHistory()});$('filtroBusca').addEventListener('input',e=>{state.filtros.busca=e.target.value;saveState();renderHistory()});$('filtroDataInicio').addEventListener('input',e=>{state.filtros.dataInicio=e.target.value;saveState();renderHistory()});$('filtroDataFim').addEventListener('input',e=>{state.filtros.dataFim=e.target.value;saveState();renderHistory()})}
-function exportBackup(){const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`livro_historico_s41_backup_${new Date().toISOString().slice(0,10)}.json`;a.click();URL.revokeObjectURL(url)}
-function importBackup(file){const reader=new FileReader();reader.onload=()=>{try{const parsed=JSON.parse(reader.result);state={bigramas:Array.isArray(parsed.bigramas)&&parsed.bigramas.length?parsed.bigramas:[...defaultBigramas],registros:Array.isArray(parsed.registros)?parsed.registros:[],ficha:parsed.ficha?{...defaultFicha,...parsed.ficha}:{...defaultFicha},filtros:parsed.filtros?{bigrama:'TODOS',busca:'',dataInicio:'',dataFim:'',...parsed.filtros}:{bigrama:'TODOS',busca:'',dataInicio:'',dataFim:''}};saveState();bootstrapUI();alert('Backup importado com sucesso.')}catch(e){alert('Arquivo de backup inválido.')}};reader.readAsText(file)}
-function bootstrapUI(){renderSelectors();renderBigramaList();fillFichaForm();$('filtroBusca').value=state.filtros.busca||'';$('filtroDataInicio').value=state.filtros.dataInicio||'';$('filtroDataFim').value=state.filtros.dataFim||'';$('filtroBigrama').value=state.filtros.bigrama||'TODOS';renderRecordPreview();renderHistory();renderDocument()}
-document.addEventListener('DOMContentLoaded',()=>{document.addEventListener('keydown',e=>{if(e.key==='Escape')closePrintChoiceModal()});loadState();renderSelectors();$('recordForm').addEventListener('submit',handleRecordSubmit);$('bigramaForm').addEventListener('submit',handleBigramaSubmit);$('fichaForm').addEventListener('submit',handleFichaSubmit);$('importBackup').addEventListener('change',e=>{const file=e.target.files?.[0];if(file)importBackup(file);e.target.value=''});bindFilterInputs();['dataInicio','dataFim','horasFunc','equipamento','tipoRegistro','avaria','solucao','observacao'].forEach(id=>$(id)&&$(id).addEventListener('input',renderRecordPreview));$('bigramaSelect')&&$('bigramaSelect').addEventListener('change',renderRecordPreview);resetRecordForm();fillFichaForm();bootstrapUI();showScreen('home')});
-</script>
-
-  <script>
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("./service-worker.js").catch(err => {
-          console.error("Falha ao registrar service worker:", err);
-        });
-      });
-    }
-  </script>
-
-</body>
-</html>
+</body></html>

@@ -1,18 +1,19 @@
-Publicação com instalação obrigatória
+Pacote corrigido
 
-Arquivos:
-- index.html -> página de instalação obrigatória
-- app.html -> aplicativo real
-- manifest.webmanifest
-- service-worker.js
+Diagnóstico do erro anterior:
+- o app real foi gerado a partir de uma versão HTML duplicada
+- isso fez aparecer código JS no rodapé da tela
 
-Comportamento:
-- abrindo pelo navegador: mostra só a página "Instalar aplicativo"
-- abrindo já instalado como PWA: entra direto no app
+Nesta versão:
+- index.html = tela de instalação obrigatória
+- app.html = aplicativo real corrigido
+- app.html foi saneado para conter apenas um documento HTML válido
 
-Para publicar:
-1. apague os arquivos antigos do repositório
-2. envie estes arquivos novos
+Publicação:
+1. apague todos os arquivos antigos do repositório
+2. envie todos os arquivos deste ZIP
 3. aguarde o GitHub Pages atualizar
-4. se o app antigo já estiver instalado, remova e instale de novo
-5. se o navegador insistir em cache antigo, abra em aba anônima
+4. remova do celular qualquer instalação anterior do app
+5. abra o link novamente
+6. instale de novo
+7. se necessário, use aba anônima para evitar cache antigo
