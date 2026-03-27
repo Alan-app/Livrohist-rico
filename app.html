@@ -55,7 +55,7 @@
     .ghost{visibility:hidden}
     .brand{text-align:center}
     .brand h1{margin:0;font-size:2rem;letter-spacing:.08em;text-transform:uppercase}
-    .brand p{margin:8px 0 0;color:var(--muted);font-size:1rem;line-height:1.25}
+    .brand p{margin:6px 0 0;color:var(--muted);font-size:.95rem;line-height:1.2;opacity:.85}
     .gold-line{height:4px;background:var(--gold)}
     .content{padding:18px 16px 90px}
     .hidden{display:none !important}
@@ -228,6 +228,72 @@
       .print-zone{display:block!important}
       .official-sheet{margin:0;box-shadow:none;width:210mm;min-height:297mm}
     }
+  
+    .conflict-grid{
+      display:grid;
+      gap:12px;
+      grid-template-columns:1fr;
+      margin-top:10px;
+    }
+    @media(min-width:700px){
+      .conflict-grid{grid-template-columns:1fr 1fr;}
+    }
+    .conflict-col{
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:18px;
+      padding:14px;
+    }
+    .conflict-col h4{
+      margin:0 0 10px;
+      font-size:1rem;
+      color:#fff;
+    }
+    .conflict-field{
+      margin-bottom:10px;
+      padding-bottom:8px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+    }
+    .conflict-field:last-child{
+      margin-bottom:0;
+      padding-bottom:0;
+      border-bottom:none;
+    }
+    .conflict-field b{
+      display:block;
+      margin-bottom:4px;
+      color:#fff;
+    }
+    .conflict-diff{
+      outline:2px solid rgba(240,196,25,.75);
+      border-radius:10px;
+      padding:6px 8px;
+      background:rgba(240,196,25,.08);
+    }
+
+  
+    .report-list{
+      display:grid;
+      gap:10px;
+      margin-top:10px;
+    }
+    .report-item{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:12px 14px;
+      border-radius:14px;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.10);
+      color:#f3f7fb;
+      font-weight:700;
+    }
+    .report-item span:last-child{
+      color:#f0c419;
+      font-size:1.05rem;
+    }
+
   </style>
 </head>
 <body>
@@ -664,39 +730,43 @@ function renderHomeFolders(){
 }
 
 function updateTopbar(){
-  const b = getSelectedBigrama();
   const backBtn = $('topBackBtn');
-  const titleEl = $('topTitle');
-  const subtitleEl = $('topSubtitle');
+  const title = $('topTitle');
+  const subtitle = $('topSubtitle');
+  const b = getSelectedBigrama();
 
-  if(UI.currentScreen==='home'){
-    titleEl.textContent='LIVRO HISTÓRICO';
-    subtitleEl.textContent='Sistema de registro histórico de equipamentos de máquinas';
-    return;
-  }
+  // clear inline overrides first
+  title.style.fontSize = '';
+  subtitle.style.fontSize = '';
 
-  if(UI.currentScreen==='dashboard'){
-    if(b){
-      titleEl.textContent = b.sigla;
-      subtitleEl.textContent = b.nome;
-    } else {
-      titleEl.textContent = 'Sistema';
-      subtitleEl.textContent = '';
+  if(currentScreen === 'home'){
+    backBtn.classList.add('ghost');
+    title.textContent = 'LIVRO HISTÓRICO';
+    subtitle.textContent = 'Sistema de registro histórico de equipamentos de máquinas';
+  }else{
+    backBtn.classList.remove('ghost');
+    if(currentScreen === 'dashboard'){
+      if(b){
+        title.textContent = b.sigla;
+        subtitle.textContent = b.nome;
+      }else{
+        title.textContent = 'Sistema';
+        subtitle.textContent = 'Selecione uma opção abaixo';
+      }
+      title.style.fontSize = '1.5rem';
+      subtitle.style.fontSize = '.95rem';
+    }else{
+      const map = {
+        novo:'Novo Registro',
+        historico:'Histórico',
+        ficha:'Dados da Ficha',
+        documento:'Documento Oficial'
+      };
+      title.textContent = map[currentScreen] || 'Livro Histórico';
+      subtitle.textContent = b ? getBigramaLabel(b.id) : '';
     }
-    return;
   }
-
-  const map={
-    novo:'Novo Registro',
-    historico:'Histórico',
-    ficha:'Dados da Ficha',
-    documento:'Documento Oficial'
-  };
-
-  titleEl.textContent = map[UI.currentScreen] || 'Livro Histórico';
-  subtitleEl.textContent = b ? `${b.sigla} - ${b.nome}` : '';
 }
-
 
 function updateSelectedContextUI(){
   const b = getSelectedBigrama();
@@ -716,7 +786,7 @@ function selectBigrama(id){
 
 function showScreen(screen){
   if(screen !== 'home' && !state.selectedBigramaId){
-    alert('Selecione primeiro um bigrama.');
+    showAppMessage('Bigrama', 'Selecione primeiro um bigrama.');
     return;
   }
   currentScreen = screen;
@@ -892,11 +962,26 @@ function renderHistory(){
   }).join('');
   renderDocument();
 }
+
 function previewSingleRecord(id){
   const r = state.registros.find(x => x.id === id);
   if(!r) return;
-  alert(`${getBigramaLabel(r.bigramaId)}\n${dateRangeLabel(r).replaceAll('\n',' | ')}\n\n${r.tipoRegistroLabel || 'Avaria'}:\n${r.avaria || '—'}\n\nSolução:\n${r.solucao || '—'}\n\nObservação:\n${r.observacao || '—'}`);
+  showAppMessage(
+    getBigramaLabel(r.bigramaId),
+    `${dateRangeLabel(r).replaceAll('
+',' | ')}
+
+${r.tipoRegistroLabel || 'Avaria'}:
+${r.avaria || '—'}
+
+Solução:
+${r.solucao || '—'}
+
+Observação:
+${r.observacao || '—'}`
+  );
 }
+
 function editRecord(id){
   const r = state.registros.find(x => x.id === id);
   if(!r) return;
@@ -916,8 +1001,9 @@ function editRecord(id){
   showScreen('novo');
   window.scrollTo({top:0, behavior:'smooth'});
 }
-function deleteRecord(id){
-  if(!confirm('Excluir este registro?')) return;
+async function deleteRecord(id){
+  const ok = await showAppConfirm('Excluir registro', 'Deseja realmente excluir este registro?');
+  if(!ok) return;
   state.registros = state.registros.filter(x => x.id !== id);
   if(editingRecordId === id) resetRecordForm();
   saveState();
@@ -1018,13 +1104,14 @@ function resetBigramaForm(){
   $('bigramaForm').reset();
   $('saveBigramaBtn').textContent = 'Salvar Bigrama';
 }
-function deleteBigrama(id){
+async function deleteBigrama(id){
   const inUse = state.registros.some(r => r.bigramaId === id);
   if(inUse){
-    alert('Não é possível excluir este bigrama porque existem registros vinculados a ele.');
+    showAppMessage('Excluir bigrama', 'Não é possível excluir este bigrama porque existem registros vinculados a ele.');
     return;
   }
-  if(!confirm('Excluir este bigrama?')) return;
+  const ok = await showAppConfirm('Excluir bigrama', 'Deseja realmente excluir este bigrama?');
+  if(!ok) return;
   state.bigramas = state.bigramas.filter(x => x.id !== id);
   delete state.fichas[id];
   if(state.selectedBigramaId === id){
@@ -1170,15 +1257,15 @@ function renderDocument(){
 
 function openPrintChoiceModal(){ $('printChoiceModal').classList.add('show'); }
 function closePrintChoiceModal(){ $('printChoiceModal').classList.remove('show'); }
-function previewPdfOnly(){ closePrintChoiceModal(); printOfficialDocument(false); }
-function confirmPrintAndClose(){ closePrintChoiceModal(); printOfficialDocument(true); }
+function previewPdfOnly(){ closePrintChoiceModal(); closeConflictModal(); closeImportReportModal(); closeAppMessageModal(); closeAppConfirmModal(); printOfficialDocument(false); }
+function confirmPrintAndClose(){ closePrintChoiceModal(); closeConflictModal(); closeImportReportModal(); closeAppMessageModal(); closeAppConfirmModal(); printOfficialDocument(true); }
 
 function printOfficialDocument(markPrinted=false){
   renderDocument();
   const printableRecords = getPrintableOpenRecords();
   const content = $('printHost').innerHTML;
   if(!content || !content.trim()){
-    alert('Não há conteúdo para imprimir.');
+    showAppMessage('Documento oficial', 'Não há conteúdo para imprimir.');
     return;
   }
   const printableIds = printableRecords.map(r => r.id);
@@ -1198,7 +1285,73 @@ function printOfficialDocument(markPrinted=false){
       .right-col{width:70%;padding:10px!important}.rh-block{line-height:1.35;min-height:84px}
       .signature-bar{position:absolute;left:12mm;right:12mm;bottom:10mm;display:flex;justify-content:space-between;align-items:flex-end;gap:20mm}
       .signature-box{width:44%;text-align:center;font-size:10pt}.signature-line{border-top:1px solid #222;margin-bottom:4px;height:0}
-    </style>
+    
+    .conflict-grid{
+      display:grid;
+      gap:12px;
+      grid-template-columns:1fr;
+      margin-top:10px;
+    }
+    @media(min-width:700px){
+      .conflict-grid{grid-template-columns:1fr 1fr;}
+    }
+    .conflict-col{
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:18px;
+      padding:14px;
+    }
+    .conflict-col h4{
+      margin:0 0 10px;
+      font-size:1rem;
+      color:#fff;
+    }
+    .conflict-field{
+      margin-bottom:10px;
+      padding-bottom:8px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+    }
+    .conflict-field:last-child{
+      margin-bottom:0;
+      padding-bottom:0;
+      border-bottom:none;
+    }
+    .conflict-field b{
+      display:block;
+      margin-bottom:4px;
+      color:#fff;
+    }
+    .conflict-diff{
+      outline:2px solid rgba(240,196,25,.75);
+      border-radius:10px;
+      padding:6px 8px;
+      background:rgba(240,196,25,.08);
+    }
+
+  
+    .report-list{
+      display:grid;
+      gap:10px;
+      margin-top:10px;
+    }
+    .report-item{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:12px 14px;
+      border-radius:14px;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.10);
+      color:#f3f7fb;
+      font-weight:700;
+    }
+    .report-item span:last-child{
+      color:#f0c419;
+      font-size:1.05rem;
+    }
+
+  </style>
   `;
   let iframe = document.getElementById('printFrame');
   if(iframe) iframe.remove();
@@ -1238,7 +1391,7 @@ function printOfficialDocument(markPrinted=false){
       iframe.contentWindow.print();
       if(markPrinted) setTimeout(applyClosedStatus, 300);
     }catch(e){
-      alert('O navegador não permitiu abrir a impressão.');
+      showAppMessage('Documento oficial', 'O navegador não permitiu abrir a impressão.');
     }
   };
   iframe.onload = () => setTimeout(doPrint, 250);
@@ -1258,77 +1411,204 @@ function exportBackup(){
   URL.revokeObjectURL(url);
 }
 
+
+
 function importBackup(file){
   const reader = new FileReader();
   reader.onload = () => {
     try{
       const parsed = JSON.parse(reader.result);
-      const incoming = parsed.registros || [];
-      let added=0, updated=0, ignored=0, conflicts=0;
+      const incoming = Array.isArray(parsed.registros) ? parsed.registros : [];
+      const incomingBigramas = Array.isArray(parsed.bigramas) ? parsed.bigramas : [];
+      const incomingFichas = parsed.fichas && typeof parsed.fichas === 'object' ? parsed.fichas : {};
 
-      incoming.forEach(ext=>{
-        const local = state.registros.find(r=>r.id===ext.id);
+      const report = { added:0, updated:0, ignored:0, conflicts:0, totalIncoming: incoming.length };
+      const compareKeys = ['dataInicio','dataFim','horasFunc','equipamento','tipoRegistro','tipoRegistroLabel','avaria','solucao','observacao','status','bigramaId'];
+
+      incomingBigramas.forEach(extB => {
+        const byId = state.bigramas.find(b => b.id === extB.id);
+        const bySigla = state.bigramas.find(b => b.sigla === extB.sigla);
+        if(!byId && !bySigla){
+          state.bigramas.push(extB);
+        }
+      });
+
+      Object.keys(incomingFichas).forEach(key => {
+        if(!state.fichas[key]){
+          state.fichas[key] = incomingFichas[key];
+        }
+      });
+
+      state.__conflictQueue = [];
+      state.__pendingImportReport = report;
+
+      incoming.forEach(ext => {
+        const local = state.registros.find(r => r.id === ext.id);
 
         if(!local){
           state.registros.push(ext);
-          added++;
-        }else{
-          if(ext.updatedAt > (local.updatedAt||0)){
-            // conflict detection
-            if(JSON.stringify(local) !== JSON.stringify(ext)){
-              const decision = confirm(
-                "Conflito detectado
-
-" +
-                "Meu status: "+local.status+"
-" +
-                "Backup status: "+ext.status+"
-
-" +
-                "OK = usar BACKUP
-Cancelar = manter LOCAL"
-              );
-              if(decision){
-                Object.assign(local, ext);
-                updated++;
-              }else{
-                ignored++;
-              }
-              conflicts++;
-            }else{
-              Object.assign(local, ext);
-              updated++;
-            }
-          }else{
-            ignored++;
-          }
+          report.added++;
+          return;
         }
+
+        const different = compareKeys.some(k => String(local[k] ?? '') !== String(ext[k] ?? ''));
+        if(!different){
+          report.ignored++;
+          return;
+        }
+
+        state.__conflictQueue.push({ localId: local.id, backupRecord: ext });
+        report.conflicts++;
       });
 
       saveState();
       bootstrapUI();
 
-      alert(
-        "Importação concluída
-
-"+
-        "Novos: "+added+"
-"+
-        "Atualizados: "+updated+"
-"+
-        "Ignorados: "+ignored+"
-"+
-        "Conflitos: "+conflicts
-      );
-
+      if((state.__conflictQueue || []).length > 0){
+        openNextConflict();
+      }else{
+        finalizeImportReport();
+      }
     }catch(e){
-      alert('Arquivo inválido');
+      showAppMessage('Importação de backup', 'Arquivo de backup inválido.');
     }
+  };
+  reader.onerror = () => {
+    showAppMessage('Importação de backup', 'Não foi possível ler o arquivo selecionado.');
   };
   reader.readAsText(file);
 }
 
+
+
+
+function formatConflictValue(v){
+  if(v === '' || v === null || typeof v === 'undefined') return '—';
+  return nl2br(String(v));
+}
+function conflictField(label, mine, theirs, useBackup=false){
+  const diff = String(mine ?? '') !== String(theirs ?? '');
+  const value = useBackup ? theirs : mine;
+  return `
+    <div class="conflict-field ${diff ? 'conflict-diff' : ''}">
+      <b>${escapeHtml(label)}</b>
+      <div>${formatConflictValue(value)}</div>
+    </div>
+  `;
+}
+function openNextConflict(){
+  const queue = state.__conflictQueue || [];
+  if(!queue.length){
+    finalizeImportReport();
+    return;
+  }
+  const item = queue[0];
+  const local = state.registros.find(r => r.id === item.localId);
+  const backup = item.backupRecord;
+  if(!local){
+    queue.shift();
+    saveState();
+    openNextConflict();
+    return;
+  }
+  $('conflictContent').innerHTML = `
+    <div class="conflict-grid">
+      <div class="conflict-col">
+        <h4>Meu registro</h4>
+        ${conflictField('Data início', local.dataInicio, backup.dataInicio)}
+        ${conflictField('Data fim', local.dataFim, backup.dataFim)}
+        ${conflictField('Horas', local.horasFunc, backup.horasFunc)}
+        ${conflictField('Equipamento', local.equipamento, backup.equipamento)}
+        ${conflictField('Tipo', local.tipoRegistroLabel || local.tipoRegistro, backup.tipoRegistroLabel || backup.tipoRegistro)}
+        ${conflictField('Avaria', local.avaria, backup.avaria)}
+        ${conflictField('Solução', local.solucao, backup.solucao)}
+        ${conflictField('Observação', local.observacao, backup.observacao)}
+        ${conflictField('Status', local.status, backup.status)}
+        ${conflictField('Atualizado em', local.updatedAt || local.createdAt, backup.updatedAt || backup.createdAt)}
+      </div>
+      <div class="conflict-col">
+        <h4>Registro do backup</h4>
+        ${conflictField('Data início', local.dataInicio, backup.dataInicio, true)}
+        ${conflictField('Data fim', local.dataFim, backup.dataFim, true)}
+        ${conflictField('Horas', local.horasFunc, backup.horasFunc, true)}
+        ${conflictField('Equipamento', local.equipamento, backup.equipamento, true)}
+        ${conflictField('Tipo', local.tipoRegistroLabel || local.tipoRegistro, backup.tipoRegistroLabel || backup.tipoRegistro, true)}
+        ${conflictField('Avaria', local.avaria, backup.avaria, true)}
+        ${conflictField('Solução', local.solucao, backup.solucao, true)}
+        ${conflictField('Observação', local.observacao, backup.observacao, true)}
+        ${conflictField('Status', local.status, backup.status, true)}
+        ${conflictField('Atualizado em', local.updatedAt || local.createdAt, backup.updatedAt || backup.createdAt, true)}
+      </div>
+    </div>
+  `;
+  $('conflictModal').classList.add('show');
+}
+function closeConflictModal(){
+  const el = $('conflictModal');
+  if(el) el.classList.remove('show');
+}
+
+function resolveConflictChoice(choice){
+  const queue = state.__conflictQueue || [];
+  if(!queue.length){
+    closeConflictModal();
+    finalizeImportReport();
+    return;
+  }
+  const item = queue.shift();
+  const local = state.registros.find(r => r.id === item.localId);
+  if(choice === 'backup' && local){
+    Object.assign(local, item.backupRecord);
+    if(state.__pendingImportReport) state.__pendingImportReport.updated++;
+  }else{
+    if(state.__pendingImportReport) state.__pendingImportReport.ignored++;
+  }
+  saveState();
+  closeConflictModal();
+  bootstrapUI();
+  if(queue.length){
+    openNextConflict();
+  }else{
+    finalizeImportReport();
+  }
+}
+
+
+
+
+function closeImportReportModal(){
+  const el = $('importReportModal');
+  if(el) el.classList.remove('show');
+}
+
+function showImportReportModal(report){
+  const content = $('importReportContent');
+  if(content){
+    content.innerHTML = `
+      <div class="report-list">
+        <div class="report-item"><span>Entradas no backup</span><span>${report.totalIncoming}</span></div>
+        <div class="report-item"><span>Novos</span><span>${report.added}</span></div>
+        <div class="report-item"><span>Atualizados</span><span>${report.updated}</span></div>
+        <div class="report-item"><span>Ignorados</span><span>${report.ignored}</span></div>
+        <div class="report-item"><span>Conflitos revisados</span><span>${report.conflicts}</span></div>
+      </div>
+    `;
+  }
+  const modal = $('importReportModal');
+  if(modal) modal.classList.add('show');
+}
+
+function finalizeImportReport(){
+  const report = state.__pendingImportReport || {added:0,updated:0,ignored:0,conflicts:0,totalIncoming:0};
+  delete state.__pendingImportReport;
+  delete state.__conflictQueue;
+  saveState();
+  bootstrapUI();
+  showImportReportModal(report);
+}
+
 function bootstrapUI(){
+
   renderHomeFolders();
   if(state.selectedBigramaId) updateSelectedContextUI();
   fillFichaForm();
@@ -1344,12 +1624,6 @@ function bootstrapUI(){
 
 document.addEventListener('DOMContentLoaded', () => {
   loadState();
-
-// GARANTIA: nunca iniciar sem bigramas
-if(!state.bigramas || state.bigramas.length === 0){
-  state.bigramas = DEFAULT_BIGRAMAS;
-}
-
   $('recordForm').addEventListener('submit', handleRecordSubmit);
   $('bigramaForm').addEventListener('submit', handleBigramaSubmit);
   $('fichaForm').addEventListener('submit', handleFichaSubmit);
@@ -1363,7 +1637,7 @@ if(!state.bigramas || state.bigramas.length === 0){
     if(e.key === 'Escape'){
       closeMainMenu();
       closeManageBigramas();
-      closePrintChoiceModal();
+      closePrintChoiceModal(); closeConflictModal(); closeImportReportModal(); closeAppMessageModal(); closeAppConfirmModal();
     }
   });
   resetRecordForm();
