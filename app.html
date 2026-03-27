@@ -12,46 +12,17 @@
   <link rel="apple-touch-icon" href="./icon-192.png" />
   <style>
     :root{
-      --bg:#031522;
-      --bg2:#031b2f;
-      --nav:#032547;
-      --card:#0b4c95;
-      --card2:#355f97;
-      --card3:#59657a;
-      --panel:#183c6b;
-      --line:#2d5b90;
-      --gold:#f0c419;
-      --text:#f3f7fb;
-      --muted:#c3cfdd;
-      --success:#66d58a;
-      --danger:#ff8f8f;
-      --shadow:0 18px 40px rgba(0,0,0,.34);
+      --bg:#031522; --bg2:#031b2f; --nav:#032547; --card:#0b4c95; --card2:#355f97; --card3:#59657a;
+      --panel:#183c6b; --line:#2d5b90; --gold:#f0c419; --text:#f3f7fb; --muted:#c3cfdd;
+      --success:#66d58a; --danger:#ff8f8f; --shadow:0 18px 40px rgba(0,0,0,.34);
     }
-    *{box-sizing:border-box}
-    html,body{margin:0;padding:0}
-    body{
-      font-family:Arial,Helvetica,sans-serif;
-      background:linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%);
-      color:var(--text);
-      min-height:100vh;
-    }
-    button,input,select,textarea{font:inherit}
-    button{cursor:pointer}
+    *{box-sizing:border-box} html,body{margin:0;padding:0}
+    body{font-family:Arial,Helvetica,sans-serif;background:linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%);color:var(--text);min-height:100vh}
+    button,input,select,textarea{font:inherit} button{cursor:pointer}
     .app{max-width:720px;margin:0 auto;min-height:100vh;background:linear-gradient(180deg, rgba(1,28,51,.96), rgba(2,23,42,.98))}
-    .topbar{
-      position:sticky;top:0;z-index:40;
-      background:linear-gradient(180deg,var(--nav) 0%, #03203d 100%);
-      border-bottom:1px solid rgba(255,255,255,.14);
-      padding:16px;
-    }
-    .topbar-main{
-      display:grid;grid-template-columns:48px 1fr 48px;align-items:center;gap:10px;
-    }
-    .topbtn{
-      width:44px;height:44px;border-radius:14px;border:1px solid rgba(255,255,255,.12);
-      background:rgba(255,255,255,.08);color:#fff;font-size:1.2rem;
-      display:flex;align-items:center;justify-content:center;
-    }
+    .topbar{position:sticky;top:0;z-index:40;background:linear-gradient(180deg,var(--nav) 0%, #03203d 100%);border-bottom:1px solid rgba(255,255,255,.14);padding:16px}
+    .topbar-main{display:grid;grid-template-columns:48px 1fr 48px;align-items:center;gap:10px}
+    .topbtn{width:44px;height:44px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.08);color:#fff;font-size:1.2rem;display:flex;align-items:center;justify-content:center}
     .ghost{visibility:hidden}
     .brand{text-align:center}
     .brand h1{margin:0;font-size:2rem;letter-spacing:.08em;text-transform:uppercase}
@@ -60,147 +31,78 @@
     .content{padding:18px 16px 90px}
     .hidden{display:none !important}
     .section{display:grid;gap:16px}
-    .banner{
-      padding:14px 16px;border-radius:18px;background:rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.08);line-height:1.45;color:#d9e5f2;
-    }
-
+    .banner{padding:14px 16px;border-radius:18px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);line-height:1.45;color:#d9e5f2}
     .folder-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
-    .folder-btn{
-      border:none;background:transparent;color:#fff;text-align:center;padding:0;
-      display:flex;flex-direction:column;align-items:center;gap:10px;
-    }
-    .folder-icon{
-      width:100%;aspect-ratio:1 / 0.9;border-radius:24px;
-      background:linear-gradient(180deg,#f7c84a 0%, #e6ad18 100%);
-      position:relative;box-shadow:var(--shadow);border:1px solid rgba(255,255,255,.16);
-      max-width:220px;
-    }
-    .folder-icon::before{
-      content:"";position:absolute;left:10%;top:-10%;width:38%;height:24%;
-      background:linear-gradient(180deg,#f6d16a 0%, #efbe36 100%);
-      border-radius:18px 18px 0 0;
-      border:1px solid rgba(255,255,255,.16);
-      border-bottom:none;
-    }
-    .folder-icon::after{
-      content:"";position:absolute;inset:16% 7% 8% 7%;
-      border-radius:18px;
-      background:linear-gradient(180deg,#f4ca53 0%, #dd9f11 100%);
-      box-shadow:inset 0 0 0 1px rgba(255,255,255,.22);
-    }
-    .folder-paw{
-      position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-      font-size:3.2rem;z-index:2;filter:drop-shadow(0 2px 4px rgba(0,0,0,.25));
-    }
+    .folder-btn{border:none;background:transparent;color:#fff;text-align:center;padding:0;display:flex;flex-direction:column;align-items:center;gap:10px}
+    .folder-icon{width:100%;aspect-ratio:1 / 0.9;border-radius:24px;background:linear-gradient(180deg,#f7c84a 0%, #e6ad18 100%);position:relative;box-shadow:var(--shadow);border:1px solid rgba(255,255,255,.16);max-width:220px}
+    .folder-icon::before{content:"";position:absolute;left:10%;top:-10%;width:38%;height:24%;background:linear-gradient(180deg,#f6d16a 0%, #efbe36 100%);border-radius:18px 18px 0 0;border:1px solid rgba(255,255,255,.16);border-bottom:none}
+    .folder-icon::after{content:"";position:absolute;inset:16% 7% 8% 7%;border-radius:18px;background:linear-gradient(180deg,#f4ca53 0%, #dd9f11 100%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.22)}
+    .folder-paw{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:3.2rem;z-index:2}
     .folder-label{font-size:1.1rem;font-weight:800;color:#fff;line-height:1.15}
     .folder-sub{font-size:.92rem;color:var(--muted);line-height:1.15}
-
     .menu-grid{display:grid;gap:16px}
-    .menu-card{
-      background:linear-gradient(180deg,var(--card) 0%, #083f7a 100%);
-      border-radius:24px;padding:18px;display:flex;align-items:center;gap:16px;
-      box-shadow:var(--shadow);border:1px solid rgba(255,255,255,.08);
-      position:relative;overflow:hidden;text-align:left;color:#fff;border:none;
-    }
+    .menu-card{background:linear-gradient(180deg,var(--card) 0%, #083f7a 100%);border-radius:24px;padding:18px;display:flex;align-items:center;gap:16px;box-shadow:var(--shadow);border:1px solid rgba(255,255,255,.08);position:relative;overflow:hidden;text-align:left;color:#fff;border:none}
     .menu-card.secondary{background:linear-gradient(180deg,var(--card2) 0%, #315688 100%)}
     .menu-card.tertiary{background:linear-gradient(180deg,var(--card3) 0%, #4e586c 100%)}
     .menu-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--gold)}
-    .menu-icon{
-      width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.12);
-      display:flex;align-items:center;justify-content:center;font-size:1.7rem;flex:0 0 auto;
-    }
+    .menu-icon{width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:1.7rem;flex:0 0 auto}
     .menu-text h2{margin:0;font-size:1.6rem;color:#fff}
     .menu-text p{margin:8px 0 0;color:#d6e1ee;font-size:1.05rem}
-
-    .card{
-      background:linear-gradient(180deg, rgba(24,60,107,.98), rgba(18,52,92,.98));
-      border-radius:22px;padding:16px;box-shadow:var(--shadow);border:1px solid rgba(255,255,255,.08);
-    }
+    .card{background:linear-gradient(180deg, rgba(24,60,107,.98), rgba(18,52,92,.98));border-radius:22px;padding:16px;box-shadow:var(--shadow);border:1px solid rgba(255,255,255,.08)}
     .card h2,.card h3{margin:0 0 8px}
     .card p{margin:0;color:var(--muted)}
     .field{display:grid;gap:6px}
     .field label{font-weight:800}
     .grid-2{display:grid;gap:14px;grid-template-columns:1fr}
     @media(min-width:560px){.grid-2{grid-template-columns:1fr 1fr}}
-    input,select,textarea{
-      width:100%;background:#203f70;border:1px solid rgba(255,255,255,.12);
-      color:var(--text);border-radius:16px;padding:14px;min-height:52px;outline:none;
-    }
+    input,select,textarea{width:100%;background:#203f70;border:1px solid rgba(255,255,255,.12);color:var(--text);border-radius:16px;padding:14px;min-height:52px;outline:none}
     textarea{min-height:130px;resize:vertical;line-height:1.45}
     input::placeholder,textarea::placeholder{color:#9bb0c8}
     input:focus,select:focus,textarea:focus{border-color:#8dc5ff;box-shadow:0 0 0 3px rgba(105,183,255,.15)}
-
-    .btn{
-      border:none;border-radius:18px;padding:14px 16px;font-weight:800;
-      letter-spacing:.04em;text-transform:uppercase;min-height:52px;
-    }
+    .btn{border:none;border-radius:18px;padding:14px 16px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;min-height:52px}
     .btn-primary{background:#0c4d96;color:#fff}
     .btn-secondary{background:#476997;color:#fff}
     .btn-ghost{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.12)}
     .btn-row{display:grid;grid-template-columns:1fr;gap:10px}
     @media(min-width:560px){.btn-row{grid-template-columns:1fr 1fr}}
     .toolbar{display:flex;gap:10px;flex-wrap:wrap}
-    .chip{
-      display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border-radius:999px;
-      background:rgba(255,255,255,.08);color:#eaf3ff;font-weight:700;font-size:.88rem;border:1px solid rgba(255,255,255,.08)
-    }
+    .chip{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.08);color:#eaf3ff;font-weight:700;font-size:.88rem;border:1px solid rgba(255,255,255,.08)}
     .status-msg{min-height:1.2em;color:var(--success);font-weight:700}
-
     .record-list{display:grid;gap:16px}
-    .record-card{
-      background:linear-gradient(180deg, rgba(31,67,116,.98), rgba(28,63,109,.98));
-      border-radius:22px;padding:16px;box-shadow:var(--shadow);
-      position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.08);
-    }
+    .record-card{background:linear-gradient(180deg, rgba(31,67,116,.98), rgba(28,63,109,.98));border-radius:22px;padding:16px;box-shadow:var(--shadow);position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.08)}
     .record-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--gold)}
     .record-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
     .record-head-left{display:flex;align-items:flex-start;gap:12px;min-width:0}
-    .sigla{
-      min-width:58px;height:52px;border-radius:14px;background:#114d97;color:#fff;
-      display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:800;flex:0 0 auto;
-    }
+    .sigla{min-width:58px;height:52px;border-radius:14px;background:#114d97;color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:800;flex:0 0 auto}
     .record-title .date{font-size:1rem;font-weight:800;color:var(--gold);margin-bottom:6px}
     .record-title .meta{display:flex;gap:8px;flex-wrap:wrap}
     .record-actions{display:grid;grid-template-columns:repeat(2,42px);gap:10px}
-    .icon-btn{
-      width:42px;height:42px;border:none;border-radius:12px;background:rgba(255,255,255,.09);
-      color:#fff;font-size:1.12rem;display:flex;align-items:center;justify-content:center;
-    }
-    .icon-btn.view{color:#7dc4ff}
-    .icon-btn.edit{color:#7fe38b}
-    .icon-btn.done{color:#5ade84}
-    .icon-btn.delete{color:#ff9292}
+    .icon-btn{width:42px;height:42px;border:none;border-radius:12px;background:rgba(255,255,255,.09);color:#fff;font-size:1.12rem;display:flex;align-items:center;justify-content:center}
+    .icon-btn.view{color:#7dc4ff}.icon-btn.edit{color:#7fe38b}.icon-btn.done{color:#5ade84}.icon-btn.delete{color:#ff9292}
     .record-body{margin-top:16px;display:grid;gap:10px}
     .label-block b{display:block;margin-bottom:4px}
-    .status-open{color:#ffd976}
-    .status-closed{color:#7cf09a}
-    .empty{
-      padding:26px 16px;border-radius:18px;background:rgba(255,255,255,.05);
-      text-align:center;color:var(--muted);border:1px dashed rgba(255,255,255,.14);
-    }
-
-    .modal-overlay{
-      position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;
-      align-items:center;justify-content:center;z-index:1000;padding:20px;
-    }
+    .status-open{color:#ffd976}.status-closed{color:#7cf09a}
+    .empty{padding:26px 16px;border-radius:18px;background:rgba(255,255,255,.05);text-align:center;color:var(--muted);border:1px dashed rgba(255,255,255,.14)}
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:1000;padding:20px}
     .modal-overlay.show{display:flex}
-    .modal-box{
-      width:min(560px,100%);max-height:90vh;overflow:auto;
-      background:linear-gradient(180deg, rgba(24,60,107,.99), rgba(18,52,92,.99));
-      border:1px solid rgba(255,255,255,.12);border-radius:22px;box-shadow:var(--shadow);padding:18px;
-    }
+    .modal-box{width:min(560px,100%);max-height:90vh;overflow:auto;background:linear-gradient(180deg, rgba(24,60,107,.99), rgba(18,52,92,.99));border:1px solid rgba(255,255,255,.12);border-radius:22px;box-shadow:var(--shadow);padding:18px}
     .modal-box h3{margin:0 0 10px;font-size:1.2rem}
-    .modal-box p{margin:0 0 16px;color:var(--muted);line-height:1.45}
+    .modal-box p{margin:0 0 16px;color:var(--muted);line-height:1.45;white-space:pre-line}
     .modal-actions{display:grid;gap:10px;grid-template-columns:1fr}
     @media(min-width:560px){.modal-actions{grid-template-columns:1fr 1fr}}
-
+    .report-list,.conflict-grid{display:grid;gap:10px;margin-top:10px}
+    .report-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10);color:#f3f7fb;font-weight:700}
+    .report-item span:last-child{color:#f0c419;font-size:1.05rem}
+    .conflict-grid{grid-template-columns:1fr}
+    @media(min-width:700px){.conflict-grid{grid-template-columns:1fr 1fr}}
+    .conflict-col{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10);border-radius:18px;padding:14px}
+    .conflict-col h4{margin:0 0 10px;font-size:1rem;color:#fff}
+    .conflict-field{margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.08)}
+    .conflict-field:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none}
+    .conflict-field b{display:block;margin-bottom:4px;color:#fff}
+    .conflict-diff{outline:2px solid rgba(240,196,25,.75);border-radius:10px;padding:6px 8px;background:rgba(240,196,25,.08)}
     .print-zone{display:grid;gap:18px}
-    .official-sheet{
-      background:#fff;color:#111;padding:18mm 12mm 18mm 12mm;width:210mm;min-height:297mm;
-      margin:0 auto 18px;box-shadow:0 10px 25px rgba(0,0,0,.28);page-break-after:always;
-      font-family:"Times New Roman", Times, serif;position:relative;
-    }
+    .official-sheet{background:#fff;color:#111;padding:18mm 12mm 18mm 12mm;width:210mm;min-height:297mm;margin:0 auto 18px;box-shadow:0 10px 25px rgba(0,0,0,.28);page-break-after:always;font-family:"Times New Roman", Times, serif;position:relative}
     .sheet-top-right{text-align:right;font-size:11pt;line-height:1.2;margin-bottom:8px}
     .page-code{text-align:center;font-size:12pt;margin:10px 0;letter-spacing:.16em}
     .doc-title-table,.meta-table,.hist-table{width:100%;border-collapse:collapse;table-layout:fixed}
@@ -211,16 +113,11 @@
     .left-col{width:30%;text-align:center;vertical-align:middle!important;font-size:10.5pt;padding:10px 6px!important}
     .right-col{width:70%;padding:10px!important}
     .rh-block{line-height:1.35;min-height:84px}
-    .signature-bar{
-      position:absolute;left:12mm;right:12mm;bottom:10mm;display:flex;justify-content:space-between;align-items:flex-end;gap:20mm;
-    }
+    .signature-bar{position:absolute;left:12mm;right:12mm;bottom:10mm;display:flex;justify-content:space-between;align-items:flex-end;gap:20mm}
     .signature-box{width:44%;text-align:center;font-size:10pt}
     .signature-line{border-top:1px solid #222;margin-bottom:4px;height:0}
     .print-note{font-size:.92rem;line-height:1.45;color:var(--muted)}
-    @media(max-width:900px){
-      .official-sheet{width:100%;min-height:auto;padding:16px}
-      .signature-bar{position:static;margin-top:18px}
-    }
+    @media(max-width:900px){.official-sheet{width:100%;min-height:auto;padding:16px}.signature-bar{position:static;margin-top:18px}}
     @media print{
       body{background:#fff}
       .topbar,.gold-line,.content > :not(.print-zone), .modal-overlay{display:none!important}
@@ -228,72 +125,6 @@
       .print-zone{display:block!important}
       .official-sheet{margin:0;box-shadow:none;width:210mm;min-height:297mm}
     }
-  
-    .conflict-grid{
-      display:grid;
-      gap:12px;
-      grid-template-columns:1fr;
-      margin-top:10px;
-    }
-    @media(min-width:700px){
-      .conflict-grid{grid-template-columns:1fr 1fr;}
-    }
-    .conflict-col{
-      background:rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.10);
-      border-radius:18px;
-      padding:14px;
-    }
-    .conflict-col h4{
-      margin:0 0 10px;
-      font-size:1rem;
-      color:#fff;
-    }
-    .conflict-field{
-      margin-bottom:10px;
-      padding-bottom:8px;
-      border-bottom:1px solid rgba(255,255,255,.08);
-    }
-    .conflict-field:last-child{
-      margin-bottom:0;
-      padding-bottom:0;
-      border-bottom:none;
-    }
-    .conflict-field b{
-      display:block;
-      margin-bottom:4px;
-      color:#fff;
-    }
-    .conflict-diff{
-      outline:2px solid rgba(240,196,25,.75);
-      border-radius:10px;
-      padding:6px 8px;
-      background:rgba(240,196,25,.08);
-    }
-
-  
-    .report-list{
-      display:grid;
-      gap:10px;
-      margin-top:10px;
-    }
-    .report-item{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      padding:12px 14px;
-      border-radius:14px;
-      background:rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.10);
-      color:#f3f7fb;
-      font-weight:700;
-    }
-    .report-item span:last-child{
-      color:#f0c419;
-      font-size:1.05rem;
-    }
-
   </style>
 </head>
 <body>
@@ -319,37 +150,10 @@
     <section id="screen-dashboard" class="section hidden">
       <div id="dashboardBanner" class="banner"></div>
       <div class="menu-grid">
-        <button class="menu-card" type="button" onclick="showScreen('novo')">
-          <div class="menu-icon">📝</div>
-          <div class="menu-text">
-            <h2>Novo Registro</h2>
-            <p>Lançar nova avaria, manutenção ou ocorrência.</p>
-          </div>
-        </button>
-
-        <button class="menu-card secondary" type="button" onclick="showScreen('historico')">
-          <div class="menu-icon">📚</div>
-          <div class="menu-text">
-            <h2>Ver Histórico</h2>
-            <p>Visualizar, filtrar, editar, concluir e exportar registros.</p>
-          </div>
-        </button>
-
-        <button class="menu-card tertiary" type="button" onclick="showScreen('ficha')">
-          <div class="menu-icon">🗂️</div>
-          <div class="menu-text">
-            <h2>Dados da Ficha</h2>
-            <p>Configurar campos fixos do modelo oficial.</p>
-          </div>
-        </button>
-
-        <button class="menu-card secondary" type="button" onclick="showScreen('documento')">
-          <div class="menu-icon">🖨️</div>
-          <div class="menu-text">
-            <h2>Documento Oficial</h2>
-            <p>Gerar visualização pronta para impressão ou PDF.</p>
-          </div>
-        </button>
+        <button class="menu-card" type="button" onclick="showScreen('novo')"><div class="menu-icon">📝</div><div class="menu-text"><h2>Novo Registro</h2><p>Lançar nova avaria, manutenção ou ocorrência.</p></div></button>
+        <button class="menu-card secondary" type="button" onclick="showScreen('historico')"><div class="menu-icon">📚</div><div class="menu-text"><h2>Ver Histórico</h2><p>Visualizar, filtrar, editar, concluir e exportar registros.</p></div></button>
+        <button class="menu-card tertiary" type="button" onclick="showScreen('ficha')"><div class="menu-icon">🗂️</div><div class="menu-text"><h2>Dados da Ficha</h2><p>Configurar campos fixos do modelo oficial.</p></div></button>
+        <button class="menu-card secondary" type="button" onclick="showScreen('documento')"><div class="menu-icon">🖨️</div><div class="menu-text"><h2>Documento Oficial</h2><p>Gerar visualização pronta para impressão ou PDF.</p></div></button>
       </div>
     </section>
 
@@ -358,60 +162,24 @@
         <h2 id="formHeading">Novo Registro</h2>
         <p style="margin-bottom:14px;">O registro será salvo no bigrama selecionado.</p>
         <div style="margin-bottom:14px;"><span id="selectedBigramaChip" class="chip"></span></div>
-
         <form id="recordForm" class="section">
           <div class="grid-2">
-            <div class="field">
-              <label for="dataInicio">Data de Início *</label>
-              <input id="dataInicio" type="date" required />
-            </div>
-            <div class="field">
-              <label for="dataFim">Data de Fechamento</label>
-              <input id="dataFim" type="date" />
-            </div>
+            <div class="field"><label for="dataInicio">Data de Início *</label><input id="dataInicio" type="date" required /></div>
+            <div class="field"><label for="dataFim">Data de Fechamento</label><input id="dataFim" type="date" /></div>
           </div>
-
           <div class="grid-2">
-            <div class="field">
-              <label for="horasFunc">Horas de Funcionamento</label>
-              <input id="horasFunc" type="text" placeholder="Ex.: 1500" />
-            </div>
-            <div class="field">
-              <label for="tipoRegistro">Tipo de Registro</label>
+            <div class="field"><label for="horasFunc">Horas de Funcionamento</label><input id="horasFunc" type="text" placeholder="Ex.: 1500" /></div>
+            <div class="field"><label for="tipoRegistro">Tipo de Registro</label>
               <select id="tipoRegistro">
-                <option value="avaria">Avaria</option>
-                <option value="manutencao">Manutenção</option>
-                <option value="rotina">Rotina de manutenção</option>
-                <option value="ocorrencia">Ocorrência</option>
-                <option value="anotacao">Anotação</option>
+                <option value="avaria">Avaria</option><option value="manutencao">Manutenção</option><option value="rotina">Rotina de manutenção</option><option value="ocorrencia">Ocorrência</option><option value="anotacao">Anotação</option>
               </select>
             </div>
           </div>
-
-          <div class="field">
-            <label for="equipamento">Equipamento</label>
-            <input id="equipamento" type="text" placeholder="Nome do equipamento (ex.: Bomba DA00002)" />
-          </div>
-
-          <div class="field">
-            <label for="avaria">Avaria / Registro *</label>
-            <textarea id="avaria" placeholder="Descreva a avaria ocorrida ou o fato histórico." required></textarea>
-          </div>
-
-          <div class="field">
-            <label for="solucao">Solução</label>
-            <textarea id="solucao" placeholder="Descreva a solução aplicada"></textarea>
-          </div>
-
-          <div class="field">
-            <label for="observacao">Observação</label>
-            <textarea id="observacao" placeholder="Observações adicionais"></textarea>
-          </div>
-
-          <div class="btn-row">
-            <button id="submitRecordBtn" class="btn btn-primary" type="submit">Salvar Registro</button>
-            <button class="btn btn-secondary" type="button" onclick="resetRecordForm()">Limpar</button>
-          </div>
+          <div class="field"><label for="equipamento">Equipamento</label><input id="equipamento" type="text" placeholder="Nome do equipamento (ex.: Bomba DA00002)" /></div>
+          <div class="field"><label for="avaria">Avaria / Registro *</label><textarea id="avaria" placeholder="Descreva a avaria ocorrida ou o fato histórico." required></textarea></div>
+          <div class="field"><label for="solucao">Solução</label><textarea id="solucao" placeholder="Descreva a solução aplicada"></textarea></div>
+          <div class="field"><label for="observacao">Observação</label><textarea id="observacao" placeholder="Observações adicionais"></textarea></div>
+          <div class="btn-row"><button id="submitRecordBtn" class="btn btn-primary" type="submit">Salvar Registro</button><button class="btn btn-secondary" type="button" onclick="resetRecordForm()">Limpar</button></div>
           <div id="recordStatus" class="status-msg"></div>
         </form>
       </div>
@@ -420,34 +188,16 @@
     <section id="screen-historico" class="section hidden">
       <div class="card">
         <h2>Filtros do Histórico</h2>
-        <div class="field" style="margin-top:14px;">
-          <label for="filtroBusca">Busca livre</label>
-          <input id="filtroBusca" type="text" placeholder="Buscar por equipamento, avaria, solução..." />
-        </div>
-        <div class="field">
-          <label for="filtroStatus">Status</label>
-          <select id="filtroStatus">
-            <option value="TODOS">Todos</option>
-            <option value="aberto">Em aberto</option>
-            <option value="fechado">Fechado</option>
-          </select>
+        <div class="field" style="margin-top:14px;"><label for="filtroBusca">Busca livre</label><input id="filtroBusca" type="text" placeholder="Buscar por equipamento, avaria, solução..." /></div>
+        <div class="field"><label for="filtroStatus">Status</label>
+          <select id="filtroStatus"><option value="TODOS">Todos</option><option value="aberto">Em aberto</option><option value="fechado">Fechado</option></select>
         </div>
         <div class="grid-2">
-          <div class="field">
-            <label for="filtroDataInicio">Data inicial</label>
-            <input id="filtroDataInicio" type="date" />
-          </div>
-          <div class="field">
-            <label for="filtroDataFim">Data final</label>
-            <input id="filtroDataFim" type="date" />
-          </div>
+          <div class="field"><label for="filtroDataInicio">Data inicial</label><input id="filtroDataInicio" type="date" /></div>
+          <div class="field"><label for="filtroDataFim">Data final</label><input id="filtroDataFim" type="date" /></div>
         </div>
-        <div class="toolbar" style="margin-top:8px;">
-          <button class="btn btn-secondary" type="button" onclick="clearFilters()">Limpar filtros</button>
-          <button class="btn btn-ghost" type="button" onclick="showScreen('documento')">Ir para documento oficial</button>
-        </div>
+        <div class="toolbar" style="margin-top:8px;"><button class="btn btn-secondary" type="button" onclick="clearFilters()">Limpar filtros</button><button class="btn btn-ghost" type="button" onclick="showScreen('documento')">Ir para documento oficial</button></div>
       </div>
-
       <div id="historyStats" class="banner"></div>
       <div id="recordList" class="record-list"></div>
     </section>
@@ -456,75 +206,29 @@
       <div class="card">
         <h2>Dados da Ficha</h2>
         <p style="margin-bottom:14px;">Os dados abaixo pertencem somente ao bigrama selecionado.</p>
-
         <form id="fichaForm" class="section">
           <div class="grid-2">
-            <div class="field">
-              <label for="navio">Navio</label>
-              <input id="navio" type="text" />
-            </div>
-            <div class="field">
-              <label for="fichaNumero">Ficha Nº</label>
-              <input id="fichaNumero" type="text" placeholder="Ex.: 01" />
-            </div>
+            <div class="field"><label for="navio">Navio</label><input id="navio" type="text" /></div>
+            <div class="field"><label for="fichaNumero">Ficha Nº</label><input id="fichaNumero" type="text" placeholder="Ex.: 01" /></div>
           </div>
-
           <div class="grid-2">
-            <div class="field">
-              <label for="folhaInicial">Folha Inicial</label>
-              <input id="folhaInicial" type="number" min="1" step="1" />
-            </div>
-            <div class="field">
-              <label for="anexoPrimeiraPagina">Anexo da 1ª página</label>
-              <select id="anexoPrimeiraPagina">
-                <option value="A">Anexo A</option>
-                <option value="B">Anexo B</option>
-              </select>
-            </div>
+            <div class="field"><label for="folhaInicial">Folha Inicial</label><input id="folhaInicial" type="number" min="1" step="1" /></div>
+            <div class="field"><label for="anexoPrimeiraPagina">Anexo da 1ª página</label><select id="anexoPrimeiraPagina"><option value="A">Anexo A</option><option value="B">Anexo B</option></select></div>
           </div>
-
           <div class="grid-2">
-            <div class="field">
-              <label for="sistemaFicha">Sistema</label>
-              <input id="sistemaFicha" type="text" />
-            </div>
-            <div class="field">
-              <label for="equipamentoFicha">Equipamento</label>
-              <input id="equipamentoFicha" type="text" />
-            </div>
+            <div class="field"><label for="sistemaFicha">Sistema</label><input id="sistemaFicha" type="text" /></div>
+            <div class="field"><label for="equipamentoFicha">Equipamento</label><input id="equipamentoFicha" type="text" /></div>
           </div>
-
-          <div class="field">
-            <label for="manualPlano">Manual e/ou Plano</label>
-            <input id="manualPlano" type="text" />
-          </div>
-
+          <div class="field"><label for="manualPlano">Manual e/ou Plano</label><input id="manualPlano" type="text" /></div>
           <div class="grid-2">
-            <div class="field">
-              <label for="fabricante">Fabricante</label>
-              <input id="fabricante" type="text" />
-            </div>
-            <div class="field">
-              <label for="dadosPlaca">Dados de Placa</label>
-              <input id="dadosPlaca" type="text" />
-            </div>
+            <div class="field"><label for="fabricante">Fabricante</label><input id="fabricante" type="text" /></div>
+            <div class="field"><label for="dadosPlaca">Dados de Placa</label><input id="dadosPlaca" type="text" /></div>
           </div>
-
           <div class="grid-2">
-            <div class="field">
-              <label for="localizacao">Localização</label>
-              <input id="localizacao" type="text" />
-            </div>
-            <div class="field">
-              <label for="numeroSerie">Nº de Série</label>
-              <input id="numeroSerie" type="text" />
-            </div>
+            <div class="field"><label for="localizacao">Localização</label><input id="localizacao" type="text" /></div>
+            <div class="field"><label for="numeroSerie">Nº de Série</label><input id="numeroSerie" type="text" /></div>
           </div>
-
-          <div class="btn-row">
-            <button class="btn btn-primary" type="submit">Salvar Dados da Ficha</button>
-            <button class="btn btn-secondary" type="button" onclick="aplicarPadraoFicha()">Restaurar padrão</button>
-          </div>
+          <div class="btn-row"><button class="btn btn-primary" type="submit">Salvar Dados da Ficha</button><button class="btn btn-secondary" type="button" onclick="aplicarPadraoFicha()">Restaurar padrão</button></div>
           <div id="fichaStatus" class="status-msg"></div>
         </form>
       </div>
@@ -534,8 +238,7 @@
       <div class="card">
         <h2>Documento Oficial</h2>
         <p style="margin-bottom:14px;">Somente registros em aberto do bigrama selecionado entram no PDF.</p>
-        <div class="toolbar">
-          <button class="btn btn-primary" type="button" onclick="openPrintChoiceModal()">Imprimir / Exportar PDF</button>        </div>
+        <div class="toolbar"><button class="btn btn-primary" type="button" onclick="openPrintChoiceModal()">Imprimir / Exportar PDF</button></div>
         <div class="print-note" style="margin-top:12px;">Ao escolher “Marcar registros como fechado”, os itens que entrarem no PDF serão considerados já impressos.</div>
       </div>
       <div id="printHost" class="print-zone"></div>
@@ -561,29 +264,16 @@
     <div class="modal-box" onclick="event.stopPropagation()">
       <h3>Gerenciar Bigramas</h3>
       <p>Adicione, edite ou exclua sistemas.</p>
-
       <form id="bigramaForm" class="section">
         <div class="grid-2">
-          <div class="field">
-            <label for="siglaInput">Sigla *</label>
-            <input id="siglaInput" type="text" maxlength="4" placeholder="Ex.: DA" required />
-          </div>
-          <div class="field">
-            <label for="nomeSistemaInput">Nome do sistema *</label>
-            <input id="nomeSistemaInput" type="text" placeholder="Ex.: Esgoto" required />
-          </div>
+          <div class="field"><label for="siglaInput">Sigla *</label><input id="siglaInput" type="text" maxlength="4" placeholder="Ex.: DA" required /></div>
+          <div class="field"><label for="nomeSistemaInput">Nome do sistema *</label><input id="nomeSistemaInput" type="text" placeholder="Ex.: Esgoto" required /></div>
         </div>
-        <div class="btn-row">
-          <button id="saveBigramaBtn" class="btn btn-primary" type="submit">Salvar Bigrama</button>
-          <button class="btn btn-secondary" type="button" onclick="resetBigramaForm()">Limpar</button>
-        </div>
+        <div class="btn-row"><button id="saveBigramaBtn" class="btn btn-primary" type="submit">Salvar Bigrama</button><button class="btn btn-secondary" type="button" onclick="resetBigramaForm()">Limpar</button></div>
         <div id="bigramaStatus" class="status-msg"></div>
       </form>
-
       <div id="bigramaList" class="record-list"></div>
-      <div class="toolbar" style="margin-top:12px;">
-        <button class="btn btn-ghost" type="button" onclick="closeManageBigramas()">Fechar</button>
-      </div>
+      <div class="toolbar" style="margin-top:12px;"><button class="btn btn-ghost" type="button" onclick="closeManageBigramas()">Fechar</button></div>
     </div>
   </div>
 
@@ -595,134 +285,128 @@
         <button class="btn btn-primary" type="button" onclick="confirmPrintAndClose()">Marcar registros como "fechado"</button>
         <button class="btn btn-secondary" type="button" onclick="previewPdfOnly()">Apenas visualizar PDF</button>
       </div>
-      <div class="toolbar" style="margin-top:10px;">
-        <button class="btn btn-ghost" type="button" onclick="closePrintChoiceModal()">Cancelar</button>
+      <div class="toolbar" style="margin-top:10px;"><button class="btn btn-ghost" type="button" onclick="closePrintChoiceModal()">Cancelar</button></div>
+    </div>
+  </div>
+
+  <div id="conflictModal" class="modal-overlay" onclick="if(event.target.id==='conflictModal')closeConflictModal()">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <h3>Ver conflito</h3>
+      <p>Compare seu registro com o registro do backup e escolha qual versão deve permanecer.</p>
+      <div id="conflictContent"></div>
+      <div class="toolbar" style="margin-top:14px;">
+        <button class="btn btn-primary" type="button" onclick="resolveConflictChoice('backup')">Usar registro do backup</button>
+        <button class="btn btn-secondary" type="button" onclick="resolveConflictChoice('local')">Manter meu registro</button>
+        <button class="btn btn-ghost" type="button" onclick="closeConflictModal()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="importReportModal" class="modal-overlay" onclick="if(event.target.id==='importReportModal')closeImportReportModal()">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <h3>Relatório de importação</h3>
+      <p>Resumo da atualização do backup.</p>
+      <div id="importReportContent"></div>
+      <div class="toolbar" style="margin-top:14px;"><button class="btn btn-primary" type="button" onclick="closeImportReportModal()">OK</button></div>
+    </div>
+  </div>
+
+  <div id="appMessageModal" class="modal-overlay" onclick="if(event.target.id==='appMessageModal')closeAppMessageModal()">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <h3 id="appMessageTitle">Mensagem</h3>
+      <p id="appMessageBody">—</p>
+      <div class="toolbar" style="margin-top:14px;"><button class="btn btn-primary" type="button" onclick="closeAppMessageModal()">OK</button></div>
+    </div>
+  </div>
+
+  <div id="appConfirmModal" class="modal-overlay" onclick="if(event.target.id==='appConfirmModal')resolveAppConfirm(false)">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <h3 id="appConfirmTitle">Confirmar ação</h3>
+      <p id="appConfirmBody">—</p>
+      <div class="toolbar" style="margin-top:14px;">
+        <button class="btn btn-primary" type="button" onclick="resolveAppConfirm(true)">Confirmar</button>
+        <button class="btn btn-ghost" type="button" onclick="resolveAppConfirm(false)">Cancelar</button>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-const STORAGE_KEY = 'livro_historico_s41_v4';
-const defaultBigramas = [
+const STORAGE_KEY = 'livro_historico_clean';
+const DEFAULT_BIGRAMAS = [
   { id:'b1', sigla:'EJ', nome:'Água Potável' },
   { id:'b2', sigla:'EW', nome:'Auxiliar de Água Salgada' },
   { id:'b3', sigla:'DA', nome:'Esgoto' },
   { id:'b4', sigla:'EM', nome:'Resfriamento AS AR' },
   { id:'b5', sigla:'ES', nome:'Resfriamento Água tratada AR' }
 ];
-const defaultFicha = {
-  navio:'SUBMARINO HUMAITÁ',
-  fichaNumero:'',
-  folhaInicial:1,
-  anexoPrimeiraPagina:'A',
-  sistemaFicha:'',
-  equipamentoFicha:'',
-  manualPlano:'',
-  fabricante:'',
-  dadosPlaca:'',
-  localizacao:'',
-  numeroSerie:''
-};
+const DEFAULT_FICHA = {navio:'SUBMARINO HUMAITÁ',fichaNumero:'',folhaInicial:1,anexoPrimeiraPagina:'A',sistemaFicha:'',equipamentoFicha:'',manualPlano:'',fabricante:'',dadosPlaca:'',localizacao:'',numeroSerie:''};
 
-let state = {
-  bigramas:[...defaultBigramas],
-  registros:[],
-  fichas:{},
-  filtros:{ busca:'', status:'TODOS', dataInicio:'', dataFim:'' },
-  selectedBigramaId:null
-};
-let currentScreen = 'home';
-let editingRecordId = null;
-let editingBigramaId = null;
-
-const $ = (id) => document.getElementById(id);
-
-function uid(prefix='id'){
-  return prefix + '_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
-}
-function saveState(){
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-}
-function loadState(){
-  try{
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if(raw){
+const AppState = {
+  data: {bigramas:[...DEFAULT_BIGRAMAS], registros:[], fichas:{}, filtros:{busca:'',status:'TODOS',dataInicio:'',dataFim:''}, selectedBigramaId:null},
+  load(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return;
       const parsed = JSON.parse(raw);
-      state.bigramas = Array.isArray(parsed.bigramas) && parsed.bigramas.length ? parsed.bigramas : [...defaultBigramas];
-      state.registros = Array.isArray(parsed.registros) ? parsed.registros : [];
-      state.fichas = parsed.fichas && typeof parsed.fichas === 'object' ? parsed.fichas : {};
-      state.filtros = parsed.filtros ? { busca:'', status:'TODOS', dataInicio:'', dataFim:'', ...parsed.filtros } : { busca:'', status:'TODOS', dataInicio:'', dataFim:'' };
-      state.selectedBigramaId = parsed.selectedBigramaId || null;
-    }
-  }catch(e){
-    console.error(e);
+      this.data = {
+        bigramas:Array.isArray(parsed.bigramas)&&parsed.bigramas.length?parsed.bigramas:[...DEFAULT_BIGRAMAS],
+        registros:Array.isArray(parsed.registros)?parsed.registros:[],
+        fichas:parsed.fichas&&typeof parsed.fichas==='object'?parsed.fichas:{},
+        filtros:parsed.filtros?{busca:'',status:'TODOS',dataInicio:'',dataFim:'',...parsed.filtros}:{busca:'',status:'TODOS',dataInicio:'',dataFim:''},
+        selectedBigramaId:parsed.selectedBigramaId||null
+      };
+    }catch(e){ console.error(e); }
+  },
+  save(){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(this.data));
+  }
+};
+
+const UI = { currentScreen:'home', editingRecordId:null, editingBigramaId:null, pendingImportReport:null, conflictQueue:[], confirmResolver:null };
+const $ = (id)=>document.getElementById(id);
+const uid = (prefix='id') => prefix+'_'+Math.random().toString(36).slice(2)+Date.now().toString(36);
+
+function escapeHtml(str){ return String(str??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;'); }
+function nl2br(str){ return escapeHtml(str).replaceAll('\n','<br>'); }
+function formatDateBR(date){ if(!date) return ''; const [y,m,d]=date.split('-'); return y&&m&&d?`${d}/${m}/${y}`:date; }
+
+function showAppMessage(title, body){
+  $('appMessageTitle').textContent = title || 'Mensagem';
+  $('appMessageBody').textContent = body || '';
+  $('appMessageModal').classList.add('show');
+}
+function closeAppMessageModal(){ $('appMessageModal').classList.remove('show'); }
+function showAppConfirm(title, body){
+  return new Promise(resolve => {
+    UI.confirmResolver = resolve;
+    $('appConfirmTitle').textContent = title || 'Confirmar ação';
+    $('appConfirmBody').textContent = body || '';
+    $('appConfirmModal').classList.add('show');
+  });
+}
+function resolveAppConfirm(value){
+  $('appConfirmModal').classList.remove('show');
+  if(UI.confirmResolver){
+    const fn = UI.confirmResolver;
+    UI.confirmResolver = null;
+    fn(Boolean(value));
   }
 }
-function setStatus(id, msg, isError=false){
-  const el = $(id);
-  if(!el) return;
-  el.textContent = msg;
-  el.style.color = isError ? 'var(--danger)' : 'var(--success)';
-  clearTimeout(el._timer);
-  el._timer = setTimeout(() => { el.textContent = ''; }, 2600);
-}
-function formatDateBR(date){
-  if(!date) return '';
-  const [y,m,d] = date.split('-');
-  return y && m && d ? `${d}/${m}/${y}` : date;
-}
-function escapeHtml(str){
-  return String(str ?? '')
-    .replaceAll('&','&amp;')
-    .replaceAll('<','&lt;')
-    .replaceAll('>','&gt;')
-    .replaceAll('"','&quot;')
-    .replaceAll("'", '&#039;');
-}
-function nl2br(str){
-  return escapeHtml(str).replaceAll('\n','<br>');
-}
-function getSelectedBigrama(){
-  return state.bigramas.find(b => b.id === state.selectedBigramaId) || null;
-}
-function getBigramaById(id){
-  return state.bigramas.find(b => b.id === id) || null;
-}
-function getBigramaLabel(id){
-  const b = getBigramaById(id);
-  return b ? `${b.sigla} - ${b.nome}` : '—';
-}
-function getDefaultFichaForSelected(){
-  const b = getSelectedBigrama();
-  return {
-    ...defaultFicha,
-    sistemaFicha: b ? `${b.nome.toUpperCase()} (${b.sigla})` : ''
-  };
-}
-function getFichaForSelected(){
-  const b = getSelectedBigrama();
-  if(!b) return { ...defaultFicha };
-  return { ...getDefaultFichaForSelected(), ...(state.fichas[b.id] || {}) };
-}
-function saveFichaForSelected(data){
-  const b = getSelectedBigrama();
-  if(!b) return;
-  state.fichas[b.id] = { ...data };
-  saveState();
-}
+
+function getSelectedBigrama(){ return AppState.data.bigramas.find(b=>b.id===AppState.data.selectedBigramaId)||null; }
+function getBigramaById(id){ return AppState.data.bigramas.find(b=>b.id===id)||null; }
+function getBigramaLabel(id){ const b=getBigramaById(id); return b?`${b.sigla} - ${b.nome}`:'—'; }
+function getDefaultFichaForSelected(){ const b=getSelectedBigrama(); return {...DEFAULT_FICHA,sistemaFicha:b?`${b.nome.toUpperCase()} (${b.sigla})`:''}; }
+function getFichaForSelected(){ const b=getSelectedBigrama(); if(!b) return {...DEFAULT_FICHA}; return {...getDefaultFichaForSelected(), ...(AppState.data.fichas[b.id]||{})}; }
+function saveFichaForSelected(data){ const b=getSelectedBigrama(); if(!b) return; AppState.data.fichas[b.id]={...data}; AppState.save(); }
 
 function renderHomeFolders(){
   const wrap = $('homeFolders');
-  if(!state.bigramas.length){
-    wrap.innerHTML = '<div class="empty" style="grid-column:1/-1;">Nenhum bigrama cadastrado.</div>';
-    return;
-  }
-  wrap.innerHTML = state.bigramas.map(b => `
+  if(!AppState.data.bigramas.length){ wrap.innerHTML='<div class="empty" style="grid-column:1/-1;">Nenhum bigrama cadastrado.</div>'; return; }
+  wrap.innerHTML = AppState.data.bigramas.map(b => `
     <button class="folder-btn" type="button" onclick="selectBigrama('${b.id}')">
-      <div class="folder-icon">
-        <div class="folder-paw">📁</div>
-      </div>
+      <div class="folder-icon"><div class="folder-paw">📁</div></div>
       <div class="folder-label">${escapeHtml(b.sigla)}</div>
       <div class="folder-sub">${escapeHtml(b.nome)}</div>
     </button>
@@ -730,916 +414,379 @@ function renderHomeFolders(){
 }
 
 function updateTopbar(){
-  const backBtn = $('topBackBtn');
-  const title = $('topTitle');
-  const subtitle = $('topSubtitle');
   const b = getSelectedBigrama();
-
-  if(currentScreen === 'home'){
-    backBtn.classList.add('ghost');
-    title.textContent = 'LIVRO HISTÓRICO';
-    subtitle.textContent = 'Sistema de registro histórico de equipamentos de máquinas';
+  $('topBackBtn').classList.toggle('ghost', UI.currentScreen==='home');
+  if(UI.currentScreen==='home'){
+    $('topTitle').textContent='LIVRO HISTÓRICO';
+    $('topSubtitle').textContent='Sistema de registro histórico de equipamentos de máquinas';
+  }else if(UI.currentScreen==='dashboard'){
+    $('topTitle').textContent = b ? `${b.sigla} - ${b.nome}` : 'Sistema';
+    $('topSubtitle').textContent='Selecione uma opção abaixo';
   }else{
-    backBtn.classList.remove('ghost');
-    if(currentScreen === 'dashboard'){
-      title.textContent = b ? `${b.sigla} - ${b.nome}` : 'Sistema';
-      subtitle.textContent = 'Selecione uma opção abaixo';
-    }else{
-      const map = {
-        novo:'Novo Registro',
-        historico:'Histórico',
-        ficha:'Dados da Ficha',
-        documento:'Documento Oficial'
-      };
-      title.textContent = map[currentScreen] || 'Livro Histórico';
-      subtitle.textContent = b ? getBigramaLabel(b.id) : '';
-    }
+    const map={novo:'Novo Registro',historico:'Histórico',ficha:'Dados da Ficha',documento:'Documento Oficial'};
+    $('topTitle').textContent = map[UI.currentScreen] || 'Livro Histórico';
+    $('topSubtitle').textContent = b ? getBigramaLabel(b.id) : '';
   }
 }
-
-function updateSelectedContextUI(){
-  const b = getSelectedBigrama();
-  const label = b ? `${b.sigla} - ${b.nome}` : 'Nenhum sistema selecionado';
-  $('selectedBigramaChip').textContent = label;
-  $('dashboardBanner').innerHTML = b
-    ? `<b>Sistema selecionado:</b> ${escapeHtml(label)}`
-    : 'Selecione um bigrama.';
+function updateContextUI(){
+  const b=getSelectedBigrama();
+  const label=b?`${b.sigla} - ${b.nome}`:'Nenhum sistema selecionado';
+  if($('selectedBigramaChip')) $('selectedBigramaChip').textContent = label;
+  if($('dashboardBanner')) $('dashboardBanner').innerHTML = b?`<b>Sistema selecionado:</b> ${escapeHtml(label)}`:'Selecione um bigrama.';
 }
-
-function selectBigrama(id){
-  state.selectedBigramaId = id;
-  saveState();
-  updateSelectedContextUI();
-  showScreen('dashboard');
-}
-
+function selectBigrama(id){ AppState.data.selectedBigramaId=id; AppState.save(); updateContextUI(); showScreen('dashboard'); }
 function showScreen(screen){
-  if(screen !== 'home' && !state.selectedBigramaId){
-    showAppMessage('Bigrama', 'Selecione primeiro um bigrama.');
-    return;
-  }
-  currentScreen = screen;
-  ['home','dashboard','novo','historico','ficha','documento'].forEach(s => {
-    $('screen-' + s).classList.toggle('hidden', s !== screen);
-  });
-  if(screen !== 'home') updateSelectedContextUI();
-  if(screen === 'historico') renderHistory();
-  if(screen === 'ficha') fillFichaForm();
-  if(screen === 'documento') renderDocument();
+  if(screen!=='home' && !AppState.data.selectedBigramaId){ showAppMessage('Bigrama','Selecione primeiro um bigrama.'); return; }
+  UI.currentScreen=screen;
+  ['home','dashboard','novo','historico','ficha','documento'].forEach(s => $('screen-'+s).classList.toggle('hidden', s!==screen));
+  if(screen!=='home') updateContextUI();
+  if(screen==='historico') renderHistory();
+  if(screen==='ficha') fillFichaForm();
+  if(screen==='documento') renderDocument();
   updateTopbar();
 }
-function goBack(){
-  if(currentScreen === 'home') return;
-  if(currentScreen === 'dashboard'){
-    showScreen('home');
-  }else{
-    showScreen('dashboard');
-  }
-}
-function goHome(){
-  closeMainMenu();
-  closeManageBigramas();
-  showScreen('home');
-}
-
+function goBack(){ if(UI.currentScreen==='home') return; if(UI.currentScreen==='dashboard') showScreen('home'); else showScreen('dashboard'); }
+function goHome(){ closeMainMenu(); closeManageBigramas(); showScreen('home'); }
 function openMainMenu(){ $('mainMenuModal').classList.add('show'); }
 function closeMainMenu(){ $('mainMenuModal').classList.remove('show'); }
-function openManageBigramas(){
-  closeMainMenu();
-  renderBigramaList();
-  $('manageBigramasModal').classList.add('show');
-}
+function openManageBigramas(){ closeMainMenu(); renderBigramaList(); $('manageBigramasModal').classList.add('show'); }
 function closeManageBigramas(){ $('manageBigramasModal').classList.remove('show'); }
 
+function setStatus(id, msg, isError=false){
+  const el=$(id); if(!el) return;
+  el.textContent=msg; el.style.color=isError?'var(--danger)':'var(--success)';
+  clearTimeout(el._timer); el._timer=setTimeout(()=>{ el.textContent=''; },2600);
+}
+
 function resetRecordForm(){
-  editingRecordId = null;
+  UI.editingRecordId=null;
   $('recordForm').reset();
-  $('dataInicio').value = new Date().toISOString().slice(0,10);
-  $('submitRecordBtn').textContent = 'Salvar Registro';
-  $('formHeading').textContent = 'Novo Registro';
+  $('dataInicio').value=new Date().toISOString().slice(0,10);
+  $('submitRecordBtn').textContent='Salvar Registro';
+  $('formHeading').textContent='Novo Registro';
 }
-function recordTypeLabel(value){
-  return {
-    avaria:'Avaria',
-    manutencao:'Manutenção',
-    rotina:'Rotina de manutenção',
-    ocorrencia:'Ocorrência',
-    anotacao:'Anotação'
-  }[value] || 'Avaria';
-}
+function recordTypeLabel(value){ return {avaria:'Avaria',manutencao:'Manutenção',rotina:'Rotina de manutenção',ocorrencia:'Ocorrência',anotacao:'Anotação'}[value]||'Avaria'; }
 function dateRangeLabel(rec){
-  const ini = formatDateBR(rec.dataInicio);
-  const fim = formatDateBR(rec.dataFim);
-  const horas = (rec.horasFunc || '').trim();
-  let base = ini;
-  if(fim && fim !== ini) base += ' à ' + fim;
-  if(horas) base += '\n' + horas + ' h';
-  return base;
+  const ini=formatDateBR(rec.dataInicio); const fim=formatDateBR(rec.dataFim); const horas=(rec.horasFunc||'').trim(); let base=ini;
+  if(fim && fim!==ini) base+=' à '+fim; if(horas) base+='\n'+horas+' h'; return base;
 }
 function handleRecordSubmit(e){
   e.preventDefault();
-  if(!state.selectedBigramaId){
-    setStatus('recordStatus', 'Selecione um bigrama antes.', true);
-    return;
-  }
-  const dataInicio = $('dataInicio').value;
-  const dataFim = $('dataFim').value;
-  const horasFunc = $('horasFunc').value.trim();
-  const equipamento = $('equipamento').value.trim();
-  const tipoRegistro = $('tipoRegistro').value;
-  const avaria = $('avaria').value.trim();
-  const solucao = $('solucao').value.trim();
-  const observacao = $('observacao').value.trim();
-
-  if(!dataInicio || !avaria){
-    setStatus('recordStatus', 'Preencha data de início e avaria/registro.', true);
-    return;
-  }
-  if(dataFim && dataFim < dataInicio){
-    setStatus('recordStatus', 'A data de fechamento não pode ser menor que a data de início.', true);
-    return;
-  }
-
-  const payload = {
-    bigramaId: state.selectedBigramaId,
-    dataInicio, dataFim, horasFunc, equipamento,
-    tipoRegistro, tipoRegistroLabel: recordTypeLabel(tipoRegistro),
-    avaria, solucao, observacao,
-    status:'aberto'
-  };
-
-  if(editingRecordId){
-    const idx = state.registros.findIndex(r => r.id === editingRecordId);
-    if(idx >= 0){
-      state.registros[idx] = { ...state.registros[idx], ...payload, updatedAt: Date.now() };
-      setStatus('recordStatus', 'Registro atualizado.');
-    }
+  if(!AppState.data.selectedBigramaId){ setStatus('recordStatus','Selecione um bigrama antes.',true); return; }
+  const dataInicio=$('dataInicio').value, dataFim=$('dataFim').value, horasFunc=$('horasFunc').value.trim(), equipamento=$('equipamento').value.trim(),
+        tipoRegistro=$('tipoRegistro').value, avaria=$('avaria').value.trim(), solucao=$('solucao').value.trim(), observacao=$('observacao').value.trim();
+  if(!dataInicio || !avaria){ setStatus('recordStatus','Preencha data de início e avaria/registro.',true); return; }
+  if(dataFim && dataFim<dataInicio){ setStatus('recordStatus','A data de fechamento não pode ser menor que a data de início.',true); return; }
+  const payload = {bigramaId:AppState.data.selectedBigramaId,dataInicio,dataFim,horasFunc,equipamento,tipoRegistro,tipoRegistroLabel:recordTypeLabel(tipoRegistro),avaria,solucao,observacao,status:'aberto'};
+  if(UI.editingRecordId){
+    const idx=AppState.data.registros.findIndex(r=>r.id===UI.editingRecordId);
+    if(idx>=0){ AppState.data.registros[idx]={...AppState.data.registros[idx], ...payload, updatedAt:Date.now()}; setStatus('recordStatus','Registro atualizado.'); }
   }else{
-    state.registros.push({ id: uid('rec'), ...payload, createdAt: Date.now() });
-    setStatus('recordStatus', 'Registro salvo.');
+    AppState.data.registros.push({id:uid('rec'), ...payload, createdAt:Date.now(), updatedAt:Date.now()});
+    setStatus('recordStatus','Registro salvo.');
   }
-
-  saveState();
-  resetRecordForm();
-  renderHistory();
-  renderDocument();
+  AppState.save(); resetRecordForm(); renderHistory(); renderDocument();
 }
-function getCurrentRecords(){
-  return state.registros.filter(r => r.bigramaId === state.selectedBigramaId);
-}
+function getCurrentRecords(){ return AppState.data.registros.filter(r=>r.bigramaId===AppState.data.selectedBigramaId); }
 function getFilteredRecords(){
-  const f = state.filtros;
-  const busca = (f.busca || '').trim().toLowerCase();
-
-  return getCurrentRecords().filter(r => {
-    const matchBusca = !busca || [r.equipamento, r.avaria, r.solucao, r.observacao, r.horasFunc].join(' ').toLowerCase().includes(busca);
-    const matchStatus = f.status === 'TODOS' || r.status === f.status;
-    const matchIni = !f.dataInicio || r.dataInicio >= f.dataInicio;
-    const compareDate = r.dataFim || r.dataInicio;
-    const matchFim = !f.dataFim || compareDate <= f.dataFim;
-    return matchBusca && matchStatus && matchIni && matchFim;
-  }).sort((a,b) => {
-    const byDate = b.dataInicio.localeCompare(a.dataInicio);
-    if(byDate !== 0) return byDate;
-    return (b.createdAt || 0) - (a.createdAt || 0);
-  });
+  const f=AppState.data.filtros, busca=(f.busca||'').trim().toLowerCase();
+  return getCurrentRecords().filter(r=>{
+    const matchBusca=!busca || [r.equipamento,r.avaria,r.solucao,r.observacao,r.horasFunc].join(' ').toLowerCase().includes(busca);
+    const matchStatus=f.status==='TODOS' || r.status===f.status;
+    const matchIni=!f.dataInicio || r.dataInicio>=f.dataInicio;
+    const compareDate=r.dataFim||r.dataInicio;
+    const matchFim=!f.dataFim || compareDate<=f.dataFim;
+    return matchBusca&&matchStatus&&matchIni&&matchFim;
+  }).sort((a,b)=>{ const byDate=b.dataInicio.localeCompare(a.dataInicio); return byDate!==0?byDate:(b.createdAt||0)-(a.createdAt||0); });
 }
 function renderHistory(){
-  const records = getFilteredRecords();
-  const abertos = records.filter(r => r.status !== 'fechado').length;
-  $('historyStats').innerHTML = `
-    <b>Total filtrado:</b> ${records.length} registro(s)
-    <br><b>Abertos aptos para PDF:</b> ${abertos}
-    <br><b>Sistema:</b> ${escapeHtml(getBigramaLabel(state.selectedBigramaId))}
-  `;
-  const list = $('recordList');
-  if(!records.length){
-    list.innerHTML = '<div class="empty">Nenhum registro encontrado com os filtros atuais.</div>';
-    renderDocument();
-    return;
-  }
-  list.innerHTML = records.map(r => {
-    const b = getBigramaById(r.bigramaId);
-    const sigla = b ? b.sigla : '??';
-    return `
-      <div class="record-card">
-        <div class="record-head">
-          <div class="record-head-left">
-            <div class="sigla">${escapeHtml(sigla)}</div>
-            <div class="record-title">
-              <div class="date">${escapeHtml(formatDateBR(r.dataInicio))}${r.dataFim ? ' à ' + escapeHtml(formatDateBR(r.dataFim)) : ''}</div>
-              <div class="meta">
-                <span class="chip ${r.status === 'fechado' ? 'status-closed' : 'status-open'}">${r.status === 'fechado' ? 'Fechado' : 'Em aberto'}</span>
-              </div>
-            </div>
-          </div>
-          <div class="record-actions">
-            <button class="icon-btn view" title="Visualizar" onclick="previewSingleRecord('${r.id}')">👁</button>
-            <button class="icon-btn edit" title="Editar" onclick="editRecord('${r.id}')">✎</button>
-            <button class="icon-btn done" title="${r.status === 'fechado' ? 'Marcar como aberto' : 'Marcar como fechado'}" onclick="toggleRecordStatus('${r.id}')">${r.status === 'fechado' ? '✖' : '✔'}</button>
-            <button class="icon-btn delete" title="Excluir" onclick="deleteRecord('${r.id}')">🗑</button>
+  const records=getFilteredRecords(); const abertos=records.filter(r=>r.status!=='fechado').length;
+  $('historyStats').innerHTML=`<b>Total filtrado:</b> ${records.length} registro(s)<br><b>Abertos aptos para PDF:</b> ${abertos}<br><b>Sistema:</b> ${escapeHtml(getBigramaLabel(AppState.data.selectedBigramaId))}`;
+  const list=$('recordList');
+  if(!records.length){ list.innerHTML='<div class="empty">Nenhum registro encontrado com os filtros atuais.</div>'; renderDocument(); return; }
+  list.innerHTML=records.map(r=>{
+    const b=getBigramaById(r.bigramaId); const sigla=b?b.sigla:'??';
+    return `<div class="record-card">
+      <div class="record-head">
+        <div class="record-head-left">
+          <div class="sigla">${escapeHtml(sigla)}</div>
+          <div class="record-title">
+            <div class="date">${escapeHtml(formatDateBR(r.dataInicio))}${r.dataFim?' à '+escapeHtml(formatDateBR(r.dataFim)):''}</div>
+            <div class="meta"><span class="chip ${r.status==='fechado'?'status-closed':'status-open'}">${r.status==='fechado'?'Fechado':'Em aberto'}</span></div>
           </div>
         </div>
-        <div class="record-body">
-          <div class="label-block"><b>Equipamento:</b> ${escapeHtml(r.equipamento || 'Sem equipamento')}</div>
-          <div class="label-block"><b>${escapeHtml(r.tipoRegistroLabel || 'Avaria')}:</b> ${nl2br(r.avaria || '—')}</div>
-          <div class="label-block"><b>Solução:</b> ${nl2br(r.solucao || '—')}</div>
-          <div class="label-block"><b>Observação:</b> ${nl2br(r.observacao || '—')}</div>
+        <div class="record-actions">
+          <button class="icon-btn view" title="Visualizar" onclick="previewSingleRecord('${r.id}')">👁</button>
+          <button class="icon-btn edit" title="Editar" onclick="editRecord('${r.id}')">✎</button>
+          <button class="icon-btn done" title="${r.status==='fechado'?'Marcar como aberto':'Marcar como fechado'}" onclick="toggleRecordStatus('${r.id}')">${r.status==='fechado'?'✖':'✔'}</button>
+          <button class="icon-btn delete" title="Excluir" onclick="deleteRecord('${r.id}')">🗑</button>
         </div>
       </div>
-    `;
+      <div class="record-body">
+        <div class="label-block"><b>Equipamento:</b> ${escapeHtml(r.equipamento||'Sem equipamento')}</div>
+        <div class="label-block"><b>${escapeHtml(r.tipoRegistroLabel||'Avaria')}:</b> ${nl2br(r.avaria||'—')}</div>
+        <div class="label-block"><b>Solução:</b> ${nl2br(r.solucao||'—')}</div>
+        <div class="label-block"><b>Observação:</b> ${nl2br(r.observacao||'—')}</div>
+      </div>
+    </div>`;
   }).join('');
   renderDocument();
 }
-
 function previewSingleRecord(id){
-  const r = state.registros.find(x => x.id === id);
-  if(!r) return;
-  showAppMessage(
-    getBigramaLabel(r.bigramaId),
-    `${dateRangeLabel(r).replaceAll('
-',' | ')}
-
-${r.tipoRegistroLabel || 'Avaria'}:
-${r.avaria || '—'}
-
-Solução:
-${r.solucao || '—'}
-
-Observação:
-${r.observacao || '—'}`
-  );
+  const r=AppState.data.registros.find(x=>x.id===id); if(!r) return;
+  showAppMessage(getBigramaLabel(r.bigramaId), `${dateRangeLabel(r).replaceAll('\n',' | ')}\n\n${r.tipoRegistroLabel || 'Avaria'}:\n${r.avaria || '—'}\n\nSolução:\n${r.solucao || '—'}\n\nObservação:\n${r.observacao || '—'}`);
 }
-
 function editRecord(id){
-  const r = state.registros.find(x => x.id === id);
-  if(!r) return;
-  state.selectedBigramaId = r.bigramaId;
-  editingRecordId = id;
-  $('dataInicio').value = r.dataInicio || '';
-  $('dataFim').value = r.dataFim || '';
-  $('horasFunc').value = r.horasFunc || '';
-  $('equipamento').value = r.equipamento || '';
-  $('tipoRegistro').value = r.tipoRegistro || 'avaria';
-  $('avaria').value = r.avaria || '';
-  $('solucao').value = r.solucao || '';
-  $('observacao').value = r.observacao || '';
-  $('submitRecordBtn').textContent = 'Salvar Edição';
-  $('formHeading').textContent = 'Editar Registro';
-  saveState();
-  showScreen('novo');
-  window.scrollTo({top:0, behavior:'smooth'});
+  const r=AppState.data.registros.find(x=>x.id===id); if(!r) return;
+  AppState.data.selectedBigramaId=r.bigramaId;
+  UI.editingRecordId=id;
+  $('dataInicio').value=r.dataInicio||''; $('dataFim').value=r.dataFim||''; $('horasFunc').value=r.horasFunc||''; $('equipamento').value=r.equipamento||''; $('tipoRegistro').value=r.tipoRegistro||'avaria'; $('avaria').value=r.avaria||''; $('solucao').value=r.solucao||''; $('observacao').value=r.observacao||'';
+  $('submitRecordBtn').textContent='Salvar Edição'; $('formHeading').textContent='Editar Registro';
+  AppState.save(); showScreen('novo'); window.scrollTo({top:0,behavior:'smooth'});
 }
 async function deleteRecord(id){
-  const ok = await showAppConfirm('Excluir registro', 'Deseja realmente excluir este registro?');
+  const ok=await showAppConfirm('Excluir registro','Deseja realmente excluir este registro?');
   if(!ok) return;
-  state.registros = state.registros.filter(x => x.id !== id);
-  if(editingRecordId === id) resetRecordForm();
-  saveState();
-  renderHistory();
+  AppState.data.registros=AppState.data.registros.filter(x=>x.id!==id);
+  if(UI.editingRecordId===id) resetRecordForm();
+  AppState.save(); renderHistory();
 }
 function toggleRecordStatus(id){
-  const r = state.registros.find(x => x.id === id);
-  if(!r) return;
-  r.status = r.status === 'fechado' ? 'aberto' : 'fechado';
-  r.updatedAt = Date.now();
-  saveState();
-  renderHistory();
-  renderDocument();
+  const r=AppState.data.registros.find(x=>x.id===id); if(!r) return;
+  r.status=r.status==='fechado'?'aberto':'fechado'; r.updatedAt=Date.now();
+  AppState.save(); renderHistory(); renderDocument();
 }
 function clearFilters(){
-  state.filtros = { busca:'', status:'TODOS', dataInicio:'', dataFim:'' };
-  $('filtroBusca').value = '';
-  $('filtroStatus').value = 'TODOS';
-  $('filtroDataInicio').value = '';
-  $('filtroDataFim').value = '';
-  saveState();
-  renderHistory();
+  AppState.data.filtros={busca:'',status:'TODOS',dataInicio:'',dataFim:''};
+  $('filtroBusca').value=''; $('filtroStatus').value='TODOS'; $('filtroDataInicio').value=''; $('filtroDataFim').value='';
+  AppState.save(); renderHistory();
 }
 function bindFilterInputs(){
-  $('filtroBusca').addEventListener('input', e => { state.filtros.busca = e.target.value; saveState(); renderHistory(); });
-  $('filtroStatus').addEventListener('change', e => { state.filtros.status = e.target.value; saveState(); renderHistory(); });
-  $('filtroDataInicio').addEventListener('input', e => { state.filtros.dataInicio = e.target.value; saveState(); renderHistory(); });
-  $('filtroDataFim').addEventListener('input', e => { state.filtros.dataFim = e.target.value; saveState(); renderHistory(); });
+  $('filtroBusca').addEventListener('input',e=>{AppState.data.filtros.busca=e.target.value; AppState.save(); renderHistory();});
+  $('filtroStatus').addEventListener('change',e=>{AppState.data.filtros.status=e.target.value; AppState.save(); renderHistory();});
+  $('filtroDataInicio').addEventListener('input',e=>{AppState.data.filtros.dataInicio=e.target.value; AppState.save(); renderHistory();});
+  $('filtroDataFim').addEventListener('input',e=>{AppState.data.filtros.dataFim=e.target.value; AppState.save(); renderHistory();});
 }
 
 function renderBigramaList(){
-  const list = $('bigramaList');
-  if(!state.bigramas.length){
-    list.innerHTML = '<div class="empty">Nenhum bigrama cadastrado.</div>';
-    return;
-  }
-  list.innerHTML = state.bigramas.map(b => `
+  const list=$('bigramaList');
+  if(!AppState.data.bigramas.length){ list.innerHTML='<div class="empty">Nenhum bigrama cadastrado.</div>'; return; }
+  list.innerHTML=AppState.data.bigramas.map(b=>`
     <div class="record-card">
       <div class="record-head">
-        <div class="record-head-left">
-          <div class="sigla">${escapeHtml(b.sigla)}</div>
-          <div class="record-title"><div class="date">${escapeHtml(b.nome)}</div></div>
-        </div>
-        <div class="record-actions">
-          <button class="icon-btn edit" title="Editar" onclick="editBigrama('${b.id}')">✎</button>
-          <button class="icon-btn delete" title="Excluir" onclick="deleteBigrama('${b.id}')">🗑</button>
-        </div>
+        <div class="record-head-left"><div class="sigla">${escapeHtml(b.sigla)}</div><div class="record-title"><div class="date">${escapeHtml(b.nome)}</div></div></div>
+        <div class="record-actions"><button class="icon-btn edit" title="Editar" onclick="editBigrama('${b.id}')">✎</button><button class="icon-btn delete" title="Excluir" onclick="deleteBigrama('${b.id}')">🗑</button></div>
       </div>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 function handleBigramaSubmit(e){
   e.preventDefault();
-  const sigla = $('siglaInput').value.trim().toUpperCase();
-  const nome = $('nomeSistemaInput').value.trim();
-  if(!sigla || !nome){
-    setStatus('bigramaStatus', 'Informe sigla e nome do sistema.', true);
-    return;
-  }
-  const exists = state.bigramas.find(b => b.sigla === sigla && b.id !== editingBigramaId);
-  if(exists){
-    setStatus('bigramaStatus', 'Já existe um bigrama com essa sigla.', true);
-    return;
-  }
-  if(editingBigramaId){
-    const idx = state.bigramas.findIndex(b => b.id === editingBigramaId);
-    if(idx >= 0){
-      const old = state.bigramas[idx];
-      state.bigramas[idx] = { ...old, sigla, nome };
-      const oldFicha = state.fichas[old.id];
-      if(oldFicha && (!oldFicha.sistemaFicha || oldFicha.sistemaFicha === `${old.nome.toUpperCase()} (${old.sigla})`)){
-        state.fichas[old.id] = { ...oldFicha, sistemaFicha:`${nome.toUpperCase()} (${sigla})` };
+  const sigla=$('siglaInput').value.trim().toUpperCase(), nome=$('nomeSistemaInput').value.trim();
+  if(!sigla || !nome){ setStatus('bigramaStatus','Informe sigla e nome do sistema.',true); return; }
+  const exists=AppState.data.bigramas.find(b=>b.sigla===sigla && b.id!==UI.editingBigramaId);
+  if(exists){ setStatus('bigramaStatus','Já existe um bigrama com essa sigla.',true); return; }
+  if(UI.editingBigramaId){
+    const idx=AppState.data.bigramas.findIndex(b=>b.id===UI.editingBigramaId);
+    if(idx>=0){
+      const old=AppState.data.bigramas[idx];
+      AppState.data.bigramas[idx]={...old,sigla,nome};
+      const oldFicha=AppState.data.fichas[old.id];
+      if(oldFicha && (!oldFicha.sistemaFicha || oldFicha.sistemaFicha===`${old.nome.toUpperCase()} (${old.sigla})`)){
+        AppState.data.fichas[old.id]={...oldFicha,sistemaFicha:`${nome.toUpperCase()} (${sigla})`};
       }
-      setStatus('bigramaStatus', 'Bigrama atualizado.');
+      setStatus('bigramaStatus','Bigrama atualizado.');
     }
   }else{
-    const id = uid('big');
-    state.bigramas.push({ id, sigla, nome });
-    state.fichas[id] = { ...defaultFicha, sistemaFicha:`${nome.toUpperCase()} (${sigla})` };
-    setStatus('bigramaStatus', 'Bigrama salvo.');
+    const id=uid('big');
+    AppState.data.bigramas.push({id,sigla,nome});
+    AppState.data.fichas[id]={...DEFAULT_FICHA,sistemaFicha:`${nome.toUpperCase()} (${sigla})`};
+    setStatus('bigramaStatus','Bigrama salvo.');
   }
-  saveState();
-  resetBigramaForm();
-  renderBigramaList();
-  renderHomeFolders();
-  if(state.selectedBigramaId) updateSelectedContextUI();
+  AppState.save(); resetBigramaForm(); renderBigramaList(); renderHomeFolders(); if(AppState.data.selectedBigramaId) updateContextUI();
 }
 function editBigrama(id){
-  const b = state.bigramas.find(x => x.id === id);
-  if(!b) return;
-  editingBigramaId = id;
-  $('siglaInput').value = b.sigla || '';
-  $('nomeSistemaInput').value = b.nome || '';
-  $('saveBigramaBtn').textContent = 'Salvar Edição';
+  const b=AppState.data.bigramas.find(x=>x.id===id); if(!b) return;
+  UI.editingBigramaId=id; $('siglaInput').value=b.sigla||''; $('nomeSistemaInput').value=b.nome||''; $('saveBigramaBtn').textContent='Salvar Edição';
 }
-function resetBigramaForm(){
-  editingBigramaId = null;
-  $('bigramaForm').reset();
-  $('saveBigramaBtn').textContent = 'Salvar Bigrama';
-}
+function resetBigramaForm(){ UI.editingBigramaId=null; $('bigramaForm').reset(); $('saveBigramaBtn').textContent='Salvar Bigrama'; }
 async function deleteBigrama(id){
-  const inUse = state.registros.some(r => r.bigramaId === id);
-  if(inUse){
-    showAppMessage('Excluir bigrama', 'Não é possível excluir este bigrama porque existem registros vinculados a ele.');
-    return;
-  }
-  const ok = await showAppConfirm('Excluir bigrama', 'Deseja realmente excluir este bigrama?');
+  const inUse=AppState.data.registros.some(r=>r.bigramaId===id);
+  if(inUse){ showAppMessage('Excluir bigrama','Não é possível excluir este bigrama porque existem registros vinculados a ele.'); return; }
+  const ok=await showAppConfirm('Excluir bigrama','Deseja realmente excluir este bigrama?');
   if(!ok) return;
-  state.bigramas = state.bigramas.filter(x => x.id !== id);
-  delete state.fichas[id];
-  if(state.selectedBigramaId === id){
-    state.selectedBigramaId = null;
-    showScreen('home');
-  }
-  saveState();
-  renderBigramaList();
-  renderHomeFolders();
-  updateTopbar();
+  AppState.data.bigramas=AppState.data.bigramas.filter(x=>x.id!==id);
+  delete AppState.data.fichas[id];
+  if(AppState.data.selectedBigramaId===id){ AppState.data.selectedBigramaId=null; showScreen('home'); }
+  AppState.save(); renderBigramaList(); renderHomeFolders(); updateTopbar();
 }
 
 function fillFichaForm(){
-  const f = getFichaForSelected();
-  $('navio').value = f.navio || '';
-  $('fichaNumero').value = f.fichaNumero || '';
-  $('folhaInicial').value = f.folhaInicial || 1;
-  $('anexoPrimeiraPagina').value = f.anexoPrimeiraPagina || 'A';
-  $('sistemaFicha').value = f.sistemaFicha || '';
-  $('equipamentoFicha').value = f.equipamentoFicha || '';
-  $('manualPlano').value = f.manualPlano || '';
-  $('fabricante').value = f.fabricante || '';
-  $('dadosPlaca').value = f.dadosPlaca || '';
-  $('localizacao').value = f.localizacao || '';
-  $('numeroSerie').value = f.numeroSerie || '';
+  const f=getFichaForSelected();
+  $('navio').value=f.navio||''; $('fichaNumero').value=f.fichaNumero||''; $('folhaInicial').value=f.folhaInicial||1; $('anexoPrimeiraPagina').value=f.anexoPrimeiraPagina||'A';
+  $('sistemaFicha').value=f.sistemaFicha||''; $('equipamentoFicha').value=f.equipamentoFicha||''; $('manualPlano').value=f.manualPlano||''; $('fabricante').value=f.fabricante||''; $('dadosPlaca').value=f.dadosPlaca||''; $('localizacao').value=f.localizacao||''; $('numeroSerie').value=f.numeroSerie||'';
 }
-function aplicarPadraoFicha(){
-  const f = getDefaultFichaForSelected();
-  saveFichaForSelected(f);
-  fillFichaForm();
-  renderDocument();
-  setStatus('fichaStatus', 'Padrão restaurado.');
-}
+function aplicarPadraoFicha(){ const f=getDefaultFichaForSelected(); saveFichaForSelected(f); fillFichaForm(); renderDocument(); setStatus('fichaStatus','Padrão restaurado.'); }
 function handleFichaSubmit(e){
   e.preventDefault();
-  saveFichaForSelected({
-    navio:$('navio').value.trim(),
-    fichaNumero:$('fichaNumero').value.trim(),
-    folhaInicial:parseInt($('folhaInicial').value || '1', 10) || 1,
-    anexoPrimeiraPagina:$('anexoPrimeiraPagina').value,
-    sistemaFicha:$('sistemaFicha').value.trim(),
-    equipamentoFicha:$('equipamentoFicha').value.trim(),
-    manualPlano:$('manualPlano').value.trim(),
-    fabricante:$('fabricante').value.trim(),
-    dadosPlaca:$('dadosPlaca').value.trim(),
-    localizacao:$('localizacao').value.trim(),
-    numeroSerie:$('numeroSerie').value.trim()
-  });
-  renderDocument();
-  setStatus('fichaStatus', 'Dados da ficha salvos.');
+  saveFichaForSelected({navio:$('navio').value.trim(),fichaNumero:$('fichaNumero').value.trim(),folhaInicial:parseInt($('folhaInicial').value||'1',10)||1,anexoPrimeiraPagina:$('anexoPrimeiraPagina').value,sistemaFicha:$('sistemaFicha').value.trim(),equipamentoFicha:$('equipamentoFicha').value.trim(),manualPlano:$('manualPlano').value.trim(),fabricante:$('fabricante').value.trim(),dadosPlaca:$('dadosPlaca').value.trim(),localizacao:$('localizacao').value.trim(),numeroSerie:$('numeroSerie').value.trim()});
+  renderDocument(); setStatus('fichaStatus','Dados da ficha salvos.');
 }
 
 function buildRowsHtml(records){
-  return records.map(r => `
-    <tr>
-      <td class="left-col">${nl2br(dateRangeLabel(r)) || '&nbsp;'}</td>
-      <td class="right-col">
-        <div class="rh-block">
-          <b>${escapeHtml(r.tipoRegistroLabel || 'Avaria')}:</b> ${nl2br(r.avaria || '')}<br><br>
-          <b>Solução:</b> ${nl2br(r.solucao || '')}<br><br>
-          <b>Observação:</b> ${nl2br(r.observacao || '')}
-        </div>
-      </td>
-    </tr>
-  `).join('');
+  return records.map(r=>`<tr><td class="left-col">${nl2br(dateRangeLabel(r))||'&nbsp;'}</td><td class="right-col"><div class="rh-block"><b>${escapeHtml(r.tipoRegistroLabel||'Avaria')}:</b> ${nl2br(r.avaria||'')}<br><br><b>Solução:</b> ${nl2br(r.solucao||'')}<br><br><b>Observação:</b> ${nl2br(r.observacao||'')}</div></td></tr>`).join('');
 }
 function makePage(pageNumber, rowsHtml, isFirst){
-  const ficha = getFichaForSelected();
-  const pageCode = isFirst ? `- ${escapeHtml(ficha.anexoPrimeiraPagina || 'A')} - ${pageNumber} -` : `- B - ${pageNumber} -`;
-  const headerTop = `
-    <div class="sheet-top-right">
-      ENGENALMARINST Nº 85-13A<br>
-      ${isFirst ? 'Anexo ' + escapeHtml(ficha.anexoPrimeiraPagina || 'A') : 'Anexo B'}
-    </div>
-  `;
-  const titleTable = `
-    <table class="doc-title-table">
-      <tr>
-        <td class="doc-title" style="width:68%;">REGISTRO HISTÓRICO DE EQUIPAMENTOS DE<br>MÁQUINAS</td>
-        <td style="width:14%;text-align:center;"><span class="box-label">FICHA Nº</span><br>${escapeHtml(ficha.fichaNumero || '')}</td>
-        <td style="width:18%;text-align:center;"><span class="box-label">FOLHA Nº</span><br>${pageNumber}</td>
-      </tr>
-    </table>
-  `;
-  const metaTable = isFirst ? `
-    <table class="meta-table">
-      <tr><td colspan="2"><span class="box-label">NAVIO:</span> ${escapeHtml(ficha.navio || '')}</td></tr>
-      <tr><td colspan="2"><span class="box-label">SISTEMA:</span> ${escapeHtml(ficha.sistemaFicha || '')}</td></tr>
-      <tr><td colspan="2"><span class="box-label">EQUIPAMENTO:</span> ${escapeHtml(ficha.equipamentoFicha || '')}</td></tr>
-      <tr><td colspan="2"><span class="box-label">MANUAL E/OU PLANO:</span> ${escapeHtml(ficha.manualPlano || '')}</td></tr>
-      <tr><td colspan="2"><span class="box-label">FABRICANTE:</span> ${escapeHtml(ficha.fabricante || '')}</td></tr>
-      <tr><td colspan="2"><span class="box-label">DADOS DE PLACA:</span> ${escapeHtml(ficha.dadosPlaca || '')}</td></tr>
-      <tr>
-        <td><span class="box-label">LOCALIZAÇÃO:</span> ${escapeHtml(ficha.localizacao || '')}</td>
-        <td><span class="box-label">Nº DE SÉRIE:</span> ${escapeHtml(ficha.numeroSerie || '')}</td>
-      </tr>
-    </table>
-  ` : '';
-  return `
-    <div class="official-sheet">
-      ${headerTop}
-      <div class="page-code">${pageCode}</div>
-      ${titleTable}
-      ${metaTable}
-      <table class="hist-table" style="margin-top:${isFirst ? '0' : '8px'};">
-        <thead>
-          <tr>
-            <th style="width:30%;">DATA E Nº DE HORAS DE FUNCIONAMENTO</th>
-            <th style="width:70%;">REGISTRO HISTÓRICO</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${rowsHtml || `<tr><td class="left-col">&nbsp;</td><td class="right-col"><div class="rh-block"><b>Avaria:</b><br><br><b>Solução:</b><br><br><b>Observação:</b></div></td></tr>`}
-        </tbody>
-      </table>
-      <div class="signature-bar">
-        <div class="signature-box"><div class="signature-line"></div>Encarregado do Sistema MO-1</div>
-        <div class="signature-box"><div class="signature-line"></div>Encarregado da Divisão de Máquinas</div>
-      </div>
-    </div>
-  `;
+  const ficha=getFichaForSelected();
+  const pageCode=isFirst?`- ${escapeHtml(ficha.anexoPrimeiraPagina||'A')} - ${pageNumber} -`:`- B - ${pageNumber} -`;
+  const headerTop=`<div class="sheet-top-right">ENGENALMARINST Nº 85-13A<br>${isFirst?'Anexo '+escapeHtml(ficha.anexoPrimeiraPagina||'A'):'Anexo B'}</div>`;
+  const titleTable=`<table class="doc-title-table"><tr><td class="doc-title" style="width:68%;">REGISTRO HISTÓRICO DE EQUIPAMENTOS DE<br>MÁQUINAS</td><td style="width:14%;text-align:center;"><span class="box-label">FICHA Nº</span><br>${escapeHtml(ficha.fichaNumero||'')}</td><td style="width:18%;text-align:center;"><span class="box-label">FOLHA Nº</span><br>${pageNumber}</td></tr></table>`;
+  const metaTable=isFirst?`<table class="meta-table"><tr><td colspan="2"><span class="box-label">NAVIO:</span> ${escapeHtml(ficha.navio||'')}</td></tr><tr><td colspan="2"><span class="box-label">SISTEMA:</span> ${escapeHtml(ficha.sistemaFicha||'')}</td></tr><tr><td colspan="2"><span class="box-label">EQUIPAMENTO:</span> ${escapeHtml(ficha.equipamentoFicha||'')}</td></tr><tr><td colspan="2"><span class="box-label">MANUAL E/OU PLANO:</span> ${escapeHtml(ficha.manualPlano||'')}</td></tr><tr><td colspan="2"><span class="box-label">FABRICANTE:</span> ${escapeHtml(ficha.fabricante||'')}</td></tr><tr><td colspan="2"><span class="box-label">DADOS DE PLACA:</span> ${escapeHtml(ficha.dadosPlaca||'')}</td></tr><tr><td><span class="box-label">LOCALIZAÇÃO:</span> ${escapeHtml(ficha.localizacao||'')}</td><td><span class="box-label">Nº DE SÉRIE:</span> ${escapeHtml(ficha.numeroSerie||'')}</td></tr></table>`:'';
+  return `<div class="official-sheet">${headerTop}<div class="page-code">${pageCode}</div>${titleTable}${metaTable}<table class="hist-table" style="margin-top:${isFirst?'0':'8px'};"><thead><tr><th style="width:30%;">DATA E Nº DE HORAS DE FUNCIONAMENTO</th><th style="width:70%;">REGISTRO HISTÓRICO</th></tr></thead><tbody>${rowsHtml || `<tr><td class="left-col">&nbsp;</td><td class="right-col"><div class="rh-block"><b>Avaria:</b><br><br><b>Solução:</b><br><br><b>Observação:</b></div></td></tr>`}</tbody></table><div class="signature-bar"><div class="signature-box"><div class="signature-line"></div>Encarregado do Sistema MO-1</div><div class="signature-box"><div class="signature-line"></div>Encarregado da Divisão de Máquinas</div></div></div>`;
 }
-function getPrintableOpenRecords(){
-  return getFilteredRecords().filter(r => r.status !== 'fechado');
-}
+function getPrintableOpenRecords(){ return getFilteredRecords().filter(r=>r.status!=='fechado'); }
 function renderDocument(){
-  const host = $('printHost');
-  const records = getPrintableOpenRecords();
-  const ficha = getFichaForSelected();
-  const initialPage = Math.max(1, parseInt(ficha.folhaInicial || 1, 10) || 1);
-  const perPage = 4;
-  const pages = [];
-  if(!records.length){
-    pages.push(makePage(initialPage, '', true));
-  }else{
-    for(let i=0;i<records.length;i+=perPage){
-      const chunk = records.slice(i, i + perPage);
-      pages.push(makePage(initialPage + (i / perPage), buildRowsHtml(chunk), i === 0));
-    }
-  }
-  host.innerHTML = pages.join('');
+  const host=$('printHost'), records=getPrintableOpenRecords(), ficha=getFichaForSelected(), initialPage=Math.max(1, parseInt(ficha.folhaInicial||1,10)||1), perPage=4, pages=[];
+  if(!records.length) pages.push(makePage(initialPage,'',true));
+  else for(let i=0;i<records.length;i+=perPage) pages.push(makePage(initialPage+(i/perPage), buildRowsHtml(records.slice(i,i+perPage)), i===0));
+  host.innerHTML=pages.join('');
 }
-
 function openPrintChoiceModal(){ $('printChoiceModal').classList.add('show'); }
 function closePrintChoiceModal(){ $('printChoiceModal').classList.remove('show'); }
-function previewPdfOnly(){ closePrintChoiceModal(); closeConflictModal(); closeImportReportModal(); closeAppMessageModal(); closeAppConfirmModal(); printOfficialDocument(false); }
-function confirmPrintAndClose(){ closePrintChoiceModal(); closeConflictModal(); closeImportReportModal(); closeAppMessageModal(); closeAppConfirmModal(); printOfficialDocument(true); }
-
+function previewPdfOnly(){ closePrintChoiceModal(); printOfficialDocument(false); }
+function confirmPrintAndClose(){ closePrintChoiceModal(); printOfficialDocument(true); }
 function printOfficialDocument(markPrinted=false){
   renderDocument();
-  const printableRecords = getPrintableOpenRecords();
-  const content = $('printHost').innerHTML;
-  if(!content || !content.trim()){
-    showAppMessage('Documento oficial', 'Não há conteúdo para imprimir.');
-    return;
-  }
-  const printableIds = printableRecords.map(r => r.id);
-  const styles = `
-    <style>
-      @page { size: A4; margin: 0; }
-      html, body { margin:0; padding:0; background:#fff; }
-      body { font-family: "Times New Roman", Times, serif; }
-      .official-sheet{background:#fff;color:#111;padding:18mm 12mm 18mm 12mm;width:210mm;min-height:297mm;margin:0 auto;box-sizing:border-box;page-break-after:always;position:relative;font-family:"Times New Roman", Times, serif}
-      .sheet-top-right{text-align:right;font-size:11pt;line-height:1.2;margin-bottom:8px}
-      .page-code{text-align:center;font-size:12pt;margin:10px 0;letter-spacing:.16em}
-      .doc-title-table,.meta-table,.hist-table{width:100%;border-collapse:collapse;table-layout:fixed}
-      .doc-title-table td,.meta-table td,.hist-table td,.hist-table th{border:1px solid #2b2b2b;padding:5px 7px;vertical-align:top;font-size:10.5pt}
-      .doc-title{font-weight:700;font-size:13pt!important;text-align:center;line-height:1.15}
-      .box-label{font-weight:700}.hist-table th{font-weight:700;text-align:center;background:#f2f2f2;vertical-align:middle}
-      .left-col{width:30%;text-align:center;vertical-align:middle!important;font-size:10.5pt;padding:10px 6px!important}
-      .right-col{width:70%;padding:10px!important}.rh-block{line-height:1.35;min-height:84px}
-      .signature-bar{position:absolute;left:12mm;right:12mm;bottom:10mm;display:flex;justify-content:space-between;align-items:flex-end;gap:20mm}
-      .signature-box{width:44%;text-align:center;font-size:10pt}.signature-line{border-top:1px solid #222;margin-bottom:4px;height:0}
-    
-    .conflict-grid{
-      display:grid;
-      gap:12px;
-      grid-template-columns:1fr;
-      margin-top:10px;
-    }
-    @media(min-width:700px){
-      .conflict-grid{grid-template-columns:1fr 1fr;}
-    }
-    .conflict-col{
-      background:rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.10);
-      border-radius:18px;
-      padding:14px;
-    }
-    .conflict-col h4{
-      margin:0 0 10px;
-      font-size:1rem;
-      color:#fff;
-    }
-    .conflict-field{
-      margin-bottom:10px;
-      padding-bottom:8px;
-      border-bottom:1px solid rgba(255,255,255,.08);
-    }
-    .conflict-field:last-child{
-      margin-bottom:0;
-      padding-bottom:0;
-      border-bottom:none;
-    }
-    .conflict-field b{
-      display:block;
-      margin-bottom:4px;
-      color:#fff;
-    }
-    .conflict-diff{
-      outline:2px solid rgba(240,196,25,.75);
-      border-radius:10px;
-      padding:6px 8px;
-      background:rgba(240,196,25,.08);
-    }
-
-  
-    .report-list{
-      display:grid;
-      gap:10px;
-      margin-top:10px;
-    }
-    .report-item{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      padding:12px 14px;
-      border-radius:14px;
-      background:rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.10);
-      color:#f3f7fb;
-      font-weight:700;
-    }
-    .report-item span:last-child{
-      color:#f0c419;
-      font-size:1.05rem;
-    }
-
-  </style>
-  `;
-  let iframe = document.getElementById('printFrame');
-  if(iframe) iframe.remove();
-  iframe = document.createElement('iframe');
-  iframe.id = 'printFrame';
-  iframe.style.position = 'fixed';
-  iframe.style.width = '1px';
-  iframe.style.height = '1px';
-  iframe.style.right = '0';
-  iframe.style.bottom = '0';
-  iframe.style.opacity = '0';
-  iframe.style.border = '0';
-  document.body.appendChild(iframe);
-
-  const doc = iframe.contentWindow.document;
-  doc.open();
-  doc.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Livro Histórico - Impressão</title>${styles}</head><body>${content}</body></html>`);
-  doc.close();
-
-  let statusApplied = false;
-  const applyClosedStatus = () => {
-    if(statusApplied || !markPrinted) return;
-    statusApplied = true;
-    state.registros.forEach(r => {
-      if(printableIds.includes(r.id)){
-        r.status = 'fechado';
-        r.updatedAt = Date.now();
-      }
-    });
-    saveState();
-    renderHistory();
-    renderDocument();
-  };
-  const doPrint = () => {
-    try{
-      iframe.contentWindow.focus();
-      iframe.contentWindow.print();
-      if(markPrinted) setTimeout(applyClosedStatus, 300);
-    }catch(e){
-      showAppMessage('Documento oficial', 'O navegador não permitiu abrir a impressão.');
-    }
-  };
-  iframe.onload = () => setTimeout(doPrint, 250);
-  setTimeout(doPrint, 700);
+  const printableRecords=getPrintableOpenRecords(), content=$('printHost').innerHTML;
+  if(!content||!content.trim()){ showAppMessage('Documento oficial','Não há conteúdo para imprimir.'); return; }
+  const printableIds=printableRecords.map(r=>r.id);
+  const styles=`<style>@page { size: A4; margin: 0; } html, body { margin:0; padding:0; background:#fff; } body { font-family: "Times New Roman", Times, serif; } .official-sheet{background:#fff;color:#111;padding:18mm 12mm 18mm 12mm;width:210mm;min-height:297mm;margin:0 auto;box-sizing:border-box;page-break-after:always;position:relative;font-family:"Times New Roman", Times, serif} .sheet-top-right{text-align:right;font-size:11pt;line-height:1.2;margin-bottom:8px} .page-code{text-align:center;font-size:12pt;margin:10px 0;letter-spacing:.16em} .doc-title-table,.meta-table,.hist-table{width:100%;border-collapse:collapse;table-layout:fixed} .doc-title-table td,.meta-table td,.hist-table td,.hist-table th{border:1px solid #2b2b2b;padding:5px 7px;vertical-align:top;font-size:10.5pt} .doc-title{font-weight:700;font-size:13pt!important;text-align:center;line-height:1.15}.box-label{font-weight:700}.hist-table th{font-weight:700;text-align:center;background:#f2f2f2;vertical-align:middle}.left-col{width:30%;text-align:center;vertical-align:middle!important;font-size:10.5pt;padding:10px 6px!important}.right-col{width:70%;padding:10px!important}.rh-block{line-height:1.35;min-height:84px}.signature-bar{position:absolute;left:12mm;right:12mm;bottom:10mm;display:flex;justify-content:space-between;align-items:flex-end;gap:20mm}.signature-box{width:44%;text-align:center;font-size:10pt}.signature-line{border-top:1px solid #222;margin-bottom:4px;height:0}</style>`;
+  let iframe=document.getElementById('printFrame'); if(iframe) iframe.remove();
+  iframe=document.createElement('iframe'); iframe.id='printFrame'; iframe.style.position='fixed'; iframe.style.width='1px'; iframe.style.height='1px'; iframe.style.right='0'; iframe.style.bottom='0'; iframe.style.opacity='0'; iframe.style.border='0'; document.body.appendChild(iframe);
+  const doc=iframe.contentWindow.document; doc.open(); doc.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Livro Histórico - Impressão</title>${styles}</head><body>${content}</body></html>`); doc.close();
+  let statusApplied=false;
+  const applyClosedStatus=()=>{ if(statusApplied||!markPrinted) return; statusApplied=true; AppState.data.registros.forEach(r=>{ if(printableIds.includes(r.id)){ r.status='fechado'; r.updatedAt=Date.now(); } }); AppState.save(); renderHistory(); renderDocument(); };
+  const doPrint=()=>{ try{ iframe.contentWindow.focus(); iframe.contentWindow.print(); if(markPrinted) setTimeout(applyClosedStatus,300); }catch(e){ showAppMessage('Documento oficial','O navegador não permitiu abrir a impressão.'); } };
+  iframe.onload=()=>setTimeout(doPrint,250); setTimeout(doPrint,700);
 }
 
 function exportBackup(){
-  const blob = new Blob([JSON.stringify(state, null, 2)], { type:'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  const now = new Date();
-  const pad = n => String(n).padStart(2,'0');
-  const stamp = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}`;
-  a.download = `Livro H- Backup ${stamp}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
+  const now=new Date(); const pad=n=>String(n).padStart(2,'0');
+  const stamp=`${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}`;
+  const blob=new Blob([JSON.stringify(AppState.data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob); const a=document.createElement('a');
+  a.href=url; a.download=`Livro H- Backup ${stamp}.json`; a.click(); URL.revokeObjectURL(url);
 }
 
-
-
+function conflictField(label, mine, theirs, useBackup=false){
+  const diff=String(mine??'')!==String(theirs??''); const value=useBackup?theirs:mine;
+  return `<div class="conflict-field ${diff?'conflict-diff':''}"><b>${escapeHtml(label)}</b><div>${nl2br(value===''||value===null||typeof value==='undefined'?'—':String(value))}</div></div>`;
+}
+function openNextConflict(){
+  if(!UI.conflictQueue.length){ finalizeImportReport(); return; }
+  const item=UI.conflictQueue[0], local=AppState.data.registros.find(r=>r.id===item.localId), backup=item.backupRecord;
+  if(!local){ UI.conflictQueue.shift(); openNextConflict(); return; }
+  $('conflictContent').innerHTML = `<div class="conflict-grid">
+    <div class="conflict-col"><h4>Meu registro</h4>
+      ${conflictField('Data início', local.dataInicio, backup.dataInicio)}
+      ${conflictField('Data fim', local.dataFim, backup.dataFim)}
+      ${conflictField('Horas', local.horasFunc, backup.horasFunc)}
+      ${conflictField('Equipamento', local.equipamento, backup.equipamento)}
+      ${conflictField('Tipo', local.tipoRegistroLabel||local.tipoRegistro, backup.tipoRegistroLabel||backup.tipoRegistro)}
+      ${conflictField('Avaria', local.avaria, backup.avaria)}
+      ${conflictField('Solução', local.solucao, backup.solucao)}
+      ${conflictField('Observação', local.observacao, backup.observacao)}
+      ${conflictField('Status', local.status, backup.status)}
+    </div>
+    <div class="conflict-col"><h4>Registro do backup</h4>
+      ${conflictField('Data início', local.dataInicio, backup.dataInicio, true)}
+      ${conflictField('Data fim', local.dataFim, backup.dataFim, true)}
+      ${conflictField('Horas', local.horasFunc, backup.horasFunc, true)}
+      ${conflictField('Equipamento', local.equipamento, backup.equipamento, true)}
+      ${conflictField('Tipo', local.tipoRegistroLabel||local.tipoRegistro, backup.tipoRegistroLabel||backup.tipoRegistro, true)}
+      ${conflictField('Avaria', local.avaria, backup.avaria, true)}
+      ${conflictField('Solução', local.solucao, backup.solucao, true)}
+      ${conflictField('Observação', local.observacao, backup.observacao, true)}
+      ${conflictField('Status', local.status, backup.status, true)}
+    </div>
+  </div>`;
+  $('conflictModal').classList.add('show');
+}
+function closeConflictModal(){ $('conflictModal').classList.remove('show'); }
+function resolveConflictChoice(choice){
+  if(!UI.conflictQueue.length){ closeConflictModal(); finalizeImportReport(); return; }
+  const item=UI.conflictQueue.shift(); const local=AppState.data.registros.find(r=>r.id===item.localId);
+  if(choice==='backup' && local){ Object.assign(local, item.backupRecord); UI.pendingImportReport.updated++; }
+  else UI.pendingImportReport.ignored++;
+  AppState.save(); closeConflictModal(); bootstrapUI(); if(UI.conflictQueue.length) openNextConflict(); else finalizeImportReport();
+}
+function showImportReportModal(report){
+  $('importReportContent').innerHTML = `<div class="report-list">
+    <div class="report-item"><span>Entradas no backup</span><span>${report.totalIncoming}</span></div>
+    <div class="report-item"><span>Novos</span><span>${report.added}</span></div>
+    <div class="report-item"><span>Atualizados</span><span>${report.updated}</span></div>
+    <div class="report-item"><span>Ignorados</span><span>${report.ignored}</span></div>
+    <div class="report-item"><span>Conflitos revisados</span><span>${report.conflicts}</span></div>
+  </div>`;
+  $('importReportModal').classList.add('show');
+}
+function closeImportReportModal(){ $('importReportModal').classList.remove('show'); }
+function finalizeImportReport(){
+  const report=UI.pendingImportReport || {added:0,updated:0,ignored:0,conflicts:0,totalIncoming:0};
+  UI.pendingImportReport=null; UI.conflictQueue=[];
+  AppState.save(); bootstrapUI(); showImportReportModal(report);
+}
 function importBackup(file){
-  const reader = new FileReader();
-  reader.onload = () => {
+  const reader=new FileReader();
+  reader.onload=()=>{
     try{
-      const parsed = JSON.parse(reader.result);
-      const incoming = Array.isArray(parsed.registros) ? parsed.registros : [];
-      const incomingBigramas = Array.isArray(parsed.bigramas) ? parsed.bigramas : [];
-      const incomingFichas = parsed.fichas && typeof parsed.fichas === 'object' ? parsed.fichas : {};
+      const parsed=JSON.parse(reader.result);
+      const incoming=Array.isArray(parsed.registros)?parsed.registros:[];
+      const incomingBigramas=Array.isArray(parsed.bigramas)?parsed.bigramas:[];
+      const incomingFichas=parsed.fichas&&typeof parsed.fichas==='object'?parsed.fichas:{};
+      const report={added:0,updated:0,ignored:0,conflicts:0,totalIncoming:incoming.length};
+      const compareKeys=['dataInicio','dataFim','horasFunc','equipamento','tipoRegistro','tipoRegistroLabel','avaria','solucao','observacao','status','bigramaId'];
 
-      const report = { added:0, updated:0, ignored:0, conflicts:0, totalIncoming: incoming.length };
-      const compareKeys = ['dataInicio','dataFim','horasFunc','equipamento','tipoRegistro','tipoRegistroLabel','avaria','solucao','observacao','status','bigramaId'];
+      incomingBigramas.forEach(extB=>{ const byId=AppState.data.bigramas.find(b=>b.id===extB.id); const bySigla=AppState.data.bigramas.find(b=>b.sigla===extB.sigla); if(!byId&&!bySigla) AppState.data.bigramas.push(extB); });
+      Object.keys(incomingFichas).forEach(key=>{ if(!AppState.data.fichas[key]) AppState.data.fichas[key]=incomingFichas[key]; });
 
-      incomingBigramas.forEach(extB => {
-        const byId = state.bigramas.find(b => b.id === extB.id);
-        const bySigla = state.bigramas.find(b => b.sigla === extB.sigla);
-        if(!byId && !bySigla){
-          state.bigramas.push(extB);
-        }
+      UI.conflictQueue=[]; UI.pendingImportReport=report;
+      incoming.forEach(ext=>{
+        const local=AppState.data.registros.find(r=>r.id===ext.id);
+        if(!local){ AppState.data.registros.push(ext); report.added++; return; }
+        const different=compareKeys.some(k=>String(local[k]??'')!==String(ext[k]??''));
+        if(!different){ report.ignored++; return; }
+        UI.conflictQueue.push({localId:local.id, backupRecord:ext}); report.conflicts++;
       });
-
-      Object.keys(incomingFichas).forEach(key => {
-        if(!state.fichas[key]){
-          state.fichas[key] = incomingFichas[key];
-        }
-      });
-
-      state.__conflictQueue = [];
-      state.__pendingImportReport = report;
-
-      incoming.forEach(ext => {
-        const local = state.registros.find(r => r.id === ext.id);
-
-        if(!local){
-          state.registros.push(ext);
-          report.added++;
-          return;
-        }
-
-        const different = compareKeys.some(k => String(local[k] ?? '') !== String(ext[k] ?? ''));
-        if(!different){
-          report.ignored++;
-          return;
-        }
-
-        state.__conflictQueue.push({ localId: local.id, backupRecord: ext });
-        report.conflicts++;
-      });
-
-      saveState();
-      bootstrapUI();
-
-      if((state.__conflictQueue || []).length > 0){
-        openNextConflict();
-      }else{
-        finalizeImportReport();
-      }
-    }catch(e){
-      showAppMessage('Importação de backup', 'Arquivo de backup inválido.');
-    }
+      AppState.save(); bootstrapUI();
+      if(UI.conflictQueue.length>0) openNextConflict(); else finalizeImportReport();
+    }catch(e){ showAppMessage('Importação de backup','Arquivo de backup inválido.'); }
   };
-  reader.onerror = () => {
-    showAppMessage('Importação de backup', 'Não foi possível ler o arquivo selecionado.');
-  };
+  reader.onerror=()=>showAppMessage('Importação de backup','Não foi possível ler o arquivo selecionado.');
   reader.readAsText(file);
 }
 
-
-
-
-function formatConflictValue(v){
-  if(v === '' || v === null || typeof v === 'undefined') return '—';
-  return nl2br(String(v));
-}
-function conflictField(label, mine, theirs, useBackup=false){
-  const diff = String(mine ?? '') !== String(theirs ?? '');
-  const value = useBackup ? theirs : mine;
-  return `
-    <div class="conflict-field ${diff ? 'conflict-diff' : ''}">
-      <b>${escapeHtml(label)}</b>
-      <div>${formatConflictValue(value)}</div>
-    </div>
-  `;
-}
-function openNextConflict(){
-  const queue = state.__conflictQueue || [];
-  if(!queue.length){
-    finalizeImportReport();
-    return;
-  }
-  const item = queue[0];
-  const local = state.registros.find(r => r.id === item.localId);
-  const backup = item.backupRecord;
-  if(!local){
-    queue.shift();
-    saveState();
-    openNextConflict();
-    return;
-  }
-  $('conflictContent').innerHTML = `
-    <div class="conflict-grid">
-      <div class="conflict-col">
-        <h4>Meu registro</h4>
-        ${conflictField('Data início', local.dataInicio, backup.dataInicio)}
-        ${conflictField('Data fim', local.dataFim, backup.dataFim)}
-        ${conflictField('Horas', local.horasFunc, backup.horasFunc)}
-        ${conflictField('Equipamento', local.equipamento, backup.equipamento)}
-        ${conflictField('Tipo', local.tipoRegistroLabel || local.tipoRegistro, backup.tipoRegistroLabel || backup.tipoRegistro)}
-        ${conflictField('Avaria', local.avaria, backup.avaria)}
-        ${conflictField('Solução', local.solucao, backup.solucao)}
-        ${conflictField('Observação', local.observacao, backup.observacao)}
-        ${conflictField('Status', local.status, backup.status)}
-        ${conflictField('Atualizado em', local.updatedAt || local.createdAt, backup.updatedAt || backup.createdAt)}
-      </div>
-      <div class="conflict-col">
-        <h4>Registro do backup</h4>
-        ${conflictField('Data início', local.dataInicio, backup.dataInicio, true)}
-        ${conflictField('Data fim', local.dataFim, backup.dataFim, true)}
-        ${conflictField('Horas', local.horasFunc, backup.horasFunc, true)}
-        ${conflictField('Equipamento', local.equipamento, backup.equipamento, true)}
-        ${conflictField('Tipo', local.tipoRegistroLabel || local.tipoRegistro, backup.tipoRegistroLabel || backup.tipoRegistro, true)}
-        ${conflictField('Avaria', local.avaria, backup.avaria, true)}
-        ${conflictField('Solução', local.solucao, backup.solucao, true)}
-        ${conflictField('Observação', local.observacao, backup.observacao, true)}
-        ${conflictField('Status', local.status, backup.status, true)}
-        ${conflictField('Atualizado em', local.updatedAt || local.createdAt, backup.updatedAt || backup.createdAt, true)}
-      </div>
-    </div>
-  `;
-  $('conflictModal').classList.add('show');
-}
-function closeConflictModal(){
-  const el = $('conflictModal');
-  if(el) el.classList.remove('show');
-}
-
-function resolveConflictChoice(choice){
-  const queue = state.__conflictQueue || [];
-  if(!queue.length){
-    closeConflictModal();
-    finalizeImportReport();
-    return;
-  }
-  const item = queue.shift();
-  const local = state.registros.find(r => r.id === item.localId);
-  if(choice === 'backup' && local){
-    Object.assign(local, item.backupRecord);
-    if(state.__pendingImportReport) state.__pendingImportReport.updated++;
-  }else{
-    if(state.__pendingImportReport) state.__pendingImportReport.ignored++;
-  }
-  saveState();
-  closeConflictModal();
-  bootstrapUI();
-  if(queue.length){
-    openNextConflict();
-  }else{
-    finalizeImportReport();
-  }
-}
-
-
-
-
-function closeImportReportModal(){
-  const el = $('importReportModal');
-  if(el) el.classList.remove('show');
-}
-
-function showImportReportModal(report){
-  const content = $('importReportContent');
-  if(content){
-    content.innerHTML = `
-      <div class="report-list">
-        <div class="report-item"><span>Entradas no backup</span><span>${report.totalIncoming}</span></div>
-        <div class="report-item"><span>Novos</span><span>${report.added}</span></div>
-        <div class="report-item"><span>Atualizados</span><span>${report.updated}</span></div>
-        <div class="report-item"><span>Ignorados</span><span>${report.ignored}</span></div>
-        <div class="report-item"><span>Conflitos revisados</span><span>${report.conflicts}</span></div>
-      </div>
-    `;
-  }
-  const modal = $('importReportModal');
-  if(modal) modal.classList.add('show');
-}
-
-function finalizeImportReport(){
-  const report = state.__pendingImportReport || {added:0,updated:0,ignored:0,conflicts:0,totalIncoming:0};
-  delete state.__pendingImportReport;
-  delete state.__conflictQueue;
-  saveState();
-  bootstrapUI();
-  showImportReportModal(report);
-}
-
 function bootstrapUI(){
-
-  renderHomeFolders();
-  if(state.selectedBigramaId) updateSelectedContextUI();
+  renderHomeFolders(); if(AppState.data.selectedBigramaId) updateContextUI();
   fillFichaForm();
-  $('filtroBusca').value = state.filtros.busca || '';
-  $('filtroStatus').value = state.filtros.status || 'TODOS';
-  $('filtroDataInicio').value = state.filtros.dataInicio || '';
-  $('filtroDataFim').value = state.filtros.dataFim || '';
-  renderBigramaList();
-  renderHistory();
-  renderDocument();
-  updateTopbar();
+  $('filtroBusca').value=AppState.data.filtros.busca||''; $('filtroStatus').value=AppState.data.filtros.status||'TODOS'; $('filtroDataInicio').value=AppState.data.filtros.dataInicio||''; $('filtroDataFim').value=AppState.data.filtros.dataFim||'';
+  renderBigramaList(); renderHistory(); renderDocument(); updateTopbar();
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  loadState();
+document.addEventListener('DOMContentLoaded', ()=>{
+  AppState.load();
   $('recordForm').addEventListener('submit', handleRecordSubmit);
   $('bigramaForm').addEventListener('submit', handleBigramaSubmit);
   $('fichaForm').addEventListener('submit', handleFichaSubmit);
-  $('importBackup').addEventListener('change', e => {
-    const file = e.target.files && e.target.files[0];
-    if(file) importBackup(file);
-    e.target.value = '';
-  });
+  $('importBackup').addEventListener('change', e=>{ const file=e.target.files&&e.target.files[0]; if(file) importBackup(file); e.target.value=''; });
   bindFilterInputs();
-  document.addEventListener('keydown', e => {
-    if(e.key === 'Escape'){
-      closeMainMenu();
-      closeManageBigramas();
-      closePrintChoiceModal(); closeConflictModal(); closeImportReportModal(); closeAppMessageModal(); closeAppConfirmModal();
-    }
-  });
-  resetRecordForm();
-  bootstrapUI();
-  showScreen(state.selectedBigramaId ? 'dashboard' : 'home');
+  document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeMainMenu(); closeManageBigramas(); closePrintChoiceModal(); closeConflictModal(); closeImportReportModal(); closeAppMessageModal(); resolveAppConfirm(false); } });
+  resetRecordForm(); bootstrapUI(); showScreen(AppState.data.selectedBigramaId?'dashboard':'home');
 });
 </script>
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./service-worker.js").catch(err => {
-      console.error("Falha ao registrar service worker:", err);
-    });
+    navigator.serviceWorker.register("./service-worker.js").catch(err => console.error("Falha ao registrar service worker:", err));
   });
 }
 </script>

@@ -1,17 +1,17 @@
-Versão v4
+Refatoração limpa
 
-Mudanças:
-- tela inicial agora mostra pastas, uma para cada bigrama
-- gerenciar bigramas foi movido para o menu de três traços no canto superior direito
-- ao entrar no bigrama, aparecem Novo Registro, Histórico, Dados da Ficha e Documento Oficial
-- removida a seleção de bigrama dentro do formulário e do filtro, pois o contexto agora é definido na entrada
-- mantida a lógica de PDF apenas com registros em aberto
-- mantida a tela de instalação obrigatória do PWA
+Base refeita para estabilidade:
+- navegação por bigrama
+- PWA com instalação obrigatória
+- mensagens e confirmações no padrão do app
+- importação por merge com tela de conflito lado a lado
+- relatório de importação em modal
+- logo corrigida
 
 Publicação:
 1. apague todos os arquivos antigos do repositório
-2. envie estes arquivos novos
+2. envie estes arquivos
 3. aguarde o GitHub Pages atualizar
-4. remova qualquer instalação antiga do app no celular
-5. abra o link e instale novamente
-6. se precisar, teste primeiro em aba anônima por causa de cache
+4. remova o app antigo do celular
+5. abra o link em aba anônima se necessário
+6. instale novamente
