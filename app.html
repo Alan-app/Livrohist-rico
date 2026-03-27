@@ -730,46 +730,42 @@ function renderHomeFolders(){
 }
 
 function updateTopbar(){
-  const b = getSelectedBigrama();
   const backBtn = $('topBackBtn');
-  const titleEl = $('topTitle');
-  const subtitleEl = $('topSubtitle');
+  const title = $('topTitle');
+  const subtitle = $('topSubtitle');
+  const b = getSelectedBigrama();
 
-  backBtn.classList.toggle('ghost', UI.currentScreen==='home');
-
-  titleEl.style.textTransform = 'none';
-  titleEl.style.letterSpacing = '.02em';
-
-  if(UI.currentScreen==='home'){
-    titleEl.textContent='LIVRO HISTÓRICO';
-    subtitleEl.textContent='Sistema de registro histórico de equipamentos de máquinas';
-    titleEl.style.fontSize = '1.4rem';
-    return;
-  }
-
-  if(UI.currentScreen==='dashboard'){
-    if(b){
-      titleEl.textContent = b.sigla;
-      subtitleEl.textContent = b.nome;
-    } else {
-      titleEl.textContent = 'Sistema';
-      subtitleEl.textContent = '';
+  if(currentScreen === 'home'){
+    backBtn.classList.add('ghost');
+    title.textContent = 'LIVRO HISTÓRICO';
+    subtitle.textContent = 'Sistema de registro histórico de equipamentos de máquinas';
+    title.style.fontSize = '';
+    subtitle.style.fontSize = '';
+  }else{
+    backBtn.classList.remove('ghost');
+    if(currentScreen === 'dashboard'){
+      if(b){
+        title.textContent = b.sigla;
+        subtitle.textContent = b.nome;
+      }else{
+        title.textContent = 'Sistema';
+        subtitle.textContent = 'Selecione uma opção abaixo';
+      }
+      title.style.fontSize = '1.45rem';
+      subtitle.style.fontSize = '.95rem';
+    }else{
+      const map = {
+        novo:'Novo Registro',
+        historico:'Histórico',
+        ficha:'Dados da Ficha',
+        documento:'Documento Oficial'
+      };
+      title.textContent = map[currentScreen] || 'Livro Histórico';
+      subtitle.textContent = b ? getBigramaLabel(b.id) : '';
+      title.style.fontSize = '';
+      subtitle.style.fontSize = '';
     }
-
-    titleEl.style.fontSize = '1.5rem';
-    subtitleEl.style.fontSize = '.95rem';
-    return;
   }
-
-  const map={
-    novo:'Novo Registro',
-    historico:'Histórico',
-    ficha:'Dados da Ficha',
-    documento:'Documento Oficial'
-  };
-
-  titleEl.textContent = map[UI.currentScreen] || 'Livro Histórico';
-  subtitleEl.textContent = b ? `${b.sigla} - ${b.nome}` : '';
 }
 
 
@@ -967,11 +963,26 @@ function renderHistory(){
   }).join('');
   renderDocument();
 }
+
 function previewSingleRecord(id){
   const r = state.registros.find(x => x.id === id);
   if(!r) return;
-  alert(`${getBigramaLabel(r.bigramaId)}\n${dateRangeLabel(r).replaceAll('\n',' | ')}\n\n${r.tipoRegistroLabel || 'Avaria'}:\n${r.avaria || '—'}\n\nSolução:\n${r.solucao || '—'}\n\nObservação:\n${r.observacao || '—'}`);
+  showAppMessage(
+    getBigramaLabel(r.bigramaId),
+    `${dateRangeLabel(r).replaceAll('
+',' | ')}
+
+${r.tipoRegistroLabel || 'Avaria'}:
+${r.avaria || '—'}
+
+Solução:
+${r.solucao || '—'}
+
+Observação:
+${r.observacao || '—'}`
+  );
 }
+
 function editRecord(id){
   const r = state.registros.find(x => x.id === id);
   if(!r) return;
@@ -1402,6 +1413,7 @@ function exportBackup(){
 }
 
 
+
 function importBackup(file){
   const reader = new FileReader();
   reader.onload = () => {
@@ -1411,7 +1423,8 @@ function importBackup(file){
       const incomingBigramas = Array.isArray(parsed.bigramas) ? parsed.bigramas : [];
       const incomingFichas = parsed.fichas && typeof parsed.fichas === 'object' ? parsed.fichas : {};
 
-      let added = 0, updated = 0, ignored = 0, conflicts = 0;
+      const report = { added:0, updated:0, ignored:0, conflicts:0, totalIncoming: incoming.length };
+      const compareKeys = ['dataInicio','dataFim','horasFunc','equipamento','tipoRegistro','tipoRegistroLabel','avaria','solucao','observacao','status','bigramaId'];
 
       incomingBigramas.forEach(extB => {
         const byId = state.bigramas.find(b => b.id === extB.id);
@@ -1428,40 +1441,31 @@ function importBackup(file){
       });
 
       state.__conflictQueue = [];
-      state.__pendingImportReport = { added:0, updated:0, ignored:0, conflicts:0, totalIncoming: incoming.length };
-
-      const compareKeys = ['dataInicio','dataFim','horasFunc','equipamento','tipoRegistro','tipoRegistroLabel','avaria','solucao','observacao','status','bigramaId'];
+      state.__pendingImportReport = report;
 
       incoming.forEach(ext => {
         const local = state.registros.find(r => r.id === ext.id);
 
         if(!local){
           state.registros.push(ext);
-          added++;
-          state.__pendingImportReport.added++;
+          report.added++;
           return;
         }
 
-        const localStamp = Number(local.updatedAt || local.createdAt || 0);
-        const extStamp = Number(ext.updatedAt || ext.createdAt || 0);
         const different = compareKeys.some(k => String(local[k] ?? '') !== String(ext[k] ?? ''));
-
         if(!different){
-          ignored++;
-          state.__pendingImportReport.ignored++;
+          report.ignored++;
           return;
         }
 
-        // if same record differs, treat as conflict for user review
         state.__conflictQueue.push({ localId: local.id, backupRecord: ext });
-        conflicts++;
-        state.__pendingImportReport.conflicts++;
+        report.conflicts++;
       });
 
       saveState();
       bootstrapUI();
 
-      if(state.__conflictQueue.length){
+      if((state.__conflictQueue || []).length > 0){
         openNextConflict();
       }else{
         finalizeImportReport();
@@ -1470,8 +1474,12 @@ function importBackup(file){
       showAppMessage('Importação de backup', 'Arquivo de backup inválido.');
     }
   };
+  reader.onerror = () => {
+    showAppMessage('Importação de backup', 'Não foi possível ler o arquivo selecionado.');
+  };
   reader.readAsText(file);
 }
+
 
 
 
@@ -1540,10 +1548,11 @@ function closeConflictModal(){
   const el = $('conflictModal');
   if(el) el.classList.remove('show');
 }
+
 function resolveConflictChoice(choice){
   const queue = state.__conflictQueue || [];
   if(!queue.length){
-    closeConflictModal(); closeImportReportModal();
+    closeConflictModal();
     finalizeImportReport();
     return;
   }
@@ -1551,12 +1560,12 @@ function resolveConflictChoice(choice){
   const local = state.registros.find(r => r.id === item.localId);
   if(choice === 'backup' && local){
     Object.assign(local, item.backupRecord);
-    state.__pendingImportReport.updated++;
+    if(state.__pendingImportReport) state.__pendingImportReport.updated++;
   }else{
-    state.__pendingImportReport.ignored++;
+    if(state.__pendingImportReport) state.__pendingImportReport.ignored++;
   }
   saveState();
-  closeConflictModal(); closeImportReportModal();
+  closeConflictModal();
   bootstrapUI();
   if(queue.length){
     openNextConflict();
@@ -1564,6 +1573,8 @@ function resolveConflictChoice(choice){
     finalizeImportReport();
   }
 }
+
+
 
 
 function closeImportReportModal(){
@@ -1584,7 +1595,8 @@ function showImportReportModal(report){
       </div>
     `;
   }
-  $('importReportModal').classList.add('show');
+  const modal = $('importReportModal');
+  if(modal) modal.classList.add('show');
 }
 
 function finalizeImportReport(){
@@ -1596,48 +1608,8 @@ function finalizeImportReport(){
   showImportReportModal(report);
 }
 
-
-
-
-function showAppMessage(title, body){
-  const t = $('appMessageTitle');
-  const b = $('appMessageBody');
-  if(t) t.textContent = title || 'Mensagem';
-  if(b) b.textContent = body || '';
-  $('appMessageModal').classList.add('show');
-}
-function closeAppMessageModal(){
-  const el = $('appMessageModal');
-  if(el) el.classList.remove('show');
-}
-
-
-let __appConfirmResolver = null;
-
-function showAppConfirm(title, body){
-  return new Promise(resolve => {
-    __appConfirmResolver = resolve;
-    const t = $('appConfirmTitle');
-    const b = $('appConfirmBody');
-    if(t) t.textContent = title || 'Confirmar ação';
-    if(b) b.textContent = body || '';
-    $('appConfirmModal').classList.add('show');
-  });
-}
-function closeAppConfirmModal(){
-  const el = $('appConfirmModal');
-  if(el) el.classList.remove('show');
-}
-function resolveAppConfirm(value){
-  closeAppConfirmModal();
-  if(__appConfirmResolver){
-    const fn = __appConfirmResolver;
-    __appConfirmResolver = null;
-    fn(Boolean(value));
-  }
-}
-
 function bootstrapUI(){
+
   renderHomeFolders();
   if(state.selectedBigramaId) updateSelectedContextUI();
   fillFichaForm();
