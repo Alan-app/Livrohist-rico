@@ -54,8 +54,8 @@
     }
     .ghost{visibility:hidden}
     .brand{text-align:center}
-    .brand h1{margin:0;font-size:1.18rem;letter-spacing:.01em;text-transform:none;line-height:1.08;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .brand p{margin:8px 0 0;color:var(--muted);font-size:.92rem;line-height:1.18}
+    .brand h1{margin:0;font-size:2rem;letter-spacing:.08em;text-transform:uppercase}
+    .brand p{margin:6px 0 0;color:var(--muted);font-size:.95rem;line-height:1.2;opacity:.85}
     .gold-line{height:4px;background:var(--gold)}
     .content{padding:18px 16px 90px}
     .hidden{display:none !important}
@@ -737,41 +737,39 @@ function updateTopbar(){
 
   backBtn.classList.toggle('ghost', UI.currentScreen==='home');
 
-  titleEl.style.whiteSpace = 'nowrap';
-  titleEl.style.overflow = 'hidden';
-  titleEl.style.textOverflow = 'ellipsis';
   titleEl.style.textTransform = 'none';
-  titleEl.style.letterSpacing = '.01em';
+  titleEl.style.letterSpacing = '.02em';
 
   if(UI.currentScreen==='home'){
     titleEl.textContent='LIVRO HISTÓRICO';
     subtitleEl.textContent='Sistema de registro histórico de equipamentos de máquinas';
-    titleEl.style.fontSize = '1.18rem';
+    titleEl.style.fontSize = '1.4rem';
     return;
   }
 
   if(UI.currentScreen==='dashboard'){
-    const titleText = b ? `${b.sigla} - ${b.nome}` : 'Sistema';
-    titleEl.textContent = titleText;
-    subtitleEl.textContent='Selecione uma opção abaixo';
-
-    const len = titleText.length;
-    if(len > 28){
-      titleEl.style.fontSize = '.72rem';
-    }else if(len > 22){
-      titleEl.style.fontSize = '.82rem';
-    }else if(len > 16){
-      titleEl.style.fontSize = '.94rem';
-    }else{
-      titleEl.style.fontSize = '1.05rem';
+    if(b){
+      titleEl.textContent = b.sigla;
+      subtitleEl.textContent = b.nome;
+    } else {
+      titleEl.textContent = 'Sistema';
+      subtitleEl.textContent = '';
     }
+
+    titleEl.style.fontSize = '1.5rem';
+    subtitleEl.style.fontSize = '.95rem';
     return;
   }
 
-  const map={novo:'Novo Registro',historico:'Histórico',ficha:'Dados da Ficha',documento:'Documento Oficial'};
+  const map={
+    novo:'Novo Registro',
+    historico:'Histórico',
+    ficha:'Dados da Ficha',
+    documento:'Documento Oficial'
+  };
+
   titleEl.textContent = map[UI.currentScreen] || 'Livro Histórico';
-  subtitleEl.textContent = b ? getBigramaLabel(b.id) : '';
-  titleEl.style.fontSize = '1.15rem';
+  subtitleEl.textContent = b ? `${b.sigla} - ${b.nome}` : '';
 }
 
 
@@ -969,26 +967,11 @@ function renderHistory(){
   }).join('');
   renderDocument();
 }
-
 function previewSingleRecord(id){
   const r = state.registros.find(x => x.id === id);
   if(!r) return;
-  showAppMessage(
-    getBigramaLabel(r.bigramaId),
-    `${dateRangeLabel(r).replaceAll('
-',' | ')}
-
-${r.tipoRegistroLabel || 'Avaria'}:
-${r.avaria || '—'}
-
-Solução:
-${r.solucao || '—'}
-
-Observação:
-${r.observacao || '—'}`
-  );
+  alert(`${getBigramaLabel(r.bigramaId)}\n${dateRangeLabel(r).replaceAll('\n',' | ')}\n\n${r.tipoRegistroLabel || 'Avaria'}:\n${r.avaria || '—'}\n\nSolução:\n${r.solucao || '—'}\n\nObservação:\n${r.observacao || '—'}`);
 }
-
 function editRecord(id){
   const r = state.registros.find(x => x.id === id);
   if(!r) return;
@@ -1419,7 +1402,6 @@ function exportBackup(){
 }
 
 
-
 function importBackup(file){
   const reader = new FileReader();
   reader.onload = () => {
@@ -1429,8 +1411,7 @@ function importBackup(file){
       const incomingBigramas = Array.isArray(parsed.bigramas) ? parsed.bigramas : [];
       const incomingFichas = parsed.fichas && typeof parsed.fichas === 'object' ? parsed.fichas : {};
 
-      const report = { added:0, updated:0, ignored:0, conflicts:0, totalIncoming: incoming.length };
-      const compareKeys = ['dataInicio','dataFim','horasFunc','equipamento','tipoRegistro','tipoRegistroLabel','avaria','solucao','observacao','status','bigramaId'];
+      let added = 0, updated = 0, ignored = 0, conflicts = 0;
 
       incomingBigramas.forEach(extB => {
         const byId = state.bigramas.find(b => b.id === extB.id);
@@ -1447,31 +1428,40 @@ function importBackup(file){
       });
 
       state.__conflictQueue = [];
-      state.__pendingImportReport = report;
+      state.__pendingImportReport = { added:0, updated:0, ignored:0, conflicts:0, totalIncoming: incoming.length };
+
+      const compareKeys = ['dataInicio','dataFim','horasFunc','equipamento','tipoRegistro','tipoRegistroLabel','avaria','solucao','observacao','status','bigramaId'];
 
       incoming.forEach(ext => {
         const local = state.registros.find(r => r.id === ext.id);
 
         if(!local){
           state.registros.push(ext);
-          report.added++;
+          added++;
+          state.__pendingImportReport.added++;
           return;
         }
 
+        const localStamp = Number(local.updatedAt || local.createdAt || 0);
+        const extStamp = Number(ext.updatedAt || ext.createdAt || 0);
         const different = compareKeys.some(k => String(local[k] ?? '') !== String(ext[k] ?? ''));
+
         if(!different){
-          report.ignored++;
+          ignored++;
+          state.__pendingImportReport.ignored++;
           return;
         }
 
+        // if same record differs, treat as conflict for user review
         state.__conflictQueue.push({ localId: local.id, backupRecord: ext });
-        report.conflicts++;
+        conflicts++;
+        state.__pendingImportReport.conflicts++;
       });
 
       saveState();
       bootstrapUI();
 
-      if((state.__conflictQueue || []).length > 0){
+      if(state.__conflictQueue.length){
         openNextConflict();
       }else{
         finalizeImportReport();
@@ -1480,12 +1470,8 @@ function importBackup(file){
       showAppMessage('Importação de backup', 'Arquivo de backup inválido.');
     }
   };
-  reader.onerror = () => {
-    showAppMessage('Importação de backup', 'Não foi possível ler o arquivo selecionado.');
-  };
   reader.readAsText(file);
 }
-
 
 
 
@@ -1554,11 +1540,10 @@ function closeConflictModal(){
   const el = $('conflictModal');
   if(el) el.classList.remove('show');
 }
-
 function resolveConflictChoice(choice){
   const queue = state.__conflictQueue || [];
   if(!queue.length){
-    closeConflictModal();
+    closeConflictModal(); closeImportReportModal();
     finalizeImportReport();
     return;
   }
@@ -1566,12 +1551,12 @@ function resolveConflictChoice(choice){
   const local = state.registros.find(r => r.id === item.localId);
   if(choice === 'backup' && local){
     Object.assign(local, item.backupRecord);
-    if(state.__pendingImportReport) state.__pendingImportReport.updated++;
+    state.__pendingImportReport.updated++;
   }else{
-    if(state.__pendingImportReport) state.__pendingImportReport.ignored++;
+    state.__pendingImportReport.ignored++;
   }
   saveState();
-  closeConflictModal();
+  closeConflictModal(); closeImportReportModal();
   bootstrapUI();
   if(queue.length){
     openNextConflict();
@@ -1579,8 +1564,6 @@ function resolveConflictChoice(choice){
     finalizeImportReport();
   }
 }
-
-
 
 
 function closeImportReportModal(){
@@ -1601,8 +1584,7 @@ function showImportReportModal(report){
       </div>
     `;
   }
-  const modal = $('importReportModal');
-  if(modal) modal.classList.add('show');
+  $('importReportModal').classList.add('show');
 }
 
 function finalizeImportReport(){
@@ -1614,8 +1596,48 @@ function finalizeImportReport(){
   showImportReportModal(report);
 }
 
-function bootstrapUI(){
 
+
+
+function showAppMessage(title, body){
+  const t = $('appMessageTitle');
+  const b = $('appMessageBody');
+  if(t) t.textContent = title || 'Mensagem';
+  if(b) b.textContent = body || '';
+  $('appMessageModal').classList.add('show');
+}
+function closeAppMessageModal(){
+  const el = $('appMessageModal');
+  if(el) el.classList.remove('show');
+}
+
+
+let __appConfirmResolver = null;
+
+function showAppConfirm(title, body){
+  return new Promise(resolve => {
+    __appConfirmResolver = resolve;
+    const t = $('appConfirmTitle');
+    const b = $('appConfirmBody');
+    if(t) t.textContent = title || 'Confirmar ação';
+    if(b) b.textContent = body || '';
+    $('appConfirmModal').classList.add('show');
+  });
+}
+function closeAppConfirmModal(){
+  const el = $('appConfirmModal');
+  if(el) el.classList.remove('show');
+}
+function resolveAppConfirm(value){
+  closeAppConfirmModal();
+  if(__appConfirmResolver){
+    const fn = __appConfirmResolver;
+    __appConfirmResolver = null;
+    fn(Boolean(value));
+  }
+}
+
+function bootstrapUI(){
   renderHomeFolders();
   if(state.selectedBigramaId) updateSelectedContextUI();
   fillFichaForm();
