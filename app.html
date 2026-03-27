@@ -1347,7 +1347,8 @@ function importBackup(file){
       const incomingBigramas = Array.isArray(parsed.bigramas) ? parsed.bigramas : [];
       const incomingFichas = parsed.fichas && typeof parsed.fichas === 'object' ? parsed.fichas : {};
 
-      // Merge bigramas by id, then by sigla if id absent locally
+      let added = 0, updated = 0, ignored = 0, conflicts = 0;
+
       incomingBigramas.forEach(extB => {
         const byId = state.bigramas.find(b => b.id === extB.id);
         const bySigla = state.bigramas.find(b => b.sigla === extB.sigla);
@@ -1356,70 +1357,53 @@ function importBackup(file){
         }
       });
 
-      // Merge fichas by bigrama id when local does not exist
       Object.keys(incomingFichas).forEach(key => {
         if(!state.fichas[key]){
           state.fichas[key] = incomingFichas[key];
         }
       });
 
-      const mergeReport = {
-        added:0,
-        updated:0,
-        ignored:0,
-        conflicts:0,
-        totalIncoming: incoming.length
-      };
+      state.__conflictQueue = [];
+      state.__pendingImportReport = { added:0, updated:0, ignored:0, conflicts:0, totalIncoming: incoming.length };
 
-      const conflictQueue = [];
+      const compareKeys = ['dataInicio','dataFim','horasFunc','equipamento','tipoRegistro','tipoRegistroLabel','avaria','solucao','observacao','status','bigramaId'];
 
       incoming.forEach(ext => {
         const local = state.registros.find(r => r.id === ext.id);
 
         if(!local){
           state.registros.push(ext);
-          mergeReport.added++;
+          added++;
+          state.__pendingImportReport.added++;
           return;
         }
 
         const localStamp = Number(local.updatedAt || local.createdAt || 0);
         const extStamp = Number(ext.updatedAt || ext.createdAt || 0);
+        const different = compareKeys.some(k => String(local[k] ?? '') !== String(ext[k] ?? ''));
 
-        const fieldsToCompare = ['dataInicio','dataFim','horasFunc','equipamento','tipoRegistro','tipoRegistroLabel','avaria','solucao','observacao','status','bigramaId'];
-        const hasContentDiff = fieldsToCompare.some(k => String(local[k] ?? '') !== String(ext[k] ?? ''));
-
-        if(!hasContentDiff){
-          mergeReport.ignored++;
+        if(!different){
+          ignored++;
+          state.__pendingImportReport.ignored++;
           return;
         }
 
-        // Conflict = both sides changed and differ
-        if(localStamp > 0 && extStamp > 0){
-          conflictQueue.push({ localId: local.id, backupRecord: ext });
-          mergeReport.conflicts++;
-          return;
-        }
-
-        if(extStamp > localStamp){
-          Object.assign(local, ext);
-          mergeReport.updated++;
-        }else{
-          mergeReport.ignored++;
-        }
+        // if same record differs, treat as conflict for user review
+        state.__conflictQueue.push({ localId: local.id, backupRecord: ext });
+        conflicts++;
+        state.__pendingImportReport.conflicts++;
       });
 
-      state.__pendingImportReport = mergeReport;
-      state.__conflictQueue = conflictQueue;
       saveState();
       bootstrapUI();
 
-      if(conflictQueue.length){
+      if(state.__conflictQueue.length){
         openNextConflict();
       }else{
         finalizeImportReport();
       }
     }catch(e){
-      alert('Arquivo inválido');
+      alert('Arquivo de backup inválido.');
     }
   };
   reader.readAsText(file);
@@ -1428,29 +1412,19 @@ function importBackup(file){
 
 
 function formatConflictValue(v){
-  return nl2br(v === '' || v === null || typeof v === 'undefined' ? '—' : String(v));
+  if(v === '' || v === null || typeof v === 'undefined') return '—';
+  return nl2br(String(v));
 }
-
-function buildConflictField(label, localValue, backupValue){
-  const different = String(localValue ?? '') !== String(backupValue ?? '');
+function conflictField(label, mine, theirs, useBackup=false){
+  const diff = String(mine ?? '') !== String(theirs ?? '');
+  const value = useBackup ? theirs : mine;
   return `
-    <div class="conflict-field ${different ? 'conflict-diff' : ''}">
+    <div class="conflict-field ${diff ? 'conflict-diff' : ''}">
       <b>${escapeHtml(label)}</b>
-      <div>${formatConflictValue(localValue)}</div>
+      <div>${formatConflictValue(value)}</div>
     </div>
   `;
 }
-
-function buildConflictFieldBackup(label, localValue, backupValue){
-  const different = String(localValue ?? '') !== String(backupValue ?? '');
-  return `
-    <div class="conflict-field ${different ? 'conflict-diff' : ''}">
-      <b>${escapeHtml(label)}</b>
-      <div>${formatConflictValue(backupValue)}</div>
-    </div>
-  `;
-}
-
 function openNextConflict(){
   const queue = state.__conflictQueue || [];
   if(!queue.length){
@@ -1461,50 +1435,47 @@ function openNextConflict(){
   const local = state.registros.find(r => r.id === item.localId);
   const backup = item.backupRecord;
   if(!local){
-    state.__conflictQueue.shift();
+    queue.shift();
     saveState();
     openNextConflict();
     return;
   }
-
-  const content = `
+  $('conflictContent').innerHTML = `
     <div class="conflict-grid">
       <div class="conflict-col">
         <h4>Meu registro</h4>
-        ${buildConflictField('Data início', local.dataInicio, backup.dataInicio)}
-        ${buildConflictField('Data fim', local.dataFim, backup.dataFim)}
-        ${buildConflictField('Horas', local.horasFunc, backup.horasFunc)}
-        ${buildConflictField('Equipamento', local.equipamento, backup.equipamento)}
-        ${buildConflictField('Tipo', local.tipoRegistroLabel || local.tipoRegistro, backup.tipoRegistroLabel || backup.tipoRegistro)}
-        ${buildConflictField('Avaria', local.avaria, backup.avaria)}
-        ${buildConflictField('Solução', local.solucao, backup.solucao)}
-        ${buildConflictField('Observação', local.observacao, backup.observacao)}
-        ${buildConflictField('Status', local.status, backup.status)}
-        ${buildConflictField('Atualizado em', local.updatedAt || local.createdAt, backup.updatedAt || backup.createdAt)}
+        ${conflictField('Data início', local.dataInicio, backup.dataInicio)}
+        ${conflictField('Data fim', local.dataFim, backup.dataFim)}
+        ${conflictField('Horas', local.horasFunc, backup.horasFunc)}
+        ${conflictField('Equipamento', local.equipamento, backup.equipamento)}
+        ${conflictField('Tipo', local.tipoRegistroLabel || local.tipoRegistro, backup.tipoRegistroLabel || backup.tipoRegistro)}
+        ${conflictField('Avaria', local.avaria, backup.avaria)}
+        ${conflictField('Solução', local.solucao, backup.solucao)}
+        ${conflictField('Observação', local.observacao, backup.observacao)}
+        ${conflictField('Status', local.status, backup.status)}
+        ${conflictField('Atualizado em', local.updatedAt || local.createdAt, backup.updatedAt || backup.createdAt)}
       </div>
       <div class="conflict-col">
         <h4>Registro do backup</h4>
-        ${buildConflictFieldBackup('Data início', local.dataInicio, backup.dataInicio)}
-        ${buildConflictFieldBackup('Data fim', local.dataFim, backup.dataFim)}
-        ${buildConflictFieldBackup('Horas', local.horasFunc, backup.horasFunc)}
-        ${buildConflictFieldBackup('Equipamento', local.equipamento, backup.equipamento)}
-        ${buildConflictFieldBackup('Tipo', local.tipoRegistroLabel || local.tipoRegistro, backup.tipoRegistroLabel || backup.tipoRegistro)}
-        ${buildConflictFieldBackup('Avaria', local.avaria, backup.avaria)}
-        ${buildConflictFieldBackup('Solução', local.solucao, backup.solucao)}
-        ${buildConflictFieldBackup('Observação', local.observacao, backup.observacao)}
-        ${buildConflictFieldBackup('Status', local.status, backup.status)}
-        ${buildConflictFieldBackup('Atualizado em', local.updatedAt || local.createdAt, backup.updatedAt || backup.createdAt)}
+        ${conflictField('Data início', local.dataInicio, backup.dataInicio, true)}
+        ${conflictField('Data fim', local.dataFim, backup.dataFim, true)}
+        ${conflictField('Horas', local.horasFunc, backup.horasFunc, true)}
+        ${conflictField('Equipamento', local.equipamento, backup.equipamento, true)}
+        ${conflictField('Tipo', local.tipoRegistroLabel || local.tipoRegistro, backup.tipoRegistroLabel || backup.tipoRegistro, true)}
+        ${conflictField('Avaria', local.avaria, backup.avaria, true)}
+        ${conflictField('Solução', local.solucao, backup.solucao, true)}
+        ${conflictField('Observação', local.observacao, backup.observacao, true)}
+        ${conflictField('Status', local.status, backup.status, true)}
+        ${conflictField('Atualizado em', local.updatedAt || local.createdAt, backup.updatedAt || backup.createdAt, true)}
       </div>
     </div>
   `;
-  $('conflictContent').innerHTML = content;
   $('conflictModal').classList.add('show');
 }
-
 function closeConflictModal(){
-  $('conflictModal').classList.remove('show');
+  const el = $('conflictModal');
+  if(el) el.classList.remove('show');
 }
-
 function resolveConflictChoice(choice){
   const queue = state.__conflictQueue || [];
   if(!queue.length){
@@ -1514,9 +1485,8 @@ function resolveConflictChoice(choice){
   }
   const item = queue.shift();
   const local = state.registros.find(r => r.id === item.localId);
-  const backup = item.backupRecord;
   if(choice === 'backup' && local){
-    Object.assign(local, backup);
+    Object.assign(local, item.backupRecord);
     state.__pendingImportReport.updated++;
   }else{
     state.__pendingImportReport.ignored++;
@@ -1524,25 +1494,27 @@ function resolveConflictChoice(choice){
   saveState();
   closeConflictModal();
   bootstrapUI();
-  openNextConflict();
+  if(queue.length){
+    openNextConflict();
+  }else{
+    finalizeImportReport();
+  }
 }
-
 function finalizeImportReport(){
   const report = state.__pendingImportReport || {added:0,updated:0,ignored:0,conflicts:0,totalIncoming:0};
-  alert(
-    'Importação concluída\\n\\n' +
-    'Entradas no backup: ' + report.totalIncoming + '\\n' +
-    'Novos: ' + report.added + '\\n' +
-    'Atualizados: ' + report.updated + '\\n' +
-    'Ignorados: ' + report.ignored + '\\n' +
-    'Conflitos revisados: ' + report.conflicts
-  );
   delete state.__pendingImportReport;
   delete state.__conflictQueue;
   saveState();
   bootstrapUI();
+  alert(
+    'Importação concluída\n\n' +
+    'Entradas no backup: ' + report.totalIncoming + '\n' +
+    'Novos: ' + report.added + '\n' +
+    'Atualizados: ' + report.updated + '\n' +
+    'Ignorados: ' + report.ignored + '\n' +
+    'Conflitos revisados: ' + report.conflicts
+  );
 }
-
 
 function bootstrapUI(){
   renderHomeFolders();
