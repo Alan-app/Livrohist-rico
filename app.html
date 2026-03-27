@@ -512,7 +512,7 @@ function updateTopbar(){
     topTitle.style.fontSize = '2rem';
     topSubtitle.style.display = 'none';
   }else{
-    const map = {novo:'Novo Registro',historico:'Histórico',ficha:'Dados da Ficha',documento:'Documento Oficial'};
+    const map={novo:'Novo Registro',historico:'Histórico',ficha:'Dados da Ficha',documento:'Documento Oficial'};
     topTitle.textContent = map[UI.currentScreen] || 'Livro Histórico';
     topSubtitle.textContent = b ? getBigramaLabel(b.id) : '';
     topTitle.style.fontSize = '';
@@ -635,13 +635,14 @@ function editRecord(id){
   $('submitRecordBtn').textContent='Salvar Edição'; $('formHeading').textContent='Editar Registro';
   AppState.save(); showScreen('novo'); window.scrollTo({top:0,behavior:'smooth'});
 }
-async async function deleteRecord(id){
+async function deleteRecord(id){
   const ok = await showAppConfirm('Excluir registro', 'Deseja realmente excluir este registro?');
   if(!ok) return;
-  state.registros = state.registros.filter(x => x.id !== id);
-  if(editingRecordId === id) resetRecordForm();
-  saveState();
+  AppState.data.registros = AppState.data.registros.filter(x => x.id !== id);
+  if(UI.editingRecordId === id) resetRecordForm();
+  AppState.save();
   renderHistory();
+  renderDocument();
 }
 function toggleRecordStatus(id){
   const r=AppState.data.registros.find(x=>x.id===id); if(!r) return;
@@ -701,21 +702,21 @@ function editBigrama(id){
   UI.editingBigramaId=id; $('siglaInput').value=b.sigla||''; $('nomeSistemaInput').value=b.nome||''; $('saveBigramaBtn').textContent='Salvar Edição';
 }
 function resetBigramaForm(){ UI.editingBigramaId=null; $('bigramaForm').reset(); $('saveBigramaBtn').textContent='Salvar Bigrama'; }
-async async function deleteBigrama(id){
-  const inUse = state.registros.some(r => r.bigramaId === id);
+async function deleteBigrama(id){
+  const inUse = AppState.data.registros.some(r => r.bigramaId === id);
   if(inUse){
     showAppMessage('Excluir bigrama', 'Não é possível excluir este bigrama porque existem registros vinculados a ele.');
     return;
   }
   const ok = await showAppConfirm('Excluir bigrama', 'Deseja realmente excluir este bigrama?');
   if(!ok) return;
-  state.bigramas = state.bigramas.filter(x => x.id !== id);
-  delete state.fichas[id];
-  if(state.selectedBigramaId === id){
-    state.selectedBigramaId = null;
+  AppState.data.bigramas = AppState.data.bigramas.filter(x => x.id !== id);
+  delete AppState.data.fichas[id];
+  if(AppState.data.selectedBigramaId === id){
+    AppState.data.selectedBigramaId = null;
     showScreen('home');
   }
-  saveState();
+  AppState.save();
   renderBigramaList();
   renderHomeFolders();
   updateTopbar();
@@ -875,26 +876,26 @@ function importBackup(file){
       const compareKeys = ['dataInicio','dataFim','horasFunc','equipamento','tipoRegistro','tipoRegistroLabel','avaria','solucao','observacao','status','bigramaId'];
 
       incomingBigramas.forEach(extB => {
-        const byId = state.bigramas.find(b => b.id === extB.id);
-        const bySigla = state.bigramas.find(b => b.sigla === extB.sigla);
+        const byId = AppState.data.bigramas.find(b => b.id === extB.id);
+        const bySigla = AppState.data.bigramas.find(b => b.sigla === extB.sigla);
         if(!byId && !bySigla){
-          state.bigramas.push(extB);
+          AppState.data.bigramas.push(extB);
         }
       });
 
       Object.keys(incomingFichas).forEach(key => {
-        if(!state.fichas[key]){
-          state.fichas[key] = incomingFichas[key];
+        if(!AppState.data.fichas[key]){
+          AppState.data.fichas[key] = incomingFichas[key];
         }
       });
 
-      __conflictQueue = [];
-      __pendingImportReport = report;
+      UI.conflictQueue = [];
+      UI.pendingImportReport = report;
 
       incoming.forEach(ext => {
-        const local = state.registros.find(r => r.id === ext.id);
+        const local = AppState.data.registros.find(r => r.id === ext.id);
         if(!local){
-          state.registros.push(ext);
+          AppState.data.registros.push(ext);
           report.added++;
           return;
         }
@@ -905,14 +906,14 @@ function importBackup(file){
           return;
         }
 
-        __conflictQueue.push({ localId: local.id, backupRecord: ext });
+        UI.conflictQueue.push({ localId: local.id, backupRecord: ext });
         report.conflicts++;
       });
 
-      saveState();
+      AppState.save();
       bootstrapUI();
 
-      if(__conflictQueue.length > 0){
+      if(UI.conflictQueue.length > 0){
         openNextConflict();
       }else{
         finalizeImportReport();
