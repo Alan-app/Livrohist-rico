@@ -951,11 +951,26 @@ function renderHistory(){
   }).join('');
   renderDocument();
 }
+
 function previewSingleRecord(id){
   const r = state.registros.find(x => x.id === id);
   if(!r) return;
-  alert(`${getBigramaLabel(r.bigramaId)}\n${dateRangeLabel(r).replaceAll('\n',' | ')}\n\n${r.tipoRegistroLabel || 'Avaria'}:\n${r.avaria || '—'}\n\nSolução:\n${r.solucao || '—'}\n\nObservação:\n${r.observacao || '—'}`);
+  showAppMessage(
+    getBigramaLabel(r.bigramaId),
+    `${dateRangeLabel(r).replaceAll('
+',' | ')}
+
+${r.tipoRegistroLabel || 'Avaria'}:
+${r.avaria || '—'}
+
+Solução:
+${r.solucao || '—'}
+
+Observação:
+${r.observacao || '—'}`
+  );
 }
+
 function editRecord(id){
   const r = state.registros.find(x => x.id === id);
   if(!r) return;

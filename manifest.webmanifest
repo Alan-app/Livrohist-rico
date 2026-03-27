@@ -1,6 +1,6 @@
 {
   "name": "Livro Histórico do S41 - Humaitá",
-  "short_name": "Livro Histórico",
+  "short_name": "Livro Histórico v7",
   "description": "Registro histórico de equipamentos de máquinas com exportação para PDF.",
   "start_url": "./index.html",
   "scope": "./",
