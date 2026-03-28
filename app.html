@@ -278,12 +278,33 @@
       <p>Ações gerais do aplicativo.</p>
       <div class="toolbar">
         <button class="btn btn-primary" type="button" onclick="openManageBigramas()">Adicionar Bigrama</button>
-        <button class="btn btn-secondary" type="button" onclick="exportBackup()">Exportar backup</button>
+        <button class="btn btn-secondary" type="button" onclick="openExportModal()">Exportar backup</button>
         <label class="btn btn-secondary" for="importBackup">Importar backup</label>
         <input id="importBackup" class="hidden" type="file" accept=".json" />
         <button class="btn btn-secondary" type="button" onclick="goHome()">Trocar bigrama</button>
         <button class="btn btn-ghost" type="button" onclick="closeMainMenu()">Fechar</button>
       </div>
+    </div>
+  </div>
+
+  <div id="exportBackupModal" class="modal-overlay" onclick="if(event.target.id==='exportBackupModal')closeExportModal()">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <h3>Exportar Backup</h3>
+      <p>Escolha o nome do arquivo e como deseja salvar o backup.</p>
+      <div class="section" style="margin-bottom:16px;">
+        <div class="field">
+          <label for="exportFileName">Nome do arquivo</label>
+          <input id="exportFileName" type="text" placeholder="Ex.: Livro H- Backup" />
+        </div>
+        <div id="exportFsaWarning" class="hidden" style="padding:10px 14px;border-radius:14px;background:rgba(255,143,143,.10);border:1px solid rgba(255,143,143,.25);color:#ffb3b3;font-size:.92rem;line-height:1.45;">
+          Seu navegador não suporta seleção de pasta. Use a opção de Downloads.
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-primary" type="button" onclick="exportWithFolderPicker()">📁 Escolher pasta e salvar</button>
+        <button class="btn btn-secondary" type="button" onclick="exportToDownloads()">⬇️ Salvar em Downloads</button>
+      </div>
+      <div class="toolbar" style="margin-top:10px;"><button class="btn btn-ghost" type="button" onclick="closeExportModal()">Cancelar</button></div>
     </div>
   </div>
 
@@ -798,12 +819,43 @@ function printOfficialDocument(markPrinted=false){
   iframe.onload=()=>setTimeout(doPrint,250); setTimeout(doPrint,700);
 }
 
-function exportBackup(){
+function openExportModal(){
   const now=new Date(); const pad=n=>String(n).padStart(2,'0');
   const stamp=`${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}`;
-  const blob=new Blob([JSON.stringify(AppState.data,null,2)],{type:'application/json'});
+  $('exportFileName').value=`Livro H- Backup ${stamp}`;
+  $('exportFsaWarning').classList.add('hidden');
+  $('exportBackupModal').classList.add('show');
+}
+function closeExportModal(){ $('exportBackupModal').classList.remove('show'); }
+function getExportBlob(){ return new Blob([JSON.stringify(AppState.data,null,2)],{type:'application/json'}); }
+function getExportFileName(){
+  const name=($('exportFileName').value||'Livro H- Backup').trim().replace(/\.json$/i,'');
+  return name+'.json';
+}
+async function exportWithFolderPicker(){
+  if(!window.showSaveFilePicker){
+    $('exportFsaWarning').classList.remove('hidden');
+    return;
+  }
+  try{
+    const handle=await window.showSaveFilePicker({
+      suggestedName: getExportFileName(),
+      types:[{description:'Arquivo JSON',accept:{'application/json':['.json']}}]
+    });
+    const writable=await handle.createWritable();
+    await writable.write(getExportBlob());
+    await writable.close();
+    closeExportModal();
+    showAppMessage('Backup exportado','Arquivo salvo com sucesso na pasta escolhida.');
+  }catch(e){
+    if(e.name!=='AbortError') showAppMessage('Exportar backup','Não foi possível salvar o arquivo: '+e.message);
+  }
+}
+function exportToDownloads(){
+  const blob=getExportBlob();
   const url=URL.createObjectURL(blob); const a=document.createElement('a');
-  a.href=url; a.download=`Livro H- Backup ${stamp}.json`; a.click(); URL.revokeObjectURL(url);
+  a.href=url; a.download=getExportFileName(); a.click(); URL.revokeObjectURL(url);
+  closeExportModal();
 }
 
 function conflictField(label, mine, theirs, useBackup=false){
@@ -945,7 +997,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   $('fichaForm').addEventListener('submit', handleFichaSubmit);
   $('importBackup').addEventListener('change', e=>{ const file=e.target.files&&e.target.files[0]; if(file) importBackup(file); e.target.value=''; });
   bindFilterInputs();
-  document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeMainMenu(); closeManageBigramas(); closePrintChoiceModal(); closeConflictModal(); closeImportReportModal(); closeAppMessageModal(); resolveAppConfirm(false); closeConflictModal(); closeImportReportModal(); closeAppMessageModal(); resolveAppConfirm(false); } });
+  document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeMainMenu(); closeManageBigramas(); closePrintChoiceModal(); closeConflictModal(); closeImportReportModal(); closeAppMessageModal(); resolveAppConfirm(false); closeConflictModal(); closeImportReportModal(); closeAppMessageModal(); resolveAppConfirm(false); closeExportModal(); } });
   resetRecordForm();
   bootstrapUI();
   showScreen(AppState.data.selectedBigramaId?'dashboard':'home');
