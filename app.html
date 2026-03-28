@@ -270,14 +270,22 @@
       </div>
       <div id="printHost" class="print-zone"></div>
     </section>
-  </div>
-
-  <div id="mainMenuModal" class="modal-overlay" onclick="if(event.target.id==='mainMenuModal')closeMainMenu()">
+    <section id="screen-relatorio" class="section hidden">
+      <div class="card">
+        <h2>Relatório Geral</h2>
+        <p style="margin-bottom:14px;">Visão consolidada de todos os bigramas.</p>
+        <div class="toolbar" style="margin-bottom:4px;">
+          <button class="btn btn-primary" type="button" onclick="printRelatorio()">🖨️ Imprimir / Exportar PDF</button>
+        </div>
+      </div>
+      <div id="relatorioContent"></div>
+    </section> class="modal-overlay" onclick="if(event.target.id==='mainMenuModal')closeMainMenu()">
     <div class="modal-box" onclick="event.stopPropagation()">
       <h3>Menu</h3>
       <p>Ações gerais do aplicativo.</p>
       <div class="toolbar">
         <button class="btn btn-primary" type="button" onclick="openManageBigramas()">Adicionar Bigrama</button>
+        <button class="btn btn-secondary" type="button" onclick="openRelatorio()">Relatório</button>
         <button class="btn btn-secondary" type="button" onclick="openExportModal()">Exportar backup</button>
         <label class="btn btn-secondary" for="importBackup">Importar backup</label>
         <input id="importBackup" class="hidden" type="file" accept=".json" />
@@ -533,9 +541,9 @@ function updateTopbar(){
     topTitle.style.fontSize = '2rem';
     topSubtitle.style.display = 'none';
   }else{
-    const map={novo:'Novo Registro',historico:'Histórico',ficha:'Dados da Ficha',documento:'Documento Oficial'};
+    const map={novo:'Novo Registro',historico:'Histórico',ficha:'Dados da Ficha',documento:'Documento Oficial',relatorio:'Relatório Geral'};
     topTitle.textContent = map[UI.currentScreen] || 'Livro Histórico';
-    topSubtitle.textContent = b ? getBigramaLabel(b.id) : '';
+    topSubtitle.textContent = UI.currentScreen==='relatorio' ? 'Visão consolidada de todos os bigramas' : (b ? getBigramaLabel(b.id) : '');
     topTitle.style.fontSize = '';
     topSubtitle.style.display = '';
   }
@@ -548,16 +556,17 @@ function updateContextUI(){
 }
 function selectBigrama(id){ AppState.data.selectedBigramaId=id; AppState.save(); updateContextUI(); showScreen('dashboard'); }
 function showScreen(screen){
-  if(screen!=='home' && !AppState.data.selectedBigramaId){ showAppMessage('Bigrama','Selecione primeiro um bigrama.'); return; }
+  if(screen!=='home' && screen!=='relatorio' && !AppState.data.selectedBigramaId){ showAppMessage('Bigrama','Selecione primeiro um bigrama.'); return; }
   UI.currentScreen=screen;
-  ['home','dashboard','novo','historico','ficha','documento'].forEach(s => $('screen-'+s).classList.toggle('hidden', s!==screen));
+  ['home','dashboard','novo','historico','ficha','documento','relatorio'].forEach(s => $('screen-'+s).classList.toggle('hidden', s!==screen));
   if(screen!=='home') updateContextUI();
   if(screen==='historico') renderHistory();
   if(screen==='ficha') fillFichaForm();
   if(screen==='documento') renderDocument();
+  if(screen==='relatorio') renderRelatorio();
   updateTopbar();
 }
-function goBack(){ if(UI.currentScreen==='home') return; if(UI.currentScreen==='dashboard') showScreen('home'); else showScreen('dashboard'); }
+function goBack(){ if(UI.currentScreen==='home') return; if(UI.currentScreen==='dashboard' || UI.currentScreen==='relatorio') showScreen('home'); else showScreen('dashboard'); }
 function goHome(){ closeMainMenu(); closeManageBigramas(); showScreen('home'); }
 function openMainMenu(){ $('mainMenuModal').classList.add('show'); }
 function closeMainMenu(){ $('mainMenuModal').classList.remove('show'); }
@@ -819,7 +828,104 @@ function printOfficialDocument(markPrinted=false){
   iframe.onload=()=>setTimeout(doPrint,250); setTimeout(doPrint,700);
 }
 
-function openExportModal(){
+function openRelatorio(){
+  closeMainMenu();
+  UI.currentScreen = 'relatorio';
+  ['home','dashboard','novo','historico','ficha','documento','relatorio'].forEach(s => $('screen-'+s).classList.toggle('hidden', s!=='relatorio'));
+  renderRelatorio();
+  updateTopbar();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function renderRelatorio(){
+  const host = $('relatorioContent');
+  const bigramas = AppState.data.bigramas;
+  if(!bigramas.length){
+    host.innerHTML = '<div class="empty">Nenhum bigrama cadastrado.</div>';
+    return;
+  }
+  const rows = bigramas.map(b => {
+    const regs = AppState.data.registros.filter(r => r.bigramaId === b.id);
+    const naoSolucionadas = regs.filter(r => !r.solucao || r.solucao.trim() === '').length;
+    const disponiveis = regs.filter(r => r.status === 'aberto').length;
+    return {b, naoSolucionadas, disponiveis};
+  });
+  const totalNaoSol = rows.reduce((s,r)=>s+r.naoSolucionadas,0);
+  const totalDisp   = rows.reduce((s,r)=>s+r.disponiveis,0);
+  host.innerHTML = `
+    <div class="card" style="overflow-x:auto;">
+      <table style="width:100%;border-collapse:collapse;min-width:340px;">
+        <thead>
+          <tr style="border-bottom:2px solid var(--gold);">
+            <th style="text-align:left;padding:10px 12px;color:var(--gold);font-size:1rem;">Bigrama</th>
+            <th style="text-align:center;padding:10px 12px;color:var(--gold);font-size:1rem;">Ocorrências não solucionadas</th>
+            <th style="text-align:center;padding:10px 12px;color:var(--gold);font-size:1rem;">Disponível para impressão</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map((row,i) => `
+          <tr style="border-bottom:1px solid rgba(255,255,255,.08);background:${i%2===0?'rgba(255,255,255,.03)':'transparent'}">
+            <td style="padding:12px;font-weight:800;">
+              <span class="chip" style="margin-right:8px;">${escapeHtml(row.b.sigla)}</span>${escapeHtml(row.b.nome)}
+            </td>
+            <td style="text-align:center;padding:12px;">
+              <span style="font-size:1.3rem;font-weight:800;color:${row.naoSolucionadas>0?'var(--danger)':'var(--success)'};">${row.naoSolucionadas}</span>
+            </td>
+            <td style="text-align:center;padding:12px;">
+              <span style="font-size:1.3rem;font-weight:800;color:${row.disponiveis>0?'var(--gold)':'var(--muted)'};">${row.disponiveis}</span>
+            </td>
+          </tr>`).join('')}
+        </tbody>
+        <tfoot>
+          <tr style="border-top:2px solid rgba(255,255,255,.15);">
+            <td style="padding:12px;font-weight:800;color:var(--muted);">TOTAL</td>
+            <td style="text-align:center;padding:12px;font-size:1.2rem;font-weight:800;color:${totalNaoSol>0?'var(--danger)':'var(--success)'};">${totalNaoSol}</td>
+            <td style="text-align:center;padding:12px;font-size:1.2rem;font-weight:800;color:${totalDisp>0?'var(--gold)':'var(--muted)'};">${totalDisp}</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>`;
+}
+function printRelatorio(){
+  const content = $('relatorioContent').innerHTML;
+  if(!content || !content.trim()){ showAppMessage('Relatório','Nenhum dado para imprimir.'); return; }
+  const styles = `<style>
+    body{font-family:Arial,Helvetica,sans-serif;background:#fff;color:#111;padding:24px;}
+    h2{margin:0 0 16px;}
+    table{width:100%;border-collapse:collapse;}
+    th,td{border:1px solid #bbb;padding:10px 12px;font-size:11pt;}
+    th{background:#f2f2f2;font-weight:700;text-align:center;}
+    td:first-child{text-align:left;}
+    td:not(:first-child){text-align:center;}
+    tfoot tr{border-top:2px solid #555;font-weight:800;}
+    .chip{display:inline-block;padding:2px 8px;border-radius:999px;background:#e2e8f0;font-weight:700;margin-right:6px;font-size:10pt;}
+  </style>`;
+  const bigramas = AppState.data.bigramas;
+  const rows = bigramas.map(b => {
+    const regs = AppState.data.registros.filter(r => r.bigramaId === b.id);
+    const naoSolucionadas = regs.filter(r => !r.solucao || r.solucao.trim() === '').length;
+    const disponiveis = regs.filter(r => r.status === 'aberto').length;
+    return {b, naoSolucionadas, disponiveis};
+  });
+  const totalNaoSol = rows.reduce((s,r)=>s+r.naoSolucionadas,0);
+  const totalDisp   = rows.reduce((s,r)=>s+r.disponiveis,0);
+  const tableHtml = `
+    <h2>Relatório Geral — Livro Histórico</h2>
+    <table>
+      <thead><tr><th>Bigrama</th><th>Ocorrências não solucionadas</th><th>Disponível para impressão</th></tr></thead>
+      <tbody>${rows.map(row=>`<tr><td><span class="chip">${escapeHtml(row.b.sigla)}</span>${escapeHtml(row.b.nome)}</td><td>${row.naoSolucionadas}</td><td>${row.disponiveis}</td></tr>`).join('')}</tbody>
+      <tfoot><tr><td>TOTAL</td><td>${totalNaoSol}</td><td>${totalDisp}</td></tr></tfoot>
+    </table>`;
+  let iframe = document.getElementById('printFrame'); if(iframe) iframe.remove();
+  iframe = document.createElement('iframe'); iframe.id='printFrame';
+  iframe.style.cssText='position:fixed;width:1px;height:1px;right:0;bottom:0;opacity:0;border:0;';
+  document.body.appendChild(iframe);
+  const doc = iframe.contentWindow.document;
+  doc.open(); doc.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Relatório Geral</title>${styles}</head><body>${tableHtml}</body></html>`); doc.close();
+  iframe.onload = () => setTimeout(()=>{ iframe.contentWindow.focus(); iframe.contentWindow.print(); }, 250);
+  setTimeout(()=>{ iframe.contentWindow.focus(); iframe.contentWindow.print(); }, 700);
+}
+
+
   const now=new Date(); const pad=n=>String(n).padStart(2,'0');
   const stamp=`${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}`;
   $('exportFileName').value=`Livro H- Backup ${stamp}`;
