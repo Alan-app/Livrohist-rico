@@ -101,7 +101,16 @@
     .conflict-field:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none}
     .conflict-field b{display:block;margin-bottom:4px;color:#fff}
     .conflict-diff{outline:2px solid rgba(240,196,25,.75);border-radius:10px;padding:6px 8px;background:rgba(240,196,25,.08)}
-    .print-zone{display:grid;gap:18px}
+    .chip-toggle{cursor:pointer;border:none;transition:background .15s,color .15s;}
+    .chip-toggle.active{background:var(--gold);color:#0b1220;}
+    .bigrama-list{display:grid;gap:10px;}
+    .bigrama-list-btn{display:flex;align-items:center;gap:14px;background:linear-gradient(180deg,var(--card) 0%,#083f7a 100%);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:14px 16px;color:#fff;text-align:left;box-shadow:var(--shadow);position:relative;overflow:hidden;}
+    .bigrama-list-btn::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--gold);}
+    .bigrama-list-sigla{min-width:52px;height:48px;border-radius:12px;background:#114d97;display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:800;flex:0 0 auto;}
+    .bigrama-list-info{display:flex;flex-direction:column;gap:2px;}
+    .bigrama-list-nome{font-size:1.05rem;font-weight:800;}
+    .bigrama-list-sub{font-size:.88rem;color:var(--muted);}
+
     .official-sheet{background:#fff;color:#111;padding:18mm 12mm 18mm 12mm;width:210mm;min-height:297mm;margin:0 auto 18px;box-shadow:0 10px 25px rgba(0,0,0,.28);page-break-after:always;font-family:"Times New Roman", Times, serif;position:relative}
     .sheet-top-right{text-align:right;font-size:11pt;line-height:1.2;margin-bottom:8px}
     .page-code{text-align:center;font-size:12pt;margin:10px 0;letter-spacing:.16em}
@@ -152,11 +161,98 @@
     .conflict-field:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none;}
     .conflict-field b{display:block;margin-bottom:4px;color:#fff;}
     .conflict-diff{outline:2px solid rgba(240,196,25,.75);border-radius:10px;padding:6px 8px;background:rgba(240,196,25,.08);}
+    /* ── DESKTOP LAYOUT (≥ 960px) ── */
+    .desktop-sidebar{ display:none; }
+    @media(min-width:960px){
+      body{ background:linear-gradient(135deg,#021220 0%,#031b2f 100%); }
+      .desktop-sidebar{
+        display:flex; flex-direction:column;
+        position:fixed; top:0; left:0; bottom:0; width:260px;
+        background:linear-gradient(180deg,#021b30 0%,#031522 100%);
+        border-right:1px solid rgba(255,255,255,.10);
+        z-index:50;
+      }
+      .sidebar-brand{ padding:24px 20px 16px; border-bottom:1px solid rgba(255,255,255,.08); }
+      .sidebar-brand h1{ margin:0; font-size:1.05rem; letter-spacing:.1em; text-transform:uppercase; color:var(--gold); }
+      .sidebar-brand p{ margin:4px 0 0; font-size:.80rem; color:var(--muted); line-height:1.3; }
+      .sidebar-gold{ height:3px; background:var(--gold); }
+      .sidebar-nav{ flex:1; padding:14px 10px; display:flex; flex-direction:column; gap:4px; overflow-y:auto; }
+      .sidebar-nav-item{
+        display:flex; align-items:center; gap:11px; padding:10px 13px;
+        border-radius:13px; border:none; background:transparent; color:var(--muted);
+        font-size:.95rem; font-weight:700; text-align:left; cursor:pointer;
+        transition:background .15s,color .15s; width:100%;
+      }
+      .sidebar-nav-item:hover{ background:rgba(255,255,255,.07); color:#fff; }
+      .sidebar-nav-item.active{ background:rgba(240,196,25,.13); color:var(--gold); }
+      .sidebar-nav-item .nav-icon{ font-size:1.15rem; width:26px; text-align:center; flex:0 0 auto; }
+      .sidebar-divider{ height:1px; background:rgba(255,255,255,.07); margin:5px 2px; }
+      .sidebar-context{ padding:12px 16px; border-top:1px solid rgba(255,255,255,.08); font-size:.83rem; color:var(--muted); line-height:1.4; }
+      .sidebar-context b{ color:#fff; display:block; margin-bottom:2px; }
+      .app{ margin-left:260px; max-width:100%; }
+      .topbar{ padding:10px 24px; }
+      .topbar-main{ grid-template-columns:44px 1fr 44px; }
+      .brand h1{ font-size:1.4rem; }
+      .brand p{ font-size:.88rem; margin-top:2px; }
+      #topMenuBtn{ display:none; }
+      .content{ padding:28px 32px 60px; max-width:1060px; }
+      .folder-grid{ grid-template-columns:repeat(4,minmax(0,1fr)); gap:22px; }
+      .menu-grid{ grid-template-columns:1fr 1fr; }
+      .grid-2{ grid-template-columns:1fr 1fr; }
+      .btn-row{ grid-template-columns:1fr 1fr; }
+      .record-actions{ grid-template-columns:repeat(4,42px); }
+      .card{ padding:24px; }
+      .record-card{ padding:20px; }
+      #relatorioContent table td,#relatorioContent table th{ padding:14px 18px; }
+    }
   </style>
 </head>
 <body>
 <div class="app">
-  <div class="topbar">
+  <!-- Sidebar desktop -->
+  <aside class="desktop-sidebar">
+    <div class="sidebar-brand">
+      <h1>Livro Histórico</h1>
+      <p>Registro histórico de equipamentos</p>
+    </div>
+    <div class="sidebar-gold"></div>
+    <nav class="sidebar-nav">
+      <button class="sidebar-nav-item" id="sideHome" type="button" onclick="goHome()">
+        <span class="nav-icon">🏠</span> Início
+      </button>
+      <div class="sidebar-divider"></div>
+      <button class="sidebar-nav-item" id="sideNovo" type="button" onclick="closeMainMenu();showScreen('novo')">
+        <span class="nav-icon">📝</span> Novo Registro
+      </button>
+      <button class="sidebar-nav-item" id="sideHistorico" type="button" onclick="closeMainMenu();showScreen('historico')">
+        <span class="nav-icon">📚</span> Ver Histórico
+      </button>
+      <button class="sidebar-nav-item" id="sideFicha" type="button" onclick="closeMainMenu();showScreen('ficha')">
+        <span class="nav-icon">🗂️</span> Dados da Ficha
+      </button>
+      <button class="sidebar-nav-item" id="sideDocumento" type="button" onclick="closeMainMenu();showScreen('documento')">
+        <span class="nav-icon">🖨️</span> Documento Oficial
+      </button>
+      <div class="sidebar-divider"></div>
+      <button class="sidebar-nav-item" id="sideRelatorio" type="button" onclick="openRelatorio()">
+        <span class="nav-icon">📊</span> Relatório
+      </button>
+      <button class="sidebar-nav-item" type="button" onclick="openManageBigramas()">
+        <span class="nav-icon">➕</span> Adicionar Bigrama
+      </button>
+      <button class="sidebar-nav-item" type="button" onclick="openExportModal()">
+        <span class="nav-icon">💾</span> Exportar Backup
+      </button>
+      <label class="sidebar-nav-item" for="importBackupSidebar">
+        <span class="nav-icon">📥</span> Importar Backup
+      </label>
+      <input id="importBackupSidebar" class="hidden" type="file" accept=".json" />
+    </nav>
+    <div class="sidebar-context" id="sidebarContext">
+      <b>Nenhum sistema selecionado</b>
+      Selecione um bigrama na tela inicial.
+    </div>
+  </aside>
     <div class="topbar-main">
       <button id="topBackBtn" class="topbtn ghost" onclick="goBack()">←</button>
       <div class="brand">
@@ -171,6 +267,16 @@
   <div class="content">
     <section id="screen-home" class="section">
       <div class="banner">Selecione primeiro o bigrama. Cada pasta representa um sistema.</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button id="btnOrdemAlfa" class="chip chip-toggle active" type="button" onclick="setHomeOrdem('alfa')">🔤 Alfabética</button>
+          <button id="btnOrdemUpdate" class="chip chip-toggle" type="button" onclick="setHomeOrdem('update')">🕐 Última atualização</button>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button id="btnApresentacaoPasta" class="chip chip-toggle active" type="button" onclick="setHomeApresentacao('pasta')" title="Pastas">📁</button>
+          <button id="btnApresentacaoLista" class="chip chip-toggle" type="button" onclick="setHomeApresentacao('lista')" title="Lista">☰</button>
+        </div>
+      </div>
       <div id="homeFolders" class="folder-grid"></div>
     </section>
 
@@ -401,7 +507,7 @@ const DEFAULT_BIGRAMAS = [
 const DEFAULT_FICHA = {navio:'SUBMARINO HUMAITÁ',fichaNumero:'',folhaInicial:1,anexoPrimeiraPagina:'A',sistemaFicha:'',equipamentoFicha:'',manualPlano:'',fabricante:'',dadosPlaca:'',localizacao:'',numeroSerie:''};
 
 const AppState = {
-  data: {bigramas:[...DEFAULT_BIGRAMAS], registros:[], fichas:{}, filtros:{busca:'',status:'TODOS',dataInicio:'',dataFim:''}, selectedBigramaId:null},
+  data: {bigramas:[...DEFAULT_BIGRAMAS], registros:[], fichas:{}, filtros:{busca:'',status:'TODOS',dataInicio:'',dataFim:''}, selectedBigramaId:null, homePrefs:{ordem:'alfa',apresentacao:'pasta'}},
   load(){
     try{
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -415,12 +521,13 @@ const AppState = {
         registros:Array.isArray(parsed.registros)?parsed.registros:[],
         fichas:parsed.fichas&&typeof parsed.fichas==='object'?parsed.fichas:{},
         filtros:parsed.filtros?{busca:'',status:'TODOS',dataInicio:'',dataFim:'',...parsed.filtros}:{busca:'',status:'TODOS',dataInicio:'',dataFim:''},
-        selectedBigramaId:parsed.selectedBigramaId||null
+        selectedBigramaId:parsed.selectedBigramaId||null,
+        homePrefs:parsed.homePrefs?{ordem:'alfa',apresentacao:'pasta',...parsed.homePrefs}:{ordem:'alfa',apresentacao:'pasta'}
       };
       ensureBigramasIntegrity(false);
     }catch(e){
       console.error(e);
-      this.data = {bigramas:[...DEFAULT_BIGRAMAS], registros:[], fichas:{}, filtros:{busca:'',status:'TODOS',dataInicio:'',dataFim:''}, selectedBigramaId:null};
+      this.data = {bigramas:[...DEFAULT_BIGRAMAS], registros:[], fichas:{}, filtros:{busca:'',status:'TODOS',dataInicio:'',dataFim:''}, selectedBigramaId:null, homePrefs:{ordem:'alfa',apresentacao:'pasta'}};
     }
   },
   save(){
@@ -507,6 +614,43 @@ function getDefaultFichaForSelected(){ const b=getSelectedBigrama(); return {...
 function getFichaForSelected(){ const b=getSelectedBigrama(); if(!b) return {...DEFAULT_FICHA}; return {...getDefaultFichaForSelected(), ...(AppState.data.fichas[b.id]||{})}; }
 function saveFichaForSelected(data){ const b=getSelectedBigrama(); if(!b) return; AppState.data.fichas[b.id]={...data}; AppState.save(); }
 
+function getLastUpdate(bigramaId){
+  const regs = AppState.data.registros.filter(r => r.bigramaId === bigramaId);
+  if(!regs.length) return 0;
+  return Math.max(...regs.map(r => r.updatedAt || r.createdAt || 0));
+}
+function getSortedBigramas(){
+  const prefs = AppState.data.homePrefs || {ordem:'alfa',apresentacao:'pasta'};
+  const list = [...AppState.data.bigramas];
+  if(prefs.ordem === 'update'){
+    list.sort((a,b) => getLastUpdate(b.id) - getLastUpdate(a.id));
+  } else {
+    list.sort((a,b) => a.sigla.localeCompare(b.sigla));
+  }
+  return list;
+}
+function setHomeOrdem(ordem){
+  AppState.data.homePrefs = {...(AppState.data.homePrefs||{}), ordem};
+  AppState.save();
+  updateHomeToggleUI();
+  renderHomeFolders();
+}
+function setHomeApresentacao(apresentacao){
+  AppState.data.homePrefs = {...(AppState.data.homePrefs||{}), apresentacao};
+  AppState.save();
+  updateHomeToggleUI();
+  renderHomeFolders();
+}
+function updateHomeToggleUI(){
+  const prefs = AppState.data.homePrefs || {ordem:'alfa',apresentacao:'pasta'};
+  ['btnOrdemAlfa','btnOrdemUpdate','btnApresentacaoPasta','btnApresentacaoLista'].forEach(id=>{
+    const el = $(id); if(el) el.classList.remove('active');
+  });
+  if(prefs.ordem==='alfa') { const el=$('btnOrdemAlfa'); if(el) el.classList.add('active'); }
+  else { const el=$('btnOrdemUpdate'); if(el) el.classList.add('active'); }
+  if(prefs.apresentacao==='lista') { const el=$('btnApresentacaoLista'); if(el) el.classList.add('active'); }
+  else { const el=$('btnApresentacaoPasta'); if(el) el.classList.add('active'); }
+}
 function renderHomeFolders(){
   const wrap = $('homeFolders');
   if(!wrap) return;
@@ -515,15 +659,48 @@ function renderHomeFolders(){
     AppState.data.bigramas = [...STRUCTURAL_DEFAULT_BIGRAMAS];
     AppState.save();
   }
-  wrap.innerHTML = AppState.data.bigramas.map(b => `
-    <button class="folder-btn" type="button" onclick="selectBigrama('${b.id}')">
-      <div class="folder-icon"><div class="folder-paw">📁</div></div>
-      <div class="folder-label">${escapeHtml(b.sigla)}</div>
-      <div class="folder-sub">${escapeHtml(b.nome)}</div>
-    </button>
-  `).join('');
+  const prefs = AppState.data.homePrefs || {ordem:'alfa',apresentacao:'pasta'};
+  const bigramas = getSortedBigramas();
+  updateHomeToggleUI();
+  if(prefs.apresentacao === 'lista'){
+    wrap.className = 'bigrama-list';
+    wrap.innerHTML = bigramas.map(b => {
+      const lastUp = getLastUpdate(b.id);
+      const sub = lastUp ? 'Atualizado em ' + new Date(lastUp).toLocaleDateString('pt-BR') : 'Sem registros';
+      return `<button class="bigrama-list-btn" type="button" onclick="selectBigrama('${b.id}')">
+        <div class="bigrama-list-sigla">${escapeHtml(b.sigla)}</div>
+        <div class="bigrama-list-info">
+          <div class="bigrama-list-nome">${escapeHtml(b.nome)}</div>
+          <div class="bigrama-list-sub">${sub}</div>
+        </div>
+        <span style="margin-left:auto;font-size:1.4rem;opacity:.5;">›</span>
+      </button>`;
+    }).join('');
+  } else {
+    wrap.className = 'folder-grid';
+    wrap.innerHTML = bigramas.map(b => `
+      <button class="folder-btn" type="button" onclick="selectBigrama('${b.id}')">
+        <div class="folder-icon"><div class="folder-paw">📁</div></div>
+        <div class="folder-label">${escapeHtml(b.sigla)}</div>
+        <div class="folder-sub">${escapeHtml(b.nome)}</div>
+      </button>
+    `).join('');
+  }
 }
 
+function updateSidebar(){
+  const screen = UI.currentScreen;
+  const b = getSelectedBigrama();
+  const ids = ['sideHome','sideNovo','sideHistorico','sideFicha','sideDocumento','sideRelatorio'];
+  const map = {home:'sideHome',novo:'sideNovo',historico:'sideHistorico',ficha:'sideFicha',documento:'sideDocumento',relatorio:'sideRelatorio'};
+  ids.forEach(id=>{ const el=$(id); if(el) el.classList.remove('active'); });
+  const activeId = map[screen]; if(activeId){ const el=$(activeId); if(el) el.classList.add('active'); }
+  const ctx = $('sidebarContext');
+  if(ctx){
+    if(b) ctx.innerHTML = `<b>${escapeHtml(b.sigla)} — ${escapeHtml(b.nome)}</b>Sistema selecionado`;
+    else ctx.innerHTML = `<b>Nenhum sistema selecionado</b>Selecione um bigrama na tela inicial.`;
+  }
+}
 function updateTopbar(){
   const b = getSelectedBigrama();
   const topBackBtn = $('topBackBtn');
@@ -566,7 +743,7 @@ function showScreen(screen){
   if(screen==='ficha') fillFichaForm();
   if(screen==='documento') renderDocument();
   if(screen==='relatorio') renderRelatorio();
-  updateTopbar();
+  updateTopbar(); updateSidebar();
 }
 function goBack(){ if(UI.currentScreen==='home') return; if(UI.currentScreen==='dashboard' || UI.currentScreen==='relatorio') showScreen('home'); else showScreen('dashboard'); }
 function goHome(){ closeMainMenu(); closeManageBigramas(); showScreen('home'); }
@@ -751,7 +928,7 @@ async function deleteBigrama(id){
   AppState.save();
   renderBigramaList();
   renderHomeFolders();
-  updateTopbar();
+  updateTopbar(); updateSidebar();
 }
 
 function fillFichaForm(){
@@ -835,7 +1012,7 @@ function openRelatorio(){
   UI.currentScreen = 'relatorio';
   ['home','dashboard','novo','historico','ficha','documento','relatorio'].forEach(s => $('screen-'+s).classList.toggle('hidden', s!=='relatorio'));
   renderRelatorio();
-  updateTopbar();
+  updateTopbar(); updateSidebar();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function renderRelatorio(){
@@ -1095,7 +1272,7 @@ function bootstrapUI(){
   if(AppState.data.selectedBigramaId) updateContextUI();
   fillFichaForm();
   $('filtroBusca').value=AppState.data.filtros.busca||''; $('filtroStatus').value=AppState.data.filtros.status||'TODOS'; $('filtroDataInicio').value=AppState.data.filtros.dataInicio||''; $('filtroDataFim').value=AppState.data.filtros.dataFim||'';
-  renderBigramaList(); renderHistory(); renderDocument(); updateTopbar();
+  renderBigramaList(); renderHistory(); renderDocument(); updateTopbar(); updateSidebar();
 }
 
 document.addEventListener('DOMContentLoaded', ()=>{
@@ -1105,6 +1282,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   $('bigramaForm').addEventListener('submit', handleBigramaSubmit);
   $('fichaForm').addEventListener('submit', handleFichaSubmit);
   $('importBackup').addEventListener('change', e=>{ const file=e.target.files&&e.target.files[0]; if(file) importBackup(file); e.target.value=''; });
+  $('importBackupSidebar').addEventListener('change', e=>{ const file=e.target.files&&e.target.files[0]; if(file) importBackup(file); e.target.value=''; });
   bindFilterInputs();
   document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeMainMenu(); closeManageBigramas(); closePrintChoiceModal(); closeConflictModal(); closeImportReportModal(); closeAppMessageModal(); resolveAppConfirm(false); closeConflictModal(); closeImportReportModal(); closeAppMessageModal(); resolveAppConfirm(false); closeExportModal(); } });
   resetRecordForm();
