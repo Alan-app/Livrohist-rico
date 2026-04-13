@@ -2867,23 +2867,103 @@ function handleFichaSubmit(e){
   renderDocument(); setStatus('fichaStatus','Dados da ficha salvos.');
 }
 
-function buildRowsHtml(records){
-  return records.map(r=>`<tr><td class="left-col">${nl2br(dateRangeLabel(r))||'&nbsp;'}</td><td class="right-col"><div class="rh-block"><b>${escapeHtml(r.tipoRegistroLabel||'Avaria')}:</b> ${nl2br(r.avaria||'')}<br><br><b>Solução:</b> ${nl2br(r.solucao||'')}<br><br><b>Observação:</b> ${nl2br(r.observacao||'')}</div></td></tr>`).join('');
+function buildOfficialRowHtml(item){
+  const r=(item && item.record) ? item.record : item;
+  return `<tr><td class="left-col">${nl2br(dateRangeLabel(r))||'&nbsp;'}</td><td class="right-col"><div class="rh-block"><b>${escapeHtml(r.tipoRegistroLabel||'Avaria')}:</b> ${nl2br(r.avaria||'')}<br><br><b>Solução:</b> ${nl2br(r.solucao||'')}<br><br><b>Observação:</b> ${nl2br(r.observacao||'')}</div></td></tr>`;
 }
-function makePage(pageNumber, rowsHtml, isFirst){
+function buildRowsHtml(records){
+  return records.map(buildOfficialRowHtml).join('');
+}
+function makePage(pageNumber, rowsHtml, isFirst, includePlaceholder=true){
   const ficha=getFichaForSelected();
   const pageCode=isFirst?`- ${escapeHtml(ficha.anexoPrimeiraPagina||'A')} - ${pageNumber} -`:`- B - ${pageNumber} -`;
   const headerTop=`<div class="sheet-top-right">ENGENALMARINST Nº 85-13A<br>${isFirst?'Anexo '+escapeHtml(ficha.anexoPrimeiraPagina||'A'):'Anexo B'}</div>`;
   const titleTable=`<table class="doc-title-table"><tr><td class="doc-title" style="width:68%;">REGISTRO HISTÓRICO DE EQUIPAMENTOS DE<br>MÁQUINAS</td><td style="width:14%;text-align:center;"><span class="box-label">FICHA Nº</span><br>${escapeHtml(ficha.fichaNumero||'')}</td><td style="width:18%;text-align:center;"><span class="box-label">FOLHA Nº</span><br>${pageNumber}</td></tr></table>`;
   const metaTable=isFirst?`<table class="meta-table"><tr><td colspan="2"><span class="box-label">NAVIO:</span> ${escapeHtml(ficha.navio||'')}</td></tr><tr><td colspan="2"><span class="box-label">SISTEMA:</span> ${escapeHtml(ficha.sistemaFicha||'')}</td></tr><tr><td colspan="2"><span class="box-label">EQUIPAMENTO:</span> ${escapeHtml(ficha.equipamentoFicha||'')}</td></tr><tr><td colspan="2"><span class="box-label">MANUAL E/OU PLANO:</span> ${escapeHtml(ficha.manualPlano||'')}</td></tr><tr><td colspan="2"><span class="box-label">FABRICANTE:</span> ${escapeHtml(ficha.fabricante||'')}</td></tr><tr><td colspan="2"><span class="box-label">DADOS DE PLACA:</span> ${escapeHtml(ficha.dadosPlaca||'')}</td></tr><tr><td><span class="box-label">LOCALIZAÇÃO:</span> ${escapeHtml(ficha.localizacao||'')}</td><td><span class="box-label">Nº DE SÉRIE:</span> ${escapeHtml(ficha.numeroSerie||'')}</td></tr></table>`:'';
-  return `<div class="official-sheet">${headerTop}<div class="page-code">${pageCode}</div>${titleTable}${metaTable}<table class="hist-table" style="margin-top:${isFirst?'0':'8px'};"><thead><tr><th style="width:30%;">DATA E Nº DE HORAS DE FUNCIONAMENTO</th><th style="width:70%;">REGISTRO HISTÓRICO</th></tr></thead><tbody>${rowsHtml || `<tr><td class="left-col">&nbsp;</td><td class="right-col"><div class="rh-block"><b>Avaria:</b><br><br><b>Solução:</b><br><br><b>Observação:</b></div></td></tr>`}</tbody></table><div class="signature-bar"><div class="signature-box"><div class="signature-line"></div>Encarregado do Sistema MO-1</div><div class="signature-box"><div class="signature-line"></div>Encarregado da Divisão de Máquinas</div></div></div>`;
+  const placeholder = includePlaceholder ? `<tr><td class="left-col">&nbsp;</td><td class="right-col"><div class="rh-block"><b>Avaria:</b><br><br><b>Solução:</b><br><br><b>Observação:</b></div></td></tr>` : '';
+  return `<div class="official-sheet">${headerTop}<div class="page-code">${pageCode}</div>${titleTable}${metaTable}<table class="hist-table" style="margin-top:${isFirst?'0':'8px'};"><thead><tr><th style="width:30%;">DATA E Nº DE HORAS DE FUNCIONAMENTO</th><th style="width:70%;">REGISTRO HISTÓRICO</th></tr></thead><tbody>${rowsHtml || placeholder}</tbody></table><div class="signature-bar"><div class="signature-box"><div class="signature-line"></div>Encarregado do Sistema MO-1</div><div class="signature-box"><div class="signature-line"></div>Encarregado da Divisão de Máquinas</div></div></div>`;
+}
+function createOfficialMeasureRoot(){
+  const root=document.createElement('div');
+  root.style.position='fixed';
+  root.style.left='-100000px';
+  root.style.top='0';
+  root.style.visibility='hidden';
+  root.style.pointerEvents='none';
+  root.style.zIndex='-1';
+  root.style.width='auto';
+  root.style.height='auto';
+  document.body.appendChild(root);
+  return root;
+}
+function paginateOfficialRecords(records){
+  const ficha=getFichaForSelected();
+  const initialPage=Math.max(1, parseInt(ficha.folhaInicial||1,10)||1);
+  if(!records.length) return [{pageNumber:initialPage,isFirst:true,rows:[]}];
+
+  const root=createOfficialMeasureRoot();
+  const pages=[];
+  let pageOffset=0;
+  let currentPageEl=null;
+  let currentBody=null;
+  let currentRows=[];
+  let mmPerPx=1;
+
+  const startPage=(isFirst)=>{
+    currentPageEl=document.createElement('div');
+    currentPageEl.innerHTML=makePage(initialPage+pageOffset, '', isFirst, false);
+    currentPageEl=currentPageEl.firstElementChild;
+    root.appendChild(currentPageEl);
+    currentBody=currentPageEl.querySelector('tbody');
+    const rect=currentPageEl.getBoundingClientRect();
+    mmPerPx=rect.width ? (210 / rect.width) : 1;
+  };
+  const finishPage=()=>{
+    pages.push({pageNumber:initialPage+pageOffset,isFirst:pageOffset===0,rows:currentRows.slice()});
+    pageOffset += 1;
+    if(currentPageEl && currentPageEl.parentNode) currentPageEl.parentNode.removeChild(currentPageEl);
+    currentPageEl=null;
+    currentBody=null;
+    currentRows=[];
+  };
+
+  startPage(true);
+
+  for(const record of records){
+    currentBody.insertAdjacentHTML('beforeend', buildOfficialRowHtml(record));
+    let rowEl=currentBody.lastElementChild;
+    const sigRect=currentPageEl.querySelector('.signature-bar').getBoundingClientRect();
+    const rowRect=rowEl.getBoundingClientRect();
+    const fits=rowRect.bottom <= (sigRect.top - 8);
+
+    if(!fits){
+      currentBody.removeChild(rowEl);
+      if(currentRows.length){
+        finishPage();
+        startPage(false);
+        currentBody.insertAdjacentHTML('beforeend', buildOfficialRowHtml(record));
+        rowEl=currentBody.lastElementChild;
+      }else{
+        currentBody.insertAdjacentHTML('beforeend', buildOfficialRowHtml(record));
+        rowEl=currentBody.lastElementChild;
+      }
+    }
+
+    const rowHeightMm=rowEl.getBoundingClientRect().height * mmPerPx;
+    currentRows.push({record,rowHeightMm});
+  }
+
+  if(currentPageEl){
+    finishPage();
+  }
+  if(root && root.parentNode) root.parentNode.removeChild(root);
+  return pages;
 }
 function getPrintableOpenRecords(){ return getFilteredRecords().filter(r=>r.status!=='fechado'); }
 function renderDocument(){
-  const host=$('printHost'), records=getPrintableOpenRecords(), ficha=getFichaForSelected(), initialPage=Math.max(1, parseInt(ficha.folhaInicial||1,10)||1), perPage=4, pages=[];
-  if(!records.length) pages.push(makePage(initialPage,'',true));
-  else for(let i=0;i<records.length;i+=perPage) pages.push(makePage(initialPage+(i/perPage), buildRowsHtml(records.slice(i,i+perPage)), i===0));
-  host.innerHTML=pages.join('');
+  const host=$('printHost');
+  const pages=paginateOfficialRecords(getPrintableOpenRecords());
+  host.innerHTML=pages.map(p=>makePage(p.pageNumber, buildRowsHtml(p.rows), p.isFirst, p.rows.length===0)).join('');
 }
 function openPrintChoiceModal(){ $('printChoiceModal').classList.add('show'); }
 function closePrintChoiceModal(){ $('printChoiceModal').classList.remove('show'); }
@@ -4021,17 +4101,17 @@ function drawCell(doc, x, y, w, h, label, value, opts={}){
 function getOfficialPdfPages(){
   const records = getPrintableOpenRecords();
   const ficha = getFichaForSelected();
-  const initialPage = Math.max(1, parseInt(ficha.folhaInicial || 1, 10) || 1);
-  const perPage = 4;
-  const pages = [];
-  if(!records.length){
-    pages.push({pageNumber: initialPage, isFirst: true, rows: []});
-  }else{
-    for(let i=0;i<records.length;i+=perPage){
-      pages.push({pageNumber: initialPage + (i/perPage), isFirst: i===0, rows: records.slice(i, i+perPage)});
-    }
-  }
+  const pages = paginateOfficialRecords(records);
   return {pages, ficha, records};
+}
+function estimateOfficialRowHeightMm(doc, record){
+  const leftLines=Math.max(1, doc.splitTextToSize(String(dateRangeLabel(record)||''), 46).length);
+  const avariaLines=Math.max(1, doc.splitTextToSize(String(record.avaria||''), 112).length);
+  const solucaoLines=Math.max(1, doc.splitTextToSize(String(record.solucao||''), 112).length);
+  const observacaoLines=Math.max(1, doc.splitTextToSize(String(record.observacao||''), 112).length);
+  const leftHeight=16 + (leftLines * 4.2);
+  const rightHeight=29 + ((avariaLines + solucaoLines + observacaoLines) * 4.2);
+  return Math.max(39, leftHeight, rightHeight);
 }
 function renderOfficialPdf(doc, page, ficha){
   const W = 210, H = 297;
@@ -4089,15 +4169,28 @@ function renderOfficialPdf(doc, page, ficha){
   doc.text('REGISTRO HISTÓRICO', m+52.2+60.9, y+7, {align:'center'});
   y += 12;
 
-  const rowH = 39;
-  for(let i=0;i<4;i++){
-    const r = page.rows[i];
+  const items = Array.isArray(page.rows) ? page.rows : [];
+  if(!items.length){
+    const rowH = 39;
     doc.rect(m, y, 52.2, rowH);
     doc.rect(m+52.2, y, 121.8, rowH);
-    doc.setFont('times','normal'); doc.setFontSize(10);
-    if(r){
+    doc.setFont('times','bold');
+    doc.text('Avaria:', m+55, y+8);
+    doc.text('Solução:', m+55, y+20);
+    doc.text('Observação:', m+55, y+32);
+    y += rowH;
+  }else{
+    items.forEach(item=>{
+      const r = item && item.record ? item.record : item;
+      const rowH = Math.max(39, Number(item && item.rowHeightMm) || estimateOfficialRowHeightMm(doc, r));
+      doc.rect(m, y, 52.2, rowH);
+      doc.rect(m+52.2, y, 121.8, rowH);
+      doc.setFont('times','normal'); doc.setFontSize(10);
       const left = dateRangeLabel(r) || '';
-      doc.text(doc.splitTextToSize(left, 46), m+26.1, y+10, {align:'center'});
+      const leftLines = doc.splitTextToSize(left, 46);
+      const leftBlockH = Math.max(1, leftLines.length) * 4.2;
+      const leftStartY = y + Math.max(8, (rowH / 2) - (leftBlockH / 2) + 1.8);
+      doc.text(leftLines, m+26.1, leftStartY, {align:'center'});
       let ty = y+6;
       doc.setFont('times','bold'); doc.text(`${r.tipoRegistroLabel || 'Avaria'}:`, m+55, ty);
       doc.setFont('times','normal'); ty = pdfText(doc, r.avaria || '', m+55, ty+5, 112, {size:10, lh:4.2});
@@ -4105,10 +4198,8 @@ function renderOfficialPdf(doc, page, ficha){
       ty = pdfText(doc, r.solucao || '', m+55, ty+7, 112, {size:10, lh:4.2});
       doc.setFont('times','bold'); doc.text('Observação:', m+55, ty+2); doc.setFont('times','normal');
       pdfText(doc, r.observacao || '', m+55, ty+7, 112, {size:10, lh:4.2});
-    }else{
-      doc.setFont('times','bold'); doc.text('Avaria:', m+55, y+8); doc.text('Solução:', m+55, y+20); doc.text('Observação:', m+55, y+32);
-    }
-    y += rowH;
+      y += rowH;
+    });
   }
 
   // signatures
