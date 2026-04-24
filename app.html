@@ -869,6 +869,57 @@
     body.ps-print-mode #psPrintHost{display:block!important}
     body.ps-print-mode #psPrintHost .ps-page{margin:0;box-shadow:none;width:210mm;min-height:297mm}
 
+
+/* v06: relatório clicável, visualização A4 full-fit e modo offline */
+.relatorio-bigrama-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:64px;
+  min-height:52px;
+  padding:10px 12px;
+  border-radius:16px;
+  background:rgba(240,196,25,.16);
+  border:1px solid rgba(240,196,25,.36);
+  color:#fff;
+  font-weight:900;
+  font-size:1.35rem;
+  letter-spacing:.05em;
+  cursor:pointer;
+  box-shadow:0 8px 18px rgba(0,0,0,.18);
+}
+.relatorio-bigrama-btn:active{transform:scale(.96);background:rgba(240,196,25,.30)}
+#pdfViewerContent{
+  flex:1;
+  min-height:0;
+  background:#1b1b1b;
+  overflow:auto;
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+  padding:8px;
+}
+.pdf-fit-stage{
+  transform-origin:top center;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:12px;
+}
+#pdfViewerContent .official-sheet{
+  flex:0 0 auto;
+  width:210mm !important;
+  min-height:297mm !important;
+  height:297mm !important;
+  padding:18mm 12mm 18mm 12mm !important;
+  margin:0 !important;
+  box-shadow:0 0 0 1px rgba(0,0,0,.15),0 8px 24px rgba(0,0,0,.45) !important;
+  overflow:hidden !important;
+}
+@media(max-width:900px){
+  .official-sheet{width:210mm !important;min-height:297mm !important;}
+}
+
 </style>
 
 <style id="pdf-viewer-overlay-fix">
@@ -972,7 +1023,7 @@
         <button class="menu-card" type="button" onclick="showScreen('novo')"><div class="menu-icon">📝</div><div class="menu-text"><h2>Novo Registro</h2><p>Lançar nova avaria, manutenção ou ocorrência.</p></div></button>
         <button class="menu-card secondary" type="button" onclick="showScreen('historico')"><div class="menu-icon">📚</div><div class="menu-text"><h2>Ver Histórico</h2><p>Visualizar, filtrar, editar, concluir e exportar registros.</p></div></button>
         <button class="menu-card tertiary" type="button" onclick="showScreen('ficha')"><div class="menu-icon">🗂️</div><div class="menu-text"><h2>Dados da Ficha</h2><p>Configurar campos fixos do modelo oficial.</p></div></button>
-        <button class="menu-card secondary" type="button" onclick="showScreen('documento')"><div class="menu-icon">🖨️</div><div class="menu-text"><h2>Imprimir Livro Histórico</h2><p>Gerar visualização pronta para impressão ou PDF.</p></div></button>
+        <button class="menu-card secondary" type="button" onclick="showScreen('documento')"><div class="menu-icon">🖨️</div><div class="menu-text"><h2>Imprimir Livro Histórico</h2><p>Gerar visualização pronta e baixar em DOCX.</p></div></button>
         <button class="menu-card tertiary" type="button" onclick="showScreen('horas')"><div class="menu-icon">⏱️</div><div class="menu-text"><h2>Horas de Funcionamento</h2><p>Cadastrar equipamentos, atualizar horas e configurar lembretes.</p></div></button>
         <button class="menu-card secondary" type="button" onclick="showScreen('ps')"><div class="menu-icon">📋</div><div class="menu-text"><h2>Pedido de Serviço</h2><p>Criar, visualizar e imprimir pedidos de serviço.</p></div></button>
       </div>
@@ -1071,9 +1122,9 @@
     <section id="screen-documento" class="section hidden">
       <div class="card">
         <h2>Imprimir Livro Histórico</h2>
-        <p style="margin-bottom:14px;">Somente registros em aberto do bigrama selecionado entram no PDF.</p>
+        <p style="margin-bottom:14px;">Somente registros em aberto do bigrama selecionado entram no documento.</p>
         <div class="toolbar" style="display:grid;grid-template-columns:1fr;gap:10px;">
-          <button class="btn btn-primary" type="button" onclick="previewPdfOnly()">Visualizar / Baixar PDF</button>
+          <button class="btn btn-primary" type="button" onclick="previewPdfOnly()">Visualizar / Baixar DOCX</button>
         </div>
         <div class="print-note" style="margin-top:12px;">Visualize o documento no app. Na visualização você pode baixar ou imprimir.</div>
       </div>
@@ -1089,7 +1140,7 @@
         <h2>Relatório Geral</h2>
         
         <div class="toolbar" style="margin-bottom:4px;">
-          <button class="btn btn-primary" type="button" onclick="printRelatorio()">🖨️ Imprimir / Exportar PDF</button>
+          <button class="btn btn-primary" type="button" onclick="printRelatorio()">🖨️ Imprimir / Exportar DOCX</button>
         </div>
       </div>
       <div id="relatorioContent"></div>
@@ -1259,11 +1310,11 @@
 
   <div id="printChoiceModal" class="modal-overlay" onclick="if(event.target.id==='printChoiceModal')closePrintChoiceModal()">
     <div class="modal-box" onclick="event.stopPropagation()">
-      <h3>Imprimir / Exportar PDF</h3>
+      <h3>Imprimir / Exportar DOCX</h3>
       <p>Escolha se os registros que forem para o PDF devem ser marcados como fechados após a abertura da visualização de impressão.</p>
       <div class="modal-actions">
-        <button class="btn btn-primary" type="button" onclick="confirmPrintAndClose()">Exportar PDF</button>
-        <button class="btn btn-secondary" type="button" onclick="previewPdfOnly()">Abrir PDF</button>
+        <button class="btn btn-primary" type="button" onclick="confirmPrintAndClose()">Exportar DOCX</button>
+        <button class="btn btn-secondary" type="button" onclick="previewPdfOnly()">Visualizar documento</button>
       </div>
       <div class="toolbar" style="margin-top:10px;"><button class="btn btn-ghost" type="button" onclick="closePrintChoiceModal()">Cancelar</button></div>
     </div>
@@ -1454,15 +1505,14 @@
       <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;background:linear-gradient(180deg, rgba(24,60,107,.99), rgba(18,52,92,.99));border-bottom:1px solid rgba(255,255,255,.12);">
         <h3 id="pdfViewerTitle" style="margin:0;font-size:1rem;color:#fff;">Visualização</h3>
         <div style="display:flex;gap:8px;">
-          <button class="btn btn-primary" type="button" id="pdfViewerDownloadBtn" onclick="downloadCurrentPdfViewer()" style="min-height:40px;padding:8px 14px;">⬇ Baixar</button>
+          <button class="btn btn-primary" type="button" id="pdfViewerDownloadBtn" onclick="downloadCurrentPdfViewer()" style="min-height:40px;padding:8px 14px;">⬇ Baixar DOCX</button>
           <button class="btn btn-ghost" type="button" onclick="closePdfViewerModal()" style="min-height:40px;padding:8px 12px;">✕ Fechar</button>
         </div>
       </div>
-      <iframe id="pdfViewerFrame" style="width:100%;flex:1;border:none;background:#d9d9d9;"></iframe>
+      <div id="pdfViewerContent"><div id="pdfViewerStage" class="pdf-fit-stage"></div></div>
     </div>
   </div>
 
-<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <script>
 const STORAGE_KEY = 'livro_historico_clean';
 const DEFAULT_BIGRAMAS = [
@@ -2707,7 +2757,7 @@ function getFilteredRecords(){
 }
 function renderHistory(){
   const records=getFilteredRecords(); const abertos=records.filter(r=>r.status!=='fechado').length;
-  $('historyStats').innerHTML=`<b>Total filtrado:</b> ${records.length} registro(s)<br><b>Abertos aptos para PDF:</b> ${abertos}<br><b>Sistema:</b> ${escapeHtml(getBigramaLabel(AppState.data.selectedBigramaId))}`;
+  $('historyStats').innerHTML=`<b>Total filtrado:</b> ${records.length} registro(s)<br><b>Abertos aptos para documento:</b> ${abertos}<br><b>Sistema:</b> ${escapeHtml(getBigramaLabel(AppState.data.selectedBigramaId))}`;
   const list=$('recordList');
   if(!records.length){ list.innerHTML='<div class="empty">Nenhum registro encontrado com os filtros atuais.</div>'; renderDocument(); return; }
   list.innerHTML=records.map(r=>{
@@ -2946,40 +2996,37 @@ function previewPdfOnly(){
     return;
   }
   const sigla = (getSelectedBigrama()||{}).sigla || 'Bigrama';
-  const styles = `<style>
-    html,body{margin:0;padding:0;background:#d9d9d9;font-family:"Times New Roman",Times,serif;overflow-y:auto;overflow-x:hidden;}
-    .wrap{display:flex;flex-direction:column;gap:12px;align-items:center;padding:12px 0;}
-    .official-sheet{background:#fff;color:#111;padding:18mm 12mm 18mm 12mm;width:210mm;min-height:297mm;margin:0 auto;box-shadow:0 2px 8px rgba(0,0,0,.2);page-break-after:always;position:relative;font-family:"Times New Roman",Times,serif;box-sizing:border-box;}
-    .sheet-top-right{text-align:right;font-size:11pt;line-height:1.2;margin-bottom:8px}
-    .page-code{text-align:center;font-size:12pt;margin:10px 0;letter-spacing:.16em}
-    .doc-title-table,.meta-table,.hist-table{width:100%;border-collapse:collapse;table-layout:fixed}
-    .doc-title-table td,.meta-table td,.hist-table td,.hist-table th{border:1px solid #2b2b2b;padding:5px 7px;vertical-align:top;font-size:10.5pt}
-    .doc-title{font-weight:700;font-size:13pt!important;text-align:center;line-height:1.15}
-    .box-label{font-weight:700}
-    .hist-table th{font-weight:700;text-align:center;background:#f2f2f2;vertical-align:middle}
-    .left-col{width:30%;text-align:center;vertical-align:top!important;font-size:10.5pt;padding:10px 6px!important}
-    .right-col{width:70%;padding:10px!important;vertical-align:top!important}
-    .rh-block{line-height:1.35;}
-    .rh-block p{margin:0 0 6px 0;}
-    .signature-bar{position:absolute;left:12mm;right:12mm;bottom:10mm;display:flex;justify-content:space-between;align-items:flex-end;gap:20mm}
-    .signature-box{width:44%;text-align:center;font-size:10pt}
-    .signature-line{border-top:1px solid #222;margin-bottom:4px;height:0}
-  </style>`;
-  const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">${styles}</head><body><div class="wrap">${content}</div></body></html>`;
-  const blob = new Blob([html], {type:'text/html'});
-  const url = URL.createObjectURL(blob);
-  window._currentPdfViewerUrl = url;
-  window._currentPdfViewerName = 'Livro_Historico_' + sigla + '.html';
-  const frame = $('pdfViewerFrame');
+  window._currentDocxName = 'Livro_Historico_' + sigla + '.docx';
   const modal = $('pdfViewerModal');
   const title = $('pdfViewerTitle');
+  const stage = $('pdfViewerStage');
   title.textContent = 'Livro Histórico — ' + sigla;
-  frame.src = url;
+  stage.innerHTML = content;
   modal.classList.add('show');
-  setTimeout(()=>{ URL.revokeObjectURL(url); }, 60000);
+  requestAnimationFrame(fitOfficialViewerToScreen);
+  setTimeout(fitOfficialViewerToScreen, 80);
+  setTimeout(fitOfficialViewerToScreen, 250);
 }
-function confirmPrintAndClose(){ closePrintChoiceModal(); exportOfficialPdf(true, 'download'); }
-function printOfficialDocument(markPrinted=false){ return exportOfficialPdf(markPrinted, markPrinted ? 'download' : 'inline'); }
+function fitOfficialViewerToScreen(){
+  const modal = $('pdfViewerModal');
+  const content = $('pdfViewerContent');
+  const stage = $('pdfViewerStage');
+  if(!modal || !content || !stage || !modal.classList.contains('show')) return;
+  stage.style.transform = 'scale(1)';
+  stage.style.height = 'auto';
+  const firstSheet = stage.querySelector('.official-sheet');
+  if(!firstSheet) return;
+  const sheetW = firstSheet.offsetWidth || 794;
+  const sheetH = firstSheet.offsetHeight || 1123;
+  const availableW = Math.max(content.clientWidth - 10, 1);
+  const availableH = Math.max(content.clientHeight - 10, 1);
+  const scale = Math.min(availableW / sheetW, availableH / sheetH, 1);
+  stage.style.transform = 'scale(' + scale + ')';
+  stage.style.height = Math.ceil(stage.scrollHeight * scale) + 'px';
+}
+window.addEventListener('resize', fitOfficialViewerToScreen);
+function confirmPrintAndClose(){ closePrintChoiceModal(); downloadOfficialDocx(true); }
+function printOfficialDocument(markPrinted=false){ if(markPrinted){ return downloadOfficialDocx(true); } previewPdfOnly(); }
 
 function openRelatorio(){
   closeMainMenu();
@@ -3018,7 +3065,7 @@ function renderRelatorio(){
           ${rows.map((row,i) => `
           <tr style="border-bottom:1px solid rgba(255,255,255,.08);background:${i%2===0?'rgba(255,255,255,.03)':'transparent'}">
             <td style="padding:12px;font-weight:800;">
-              <span class="chip" style="margin-right:0;">${escapeHtml(row.b.sigla)}</span>
+              <button type="button" class="relatorio-bigrama-btn" onclick="openBigramaFromRelatorio('${escapeHtml(row.b.id)}')">${escapeHtml(row.b.sigla)}</button>
             </td>
             <td style="text-align:center;padding:12px;">
               <span style="font-size:1.3rem;font-weight:800;color:${row.naoSolucionadas>0?'var(--danger)':'var(--success)'};">${row.naoSolucionadas}</span>
@@ -3037,6 +3084,14 @@ function renderRelatorio(){
         </tfoot>
       </table>
     </div>`;
+}
+function openBigramaFromRelatorio(id){
+  const exists = AppState.data.bigramas.some(b => b.id === id);
+  if(!exists){ showAppMessage('Bigrama','Bigrama não encontrado.'); return; }
+  AppState.data.selectedBigramaId = id;
+  AppState.save();
+  updateContextUI();
+  showScreen('dashboard');
 }
 function printRelatorio(){
   const content = $('relatorioContent').innerHTML;
@@ -3867,7 +3922,7 @@ function renderPsList(){
           </div>
         </div>
         <div class="record-actions" style="grid-template-columns:repeat(3,42px);">
-          <button class="icon-btn view" title="PDF" onclick="openPsPdfChoiceModal('${ps.id}')">📄</button>
+          <button class="icon-btn view" title="Documento" onclick="openPsPdfChoiceModal('${ps.id}')">📄</button>
           <button class="icon-btn edit" title="Editar" onclick="openPsModal('${ps.id}')">✎</button>
           <button class="icon-btn delete" title="Excluir" onclick="deletePs('${ps.id}')">🗑</button>
         </div>
@@ -3956,7 +4011,7 @@ function openPdfInNewTab(doc, fallbackName){
 <body>
   <div class="topbar">
     <a class="btn btn-secondary" href="${url}" download="${safeName}">Salvar PDF</a>
-    <button class="btn btn-primary" onclick="window.open('${url}','_blank')">Abrir PDF direto</button>
+    <button class="btn btn-primary" onclick="window.open('${url}','_blank')">Visualizar documento direto</button>
   </div>
   <iframe src="${url}"></iframe>
 </body>
@@ -3990,11 +4045,11 @@ function openPdfBlobUrl(doc, fallbackName, mode){
 
     if(mode === 'inline'){
       const dataUri = doc.output('datauristring');
-      $('pdfViewerTitle').textContent = String(fallbackName || 'PDF');
-      const frame = $('pdfViewerFrame');
+      $('pdfViewerTitle').textContent = String(fallbackName || 'Documento');
+      const stage = $('pdfViewerStage');
       const viewerHtml = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><style>html,body{margin:0;height:100%;background:#2b2b2b} iframe,embed,object{border:0;width:100%;height:100%;display:block;background:#fff}</style></head><body><embed src="${dataUri}" type="application/pdf"></body></html>`;
-      frame.removeAttribute('src');
-      frame.srcdoc = viewerHtml;
+      stage.innerHTML = '<iframe style="width:100vw;height:calc(100vh - 66px);border:0;background:#fff;"></iframe>';
+      stage.querySelector('iframe').srcdoc = viewerHtml;
       $('pdfViewerModal').classList.add('show');
       return;
     }
@@ -4007,7 +4062,7 @@ function openPdfBlobUrl(doc, fallbackName, mode){
       return;
     }
     const safeName = String(fallbackName || 'documento.pdf').replace(/"/g, '');
-    const viewerHtml = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${safeName}</title><style>html,body{margin:0;height:100%;font-family:Arial,Helvetica,sans-serif;background:#0b1f33}.topbar{display:flex;gap:10px;align-items:center;justify-content:center;padding:12px;background:#183c6b;position:sticky;top:0;z-index:10}.btn{border:none;border-radius:12px;padding:12px 14px;font-weight:700;font-size:14px}.btn-primary{background:#f0c419;color:#111}.btn-secondary{background:#fff;color:#111;text-decoration:none;display:inline-flex;align-items:center}iframe{width:100%;height:calc(100% - 60px);border:none;background:#fff}</style></head><body><div class="topbar"><a class="btn btn-secondary" href="${url}" download="${safeName}">Salvar PDF</a><button class="btn btn-primary" onclick="window.open('${url}','_blank')">Abrir PDF direto</button></div><iframe src="${url}"></iframe></body></html>`;
+    const viewerHtml = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${safeName}</title><style>html,body{margin:0;height:100%;font-family:Arial,Helvetica,sans-serif;background:#0b1f33}.topbar{display:flex;gap:10px;align-items:center;justify-content:center;padding:12px;background:#183c6b;position:sticky;top:0;z-index:10}.btn{border:none;border-radius:12px;padding:12px 14px;font-weight:700;font-size:14px}.btn-primary{background:#f0c419;color:#111}.btn-secondary{background:#fff;color:#111;text-decoration:none;display:inline-flex;align-items:center}iframe{width:100%;height:calc(100% - 60px);border:none;background:#fff}</style></head><body><div class="topbar"><a class="btn btn-secondary" href="${url}" download="${safeName}">Salvar PDF</a><button class="btn btn-primary" onclick="window.open('${url}','_blank')">Visualizar documento direto</button></div><iframe src="${url}"></iframe></body></html>`;
     win.document.open();
     win.document.write(viewerHtml);
     win.document.close();
@@ -4018,20 +4073,150 @@ function openPdfBlobUrl(doc, fallbackName, mode){
   }
 }
 function downloadCurrentPdfViewer(){
-  const url = window._currentPdfViewerUrl;
-  const name = window._currentPdfViewerName || 'documento.html';
-  if(!url){ showAppMessage('Baixar','Nenhum documento carregado.'); return; }
-  const a = document.createElement('a');
-  a.href = url; a.download = name;
-  document.body.appendChild(a); a.click(); a.remove();
+  downloadOfficialDocx(false);
 }
 
 function closePdfViewerModal(){
-  const frame = $('pdfViewerFrame');
-  if(frame){ frame.src = 'about:blank'; frame.srcdoc = ''; }
+  const stage = $('pdfViewerStage');
+  if(stage) stage.innerHTML = '';
   $('pdfViewerModal').classList.remove('show');
 }
 
+function xmlEscape(v){
+  return String(v == null ? '' : v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;');
+}
+function docxTextRuns(text){
+  const parts = String(text || '').split(/\n/);
+  return parts.map((p,i)=>`${i?'<w:br/>':''}<w:t xml:space="preserve">${xmlEscape(p)}</w:t>`).join('');
+}
+function docxP(text, opts={}){
+  const jc = opts.jc ? `<w:pPr><w:jc w:val="${opts.jc}"/></w:pPr>` : '';
+  const bold = opts.bold ? '<w:b/>' : '';
+  const size = opts.size ? `<w:sz w:val="${opts.size}"/><w:szCs w:val="${opts.size}"/>` : '';
+  return `<w:p>${jc}<w:r><w:rPr>${bold}${size}</w:rPr>${docxTextRuns(text)}</w:r></w:p>`;
+}
+function docxCell(content, width, opts={}){
+  const shade = opts.shade ? `<w:shd w:fill="${opts.shade}"/>` : '';
+  const vAlign = '<w:vAlign w:val="top"/>';
+  return `<w:tc><w:tcPr><w:tcW w:w="${width}" w:type="dxa"/>${vAlign}${shade}</w:tcPr>${content}</w:tc>`;
+}
+function docxRow(cells){ return `<w:tr>${cells.join('')}</w:tr>`; }
+function docxTable(rows){
+  return `<w:tbl><w:tblPr><w:tblW w:w="0" w:type="auto"/><w:tblBorders><w:top w:val="single" w:sz="8" w:space="0" w:color="000000"/><w:left w:val="single" w:sz="8" w:space="0" w:color="000000"/><w:bottom w:val="single" w:sz="8" w:space="0" w:color="000000"/><w:right w:val="single" w:sz="8" w:space="0" w:color="000000"/><w:insideH w:val="single" w:sz="8" w:space="0" w:color="000000"/><w:insideV w:val="single" w:sz="8" w:space="0" w:color="000000"/></w:tblBorders></w:tblPr>${rows.join('')}</w:tbl>`;
+}
+function buildOfficialDocxXml(){
+  const {pages, ficha} = getOfficialPdfPages();
+  const body = [];
+  pages.forEach((page, idx)=>{
+    body.push(docxP('ENGENALMARINST Nº 85-13A', {jc:'right', size:22}));
+    body.push(docxP(page.isFirst ? `Anexo ${String(ficha.anexoPrimeiraPagina || 'A')}` : 'Anexo B', {jc:'right', size:22}));
+    body.push(docxP(page.isFirst ? `- ${String(ficha.anexoPrimeiraPagina || 'A')} - ${page.pageNumber} -` : `- B - ${page.pageNumber} -`, {jc:'center', size:24}));
+    body.push(docxTable([
+      docxRow([
+        docxCell(docxP('REGISTRO HISTÓRICO DE EQUIPAMENTOS DE\nMÁQUINAS',{jc:'center',bold:true,size:26}), 6200),
+        docxCell(docxP('FICHA Nº\n' + (ficha.fichaNumero || ''),{jc:'center',bold:true,size:20}), 1400),
+        docxCell(docxP('FOLHA Nº\n' + page.pageNumber,{jc:'center',bold:true,size:20}), 1700)
+      ])
+    ]));
+    if(page.isFirst){
+      const metaRows = [
+        ['NAVIO:', ficha.navio || ''], ['SISTEMA:', ficha.sistemaFicha || ''], ['EQUIPAMENTO:', ficha.equipamentoFicha || ''],
+        ['MANUAL E/OU PLANO:', ficha.manualPlano || ''], ['FABRICANTE:', ficha.fabricante || ''], ['DADOS DE PLACA:', ficha.dadosPlaca || '']
+      ].map(([l,v]) => docxRow([docxCell(docxP(l + ' ' + v, {bold:false,size:21}), 9300)]));
+      metaRows.push(docxRow([
+        docxCell(docxP('LOCALIZAÇÃO: ' + (ficha.localizacao || ''), {size:21}), 4650),
+        docxCell(docxP('Nº DE SÉRIE: ' + (ficha.numeroSerie || ''), {size:21}), 4650)
+      ]));
+      body.push(docxTable(metaRows));
+    }
+    const histRows = [docxRow([
+      docxCell(docxP('DATA E Nº DE HORAS DE\nFUNCIONAMENTO',{jc:'center',bold:true,size:20}), 2800, {shade:'F2F2F2'}),
+      docxCell(docxP('REGISTRO HISTÓRICO',{jc:'center',bold:true,size:20}), 6500, {shade:'F2F2F2'})
+    ])];
+    (page.rows || []).forEach(r=>{
+      const right = [
+        `${r.tipoRegistroLabel || 'Avaria'}: ${r.avaria || ''}`,
+        `Solução: ${r.solucao || ''}`,
+        `Observação: ${r.observacao || ''}`
+      ].join('\n');
+      histRows.push(docxRow([
+        docxCell(docxP(dateRangeLabel(r) || '', {jc:'center', size:21}), 2800),
+        docxCell(docxP(right, {size:21}), 6500)
+      ]));
+    });
+    body.push(docxTable(histRows));
+    body.push(docxP('\n_______________________________                         _______________________________', {jc:'center', size:20}));
+    body.push(docxP('Encarregado do Sistema MO-1                         Encarregado da Divisão de Máquinas', {jc:'center', size:19}));
+    if(idx < pages.length - 1){
+      body.push('<w:p><w:r><w:br w:type="page"/></w:r></w:p>');
+    }
+  });
+  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>${body.join('')}<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1021" w:right="680" w:bottom="1021" w:left="680" w:header="708" w:footer="708" w:gutter="0"/></w:sectPr></w:body></w:document>`;
+}
+function crc32(str){
+  const table = crc32.table || (crc32.table = (()=>{let c,t=[];for(let n=0;n<256;n++){c=n;for(let k=0;k<8;k++) c=((c&1)?(0xEDB88320^(c>>>1)):(c>>>1));t[n]=c>>>0;}return t;})());
+  let crc = 0 ^ -1;
+  for(let i=0;i<str.length;i++) crc = (crc >>> 8) ^ table[(crc ^ str.charCodeAt(i)) & 0xff];
+  return (crc ^ -1) >>> 0;
+}
+function dosDateTime(){
+  const d = new Date();
+  const time = ((d.getHours()&31)<<11) | ((d.getMinutes()&63)<<5) | ((Math.floor(d.getSeconds()/2))&31);
+  const date = (((d.getFullYear()-1980)&127)<<9) | (((d.getMonth()+1)&15)<<5) | (d.getDate()&31);
+  return {time,date};
+}
+function makeZip(files){
+  const enc = new TextEncoder();
+  const chunks=[]; const central=[]; let offset=0; const dt=dosDateTime();
+  const u16=n=>String.fromCharCode(n&255,(n>>>8)&255);
+  const u32=n=>String.fromCharCode(n&255,(n>>>8)&255,(n>>>16)&255,(n>>>24)&255);
+  files.forEach(f=>{
+    const nameBytes = enc.encode(f.name);
+    const dataBytes = enc.encode(f.content);
+    let dataBin=''; dataBytes.forEach(b=>dataBin+=String.fromCharCode(b));
+    const crc = crc32(dataBin);
+    let nameBin=''; nameBytes.forEach(b=>nameBin+=String.fromCharCode(b));
+    const local = 'PK\x03\x04'+u16(20)+u16(0)+u16(0)+u16(dt.time)+u16(dt.date)+u32(crc)+u32(dataBytes.length)+u32(dataBytes.length)+u16(nameBytes.length)+u16(0)+nameBin+dataBin;
+    chunks.push(local);
+    const cent = 'PK\x01\x02'+u16(20)+u16(20)+u16(0)+u16(0)+u16(dt.time)+u16(dt.date)+u32(crc)+u32(dataBytes.length)+u32(dataBytes.length)+u16(nameBytes.length)+u16(0)+u16(0)+u16(0)+u16(0)+u32(0)+u32(offset)+nameBin;
+    central.push(cent);
+    offset += local.length;
+  });
+  const centralStr = central.join('');
+  const end = 'PK\x05\x06'+u16(0)+u16(0)+u16(files.length)+u16(files.length)+u32(centralStr.length)+u32(offset)+u16(0);
+  const zipStr = chunks.join('') + centralStr + end;
+  const arr = new Uint8Array(zipStr.length);
+  for(let i=0;i<zipStr.length;i++) arr[i]=zipStr.charCodeAt(i)&255;
+  return new Blob([arr], {type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
+}
+function buildOfficialDocxBlob(){
+  const documentXml = buildOfficialDocxXml();
+  const files = [
+    {name:'[Content_Types].xml', content:'<?xml version="1.0" encoding="UTF-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>'},
+    {name:'_rels/.rels', content:'<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>'},
+    {name:'word/_rels/document.xml.rels', content:'<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"></Relationships>'},
+    {name:'word/document.xml', content:documentXml}
+  ];
+  return makeZip(files);
+}
+function downloadBlob(blob, filename){
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>{ try{ URL.revokeObjectURL(url); }catch(e){} }, 60000);
+}
+function downloadOfficialDocx(markPrinted=false){
+  renderDocument();
+  const sigla = (getSelectedBigrama()||{}).sigla || 'Bigrama';
+  const blob = buildOfficialDocxBlob();
+  downloadBlob(blob, 'Documento_Oficial_' + sigla + '.docx');
+  if(markPrinted){
+    const data = getOfficialPdfPages();
+    data.records.forEach(r=>{ r.status='fechado'; r.updatedAt=Date.now(); });
+    AppState.save(); renderHistory(); renderDocument();
+  }
+}
 function getJsPdfCtor(){
   return window.jspdf && window.jspdf.jsPDF ? window.jspdf.jsPDF : null;
 }
@@ -4248,26 +4433,11 @@ async function buildPsPdf(doc, ps){
   doc.text('ASSINADO DIGITALMENTE', 105, 267, {align:'center'});
 }
 async function exportOfficialPdf(markPrinted=false, mode='download'){
-  const JsPDF = getJsPdfCtor();
-  if(!JsPDF){
-    showAppMessage('PDF','Biblioteca de PDF não carregou. Abra com internet para carregar a geração de PDF.');
+  if(mode === 'inline'){
+    previewPdfOnly();
     return;
   }
-  const data = getOfficialPdfPages();
-  const pages = data.pages, ficha = data.ficha, records = data.records;
-  const doc = new JsPDF({unit:'mm', format:'a4'});
-  pages.forEach((p, idx)=>{
-    if(idx>0) doc.addPage();
-    renderOfficialPdf(doc, p, ficha);
-  });
-  const sigla = (getSelectedBigrama()||{}).sigla || 'Bigrama';
-  openPdfBlobUrl(doc, `Documento_Oficial_${sigla}.pdf`, mode);
-  if(markPrinted){
-    records.forEach(r=>{ r.status='fechado'; r.updatedAt=Date.now(); });
-    AppState.save();
-    renderHistory();
-    renderDocument();
-  }
+  downloadOfficialDocx(!!markPrinted);
 }
 async function exportPsPdf(id, mode='inline'){
   const JsPDF = getJsPdfCtor();
@@ -4297,14 +4467,42 @@ function closePsPdfChoiceModal(){
   const modal = $('psPdfChoiceModal');
   if(modal) modal.classList.remove('show');
 }
+function buildPsDocxBlob(ps){
+  const rows = [
+    ['OM Solicitante', ps.om], ['Data', ps.data ? formatDateBR(ps.data) : ''], ['Número', ps.numero], ['Prioridade', ps.prioridade],
+    ['Descrição do Serviço', ps.descricao], ['Tipo de Manutenção', ps.tipoManutencao], ['Sobressalentes Disponíveis', ps.sobressalentes],
+    ['Código MRC', ps.codigoMrc], ['Código LCN', ps.codigoLcn], ['Compartimento', ps.compartimento], ['Functional Mark', ps.functionalMark],
+    ['Dados da Placa do Fabricante', ps.dadosPlaca], ['Horas de Funcionamento', ps.horasFuncionamento],
+    ['Data da Última Manutenção', ps.dataUltimaManutencao ? formatDateBR(ps.dataUltimaManutencao) : ''],
+    ['Encarregado da Incumbência', ps.encarregado], ['Oficial Responsável', ps.oficial], ['Divisão Responsável', ps.divisao],
+    ['Informações Complementares', ps.infoComplementares]
+  ];
+  const body = [docxP('PEDIDO DE SERVIÇO', {jc:'center', bold:true, size:32})];
+  body.push(docxTable(rows.map(([l,v]) => docxRow([
+    docxCell(docxP(String(l || ''), {bold:true, size:22}), 3200, {shade:'F2F2F2'}),
+    docxCell(docxP(String(v || ''), {size:22}), 6100)
+  ]))));
+  body.push(docxP('\n' + String(ps.oficial || ''), {jc:'center', bold:true, size:22}));
+  body.push(docxP('Primeiro-Tenente', {jc:'center', size:20}));
+  body.push(docxP(String(ps.divisao || ''), {jc:'center', size:19}));
+  const xml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>${body.join('')}<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1021" w:right="680" w:bottom="1021" w:left="680" w:header="708" w:footer="708" w:gutter="0"/></w:sectPr></w:body></w:document>`;
+  return makeZip([
+    {name:'[Content_Types].xml', content:'<?xml version="1.0" encoding="UTF-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>'},
+    {name:'_rels/.rels', content:'<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>'},
+    {name:'word/_rels/document.xml.rels', content:'<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"></Relationships>'},
+    {name:'word/document.xml', content:xml}
+  ]);
+}
 function downloadCurrentPsPdf(){
-  if(!currentPsPdfId){
-    closePsPdfChoiceModal();
-    return;
-  }
+  if(!currentPsPdfId){ closePsPdfChoiceModal(); return; }
   const id = currentPsPdfId;
   closePsPdfChoiceModal();
-  exportPsPdf(id, 'download');
+  const bigramaId = AppState.data.selectedBigramaId;
+  const list = getPsListForBigrama(bigramaId);
+  const ps = list.find(x=>x.id===id);
+  if(!ps){ showAppMessage('Documento','Pedido não encontrado.'); return; }
+  const numero = String(ps.numero || 'pedido').replace(/[^A-Za-z0-9_-]+/g,'_');
+  downloadBlob(buildPsDocxBlob(ps), `Pedido_Servico_${numero}.docx`);
 }
 function previewCurrentPsPdf(){
   if(!currentPsPdfId){
@@ -4439,16 +4637,17 @@ async function previewPsPdf(id){
     showAppMessage('Visualização','Pedido não encontrado.');
     return;
   }
-  const frame = $('pdfViewerFrame');
   const modal = $('pdfViewerModal');
   const title = $('pdfViewerTitle');
-  if(!frame || !modal || !title){
+  const stage = $('pdfViewerStage');
+  if(!modal || !title || !stage){
     showAppMessage('Visualização','O visualizador não foi carregado corretamente.');
     return;
   }
   const imgs = await resolvePsAttachmentDataUrls(ps);
   title.textContent = 'Visualização do Pedido de Serviço';
-  frame.src = 'about:blank';
+  stage.innerHTML = '<iframe style="width:100vw;height:calc(100vh - 66px);border:0;background:#d9d9d9;"></iframe>';
+  const frame = stage.querySelector('iframe');
   frame.srcdoc = buildPsPreviewHtml(ps, imgs);
   modal.classList.add('show');
 }
@@ -4503,11 +4702,11 @@ if ("serviceWorker" in navigator) {
 
   <div id="psPdfChoiceModal" class="modal-overlay" onclick="if(event.target.id==='psPdfChoiceModal')closePsPdfChoiceModal()">
     <div class="modal-box" onclick="event.stopPropagation()">
-      <h3>PDF do Pedido de Serviço</h3>
-      <p>Escolha se deseja visualizar ou baixar o PDF deste pedido.</p>
+      <h3>Documento do Pedido de Serviço</h3>
+      <p>Escolha se deseja visualizar ou baixar o documento deste pedido.</p>
       <div class="modal-actions">
-        <button class="btn btn-primary" type="button" onclick="downloadCurrentPsPdf()">Baixar PDF</button>
-        <button class="btn btn-secondary" type="button" onclick="previewCurrentPsPdf()">Visualizar PDF</button>
+        <button class="btn btn-primary" type="button" onclick="downloadCurrentPsPdf()">Baixar DOCX</button>
+        <button class="btn btn-secondary" type="button" onclick="previewCurrentPsPdf()">Visualizar</button>
       </div>
       <div class="toolbar" style="margin-top:10px;">
         <button class="btn btn-ghost" type="button" onclick="closePsPdfChoiceModal()">Cancelar</button>
