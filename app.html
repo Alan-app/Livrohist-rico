@@ -920,6 +920,32 @@
   .official-sheet{width:210mm !important;min-height:297mm !important;}
 }
 
+/* v07: sem prévia cortada na tela Documento; viewer fit-page; assinatura fixa no rodapé */
+#printHost{display:none !important;}
+#pdfViewerContent{
+  overflow:hidden !important;
+  align-items:flex-start !important;
+  justify-content:center !important;
+}
+#pdfViewerStage.pdf-fit-stage{
+  transform-origin:top center !important;
+  will-change:transform;
+}
+.official-sheet .signature-bar,
+#pdfViewerContent .official-sheet .signature-bar{
+  position:absolute !important;
+  left:12mm !important;
+  right:12mm !important;
+  bottom:10mm !important;
+  margin-top:0 !important;
+}
+#pdfViewerContent .official-sheet .hist-table{
+  margin-bottom:0 !important;
+}
+@media print{
+  #printHost{display:block !important;}
+}
+
 </style>
 
 <style id="pdf-viewer-overlay-fix">
@@ -1502,11 +1528,11 @@
 
   <div id="pdfViewerModal" class="modal-overlay" onclick="if(event.target.id==='pdfViewerModal')closePdfViewerModal()">
     <div class="modal-box" onclick="event.stopPropagation()" style="width:100%;height:100%;max-width:100%;max-height:100%;padding:0;overflow:hidden;display:flex;flex-direction:column;border-radius:0;">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;background:linear-gradient(180deg, rgba(24,60,107,.99), rgba(18,52,92,.99));border-bottom:1px solid rgba(255,255,255,.12);">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;background:linear-gradient(180deg, rgba(24,60,107,.99), rgba(18,52,92,.99));border-bottom:1px solid rgba(255,255,255,.12);">
         <h3 id="pdfViewerTitle" style="margin:0;font-size:1rem;color:#fff;">Visualização</h3>
         <div style="display:flex;gap:8px;">
-          <button class="btn btn-primary" type="button" id="pdfViewerDownloadBtn" onclick="downloadCurrentPdfViewer()" style="min-height:40px;padding:8px 14px;">⬇ Baixar DOCX</button>
-          <button class="btn btn-ghost" type="button" onclick="closePdfViewerModal()" style="min-height:40px;padding:8px 12px;">✕ Fechar</button>
+          <button class="btn btn-primary" type="button" id="pdfViewerDownloadBtn" onclick="downloadCurrentPdfViewer()" style="min-height:36px;padding:6px 10px;">⬇ Baixar DOCX</button>
+          <button class="btn btn-ghost" type="button" onclick="closePdfViewerModal()" style="min-height:36px;padding:6px 10px;">✕ Fechar</button>
         </div>
       </div>
       <div id="pdfViewerContent"><div id="pdfViewerStage" class="pdf-fit-stage"></div></div>
@@ -2950,8 +2976,8 @@ function estimateOfficialRowHeightMm(record){
 function paginateOfficialRecords(records, ficha){
   const initialPage = Math.max(1, parseInt(ficha.folhaInicial||1,10)||1);
   const pages = [];
-  const firstPageLimit = 84; // espaço útil da tabela na primeira página, em mm
-  const otherPageLimit = 165; // páginas seguintes, preservando 50mm antes da assinatura
+  const firstPageLimit = 142; // v07: usa quase toda a área útil da 1ª página sem invadir assinatura
+  const otherPageLimit = 192; // v07: páginas seguintes preenchem mais a folha, preservando assinatura no rodapé
   if(!records.length){
     return [{pageNumber: initialPage, isFirst: true, rows: []}];
   }
@@ -3012,19 +3038,34 @@ function fitOfficialViewerToScreen(){
   const content = $('pdfViewerContent');
   const stage = $('pdfViewerStage');
   if(!modal || !content || !stage || !modal.classList.contains('show')) return;
+
   stage.style.transform = 'scale(1)';
   stage.style.height = 'auto';
+  stage.style.width = 'auto';
+
   const firstSheet = stage.querySelector('.official-sheet');
   if(!firstSheet) return;
-  const sheetW = firstSheet.offsetWidth || 794;
-  const sheetH = firstSheet.offsetHeight || 1123;
-  const availableW = Math.max(content.clientWidth - 10, 1);
-  const availableH = Math.max(content.clientHeight - 10, 1);
-  const scale = Math.min(availableW / sheetW, availableH / sheetH, 1);
+
+  // Calcula pela folha A4 real renderizada, não pelo tamanho do documento inteiro.
+  const sheetRect = firstSheet.getBoundingClientRect();
+  const sheetW = firstSheet.offsetWidth || sheetRect.width || 794;
+  const sheetH = firstSheet.offsetHeight || sheetRect.height || 1123;
+  const availableW = Math.max(content.clientWidth - 16, 1);
+  const availableH = Math.max(content.clientHeight - 16, 1);
+
+  // Prioridade: página inteira visível, sem cortar. Não limita a 1, porque em telas grandes pode ampliar.
+  const scale = Math.max(0.1, Math.min(availableW / sheetW, availableH / sheetH));
   stage.style.transform = 'scale(' + scale + ')';
-  stage.style.height = Math.ceil(stage.scrollHeight * scale) + 'px';
+
+  // Mantém o container com a altura visual correta para não sobrar scroll falso.
+  const pageGap = 12;
+  const sheets = stage.querySelectorAll('.official-sheet').length || 1;
+  const visualHeight = (sheetH * sheets + pageGap * Math.max(0, sheets - 1)) * scale;
+  stage.style.height = Math.ceil(visualHeight) + 'px';
+  stage.style.width = Math.ceil(sheetW * scale) + 'px';
 }
 window.addEventListener('resize', fitOfficialViewerToScreen);
+window.addEventListener('orientationchange', ()=>setTimeout(fitOfficialViewerToScreen, 250));
 function confirmPrintAndClose(){ closePrintChoiceModal(); downloadOfficialDocx(true); }
 function printOfficialDocument(markPrinted=false){ if(markPrinted){ return downloadOfficialDocx(true); } previewPdfOnly(); }
 
