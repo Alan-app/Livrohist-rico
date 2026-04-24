@@ -877,18 +877,22 @@
   justify-content:center;
   min-width:64px;
   min-height:52px;
-  padding:10px 12px;
-  border-radius:16px;
-  background:rgba(240,196,25,.16);
-  border:1px solid rgba(240,196,25,.36);
+  padding:0;
+  border-radius:0;
+  background:transparent;
+  border:none;
   color:#fff;
-  font-weight:900;
-  font-size:1.35rem;
-  letter-spacing:.05em;
+  font-weight:800;
+  font-size:1rem;
+  letter-spacing:0;
   cursor:pointer;
-  box-shadow:0 8px 18px rgba(0,0,0,.18);
+  box-shadow:none;
+  min-height:auto;
+  text-transform:none;
 }
-.relatorio-bigrama-btn:active{transform:scale(.96);background:rgba(240,196,25,.30)}
+.relatorio-bigrama-btn:active{transform:scale(.98);color:var(--gold)}
+/* v11: relatório volta ao tamanho compacto, mantendo clique */
+.relatorio-bigrama-btn{display:inline !important;line-height:1.2 !important;}
 #pdfViewerContent{
   flex:1;
   min-height:0;
@@ -2737,7 +2741,7 @@ function showScreen(screen){
     requestAnimationFrame(() => window.scrollTo({top:0, behavior:'auto'}));
   } applyFixedTopbarLayoutStable();
 }
-function goBack(){ if(UI.currentScreen==='home') return; if(UI.currentScreen==='dashboard' || UI.currentScreen==='relatorio' || UI.currentScreen==='ps') showScreen('home'); else showScreen('dashboard'); }
+function goBack(){ if(UI.currentScreen==='home') return; if(UI.currentScreen==='dashboard' || UI.currentScreen==='relatorio') showScreen('home'); else showScreen('dashboard'); }
 function goHome(){ closeMainMenu(); closeManageBigramas(); showScreen('home'); }
 function toggleVisualPrefsMenu(){
   const panel = $('visualPrefsPanel');
@@ -3038,7 +3042,7 @@ function paginateOfficialRecords(records, ficha){
 
   function fallbackPaginate(){
     const pages = [];
-    const pageLimit = 218; // fallback mais cheio que a v09, usado só se o DOM não puder medir
+    const pageLimit = 236; // v11: fallback mais cheio, reserva 4 cm totais no rodapé
     let current = {pageNumber: 1, isFirst: false, rows: []};
     let used = 0;
     records.forEach((record)=>{
@@ -3089,9 +3093,12 @@ function paginateOfficialRecords(records, ficha){
   const clearancePx = SIGNATURE_CLEARANCE_MM * pxPerMm;
 
   const canFitCurrentSheet = ()=>{
+    const sheetRect = sheet.getBoundingClientRect();
     const tableBottom = table.getBoundingClientRect().bottom;
-    const signatureTop = signature.getBoundingClientRect().top;
-    return tableBottom <= (signatureTop - clearancePx);
+    // v11: os 4 cm são a área total reservada no rodapé para assinatura,
+    // não 4 cm extras acima da assinatura. Isso libera mais lançamentos por página.
+    const usableBottom = sheetRect.top + sheetRect.height - clearancePx;
+    return tableBottom <= usableBottom;
   };
 
   try{
