@@ -249,7 +249,7 @@
     .signature-box{width:44%;text-align:center;font-size:10pt}
     .signature-line{border-top:1px solid #222;margin-bottom:4px;height:0}
     .print-note{font-size:.92rem;line-height:1.45;color:var(--muted)}
-    @media(max-width:900px){.official-sheet{width:100%;min-height:auto;padding:16px}.signature-bar{position:static;margin-top:18px}}
+    @media(max-width:900px){.official-sheet{width:210mm !important;min-height:297mm !important;padding:18mm 12mm 18mm 12mm !important}.signature-bar{position:absolute !important;margin-top:0 !important}}
     @media print{
       body{background:#fff}
       .topbar,.gold-line,.content > :not(.print-zone), .modal-overlay{display:none!important}
@@ -923,9 +923,11 @@
 /* v07: sem prévia cortada na tela Documento; viewer fit-page; assinatura fixa no rodapé */
 #printHost{display:none !important;}
 #pdfViewerContent{
-  overflow:hidden !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
   align-items:flex-start !important;
   justify-content:center !important;
+  -webkit-overflow-scrolling:touch !important;
 }
 #pdfViewerStage.pdf-fit-stage{
   transform-origin:top center !important;
@@ -944,6 +946,27 @@
 }
 @media print{
   #printHost{display:block !important;}
+}
+
+/* v09: lançamento preto, modelo somente B, rolagem vertical no viewer */
+.rh-block,
+.rh-block p,
+.rh-block b,
+.left-col,
+.right-col,
+.hist-table td{
+  color:#000 !important;
+}
+#pdfViewerContent .rh-block,
+#pdfViewerContent .rh-block p,
+#pdfViewerContent .rh-block b,
+#pdfViewerContent .left-col,
+#pdfViewerContent .right-col,
+#pdfViewerContent .hist-table td{
+  color:#000 !important;
+}
+#pdfViewerContent .official-sheet{
+  color:#000 !important;
 }
 
 </style>
@@ -2974,21 +2997,19 @@ function estimateOfficialRowHeightMm(record){
   return Math.max(22, leftHeight, rightHeight);
 }
 function paginateOfficialRecords(records, ficha){
-  const initialPage = Math.max(1, parseInt(ficha.folhaInicial||1,10)||1);
+  // v09: remove o modelo A-1. O documento começa sempre no Anexo B, página B-1.
   const pages = [];
-  const firstPageLimit = 142; // v07: usa quase toda a área útil da 1ª página sem invadir assinatura
-  const otherPageLimit = 192; // v07: páginas seguintes preenchem mais a folha, preservando assinatura no rodapé
+  const pageLimit = 192; // área útil preservando assinatura fixa no rodapé
   if(!records.length){
-    return [{pageNumber: initialPage, isFirst: true, rows: []}];
+    return [{pageNumber: 1, isFirst: false, rows: []}];
   }
-  let current = {pageNumber: initialPage, isFirst: true, rows: []};
+  let current = {pageNumber: 1, isFirst: false, rows: []};
   let used = 0;
   records.forEach((record)=>{
     const h = estimateOfficialRowHeightMm(record);
-    const limit = current.isFirst ? firstPageLimit : otherPageLimit;
-    if(current.rows.length && (used + h > limit)){
+    if(current.rows.length && (used + h > pageLimit)){
       pages.push(current);
-      current = {pageNumber: initialPage + pages.length, isFirst: false, rows: []};
+      current = {pageNumber: pages.length + 1, isFirst: false, rows: []};
       used = 0;
     }
     current.rows.push(record);
@@ -2999,11 +3020,11 @@ function paginateOfficialRecords(records, ficha){
 }
 function makePage(pageNumber, rowsHtml, isFirst){
   const ficha=getFichaForSelected();
-  const pageCode=isFirst?`- ${escapeHtml(ficha.anexoPrimeiraPagina||'A')} - ${pageNumber} -`:`- B - ${pageNumber} -`;
-  const headerTop=`<div class="sheet-top-right">ENGENALMARINST Nº 85-13A<br>${isFirst?'Anexo '+escapeHtml(ficha.anexoPrimeiraPagina||'A'):'Anexo B'}</div>`;
+  // v09: somente Anexo B, sequência B-1, B-2, B-3...
+  const pageCode=`- B - ${pageNumber} -`;
+  const headerTop=`<div class="sheet-top-right">ENGENALMARINST Nº 85-13A<br>Anexo B</div>`;
   const titleTable=`<table class="doc-title-table"><tr><td class="doc-title" style="width:68%;">REGISTRO HISTÓRICO DE EQUIPAMENTOS DE<br>MÁQUINAS</td><td style="width:14%;text-align:center;"><span class="box-label">FICHA Nº</span><br>${escapeHtml(ficha.fichaNumero||'')}</td><td style="width:18%;text-align:center;"><span class="box-label">FOLHA Nº</span><br>${pageNumber}</td></tr></table>`;
-  const metaTable=isFirst?`<table class="meta-table"><tr><td colspan="2"><span class="box-label">NAVIO:</span> ${escapeHtml(ficha.navio||'')}</td></tr><tr><td colspan="2"><span class="box-label">SISTEMA:</span> ${escapeHtml(ficha.sistemaFicha||'')}</td></tr><tr><td colspan="2"><span class="box-label">EQUIPAMENTO:</span> ${escapeHtml(ficha.equipamentoFicha||'')}</td></tr><tr><td colspan="2"><span class="box-label">MANUAL E/OU PLANO:</span> ${escapeHtml(ficha.manualPlano||'')}</td></tr><tr><td colspan="2"><span class="box-label">FABRICANTE:</span> ${escapeHtml(ficha.fabricante||'')}</td></tr><tr><td colspan="2"><span class="box-label">DADOS DE PLACA:</span> ${escapeHtml(ficha.dadosPlaca||'')}</td></tr><tr><td><span class="box-label">LOCALIZAÇÃO:</span> ${escapeHtml(ficha.localizacao||'')}</td><td><span class="box-label">Nº DE SÉRIE:</span> ${escapeHtml(ficha.numeroSerie||'')}</td></tr></table>`:'';
-  return `<div class="official-sheet">${headerTop}<div class="page-code">${pageCode}</div>${titleTable}${metaTable}<table class="hist-table" style="margin-top:${isFirst?'0':'8px'};"><thead><tr><th style="width:30%;">DATA E Nº DE HORAS DE FUNCIONAMENTO</th><th style="width:70%;">REGISTRO HISTÓRICO</th></tr></thead><tbody>${rowsHtml || ''}</tbody></table><div class="signature-bar"><div class="signature-box"><div class="signature-line"></div>Encarregado do Sistema MO-1</div><div class="signature-box"><div class="signature-line"></div>Encarregado da Divisão de Máquinas</div></div></div>`;
+  return `<div class="official-sheet"><div class="official-page-body">${headerTop}<div class="page-code">${pageCode}</div>${titleTable}<table class="hist-table" style="margin-top:8px;"><thead><tr><th style="width:30%;">DATA E Nº DE HORAS DE FUNCIONAMENTO</th><th style="width:70%;">REGISTRO HISTÓRICO</th></tr></thead><tbody>${rowsHtml || ''}</tbody></table></div><div class="signature-bar"><div class="signature-box"><div class="signature-line"></div>Encarregado do Sistema MO-1</div><div class="signature-box"><div class="signature-line"></div>Encarregado da Divisão de Máquinas</div></div></div>`;
 }
 function getPrintableOpenRecords(){ return getFilteredRecords().filter(r=>r.status!=='fechado'); }
 function renderDocument(){
@@ -3046,23 +3067,20 @@ function fitOfficialViewerToScreen(){
   const firstSheet = stage.querySelector('.official-sheet');
   if(!firstSheet) return;
 
-  // Calcula pela folha A4 real renderizada, não pelo tamanho do documento inteiro.
-  const sheetRect = firstSheet.getBoundingClientRect();
-  const sheetW = firstSheet.offsetWidth || sheetRect.width || 794;
-  const sheetH = firstSheet.offsetHeight || sheetRect.height || 1123;
+  const sheetW = firstSheet.offsetWidth || 794;
+  const sheetH = firstSheet.offsetHeight || 1123;
   const availableW = Math.max(content.clientWidth - 16, 1);
-  const availableH = Math.max(content.clientHeight - 16, 1);
 
-  // Prioridade: página inteira visível, sem cortar. Não limita a 1, porque em telas grandes pode ampliar.
-  const scale = Math.max(0.1, Math.min(availableW / sheetW, availableH / sheetH));
+  // v09: ajusta pela largura para caber na tela e mantém rolagem vertical para todas as páginas.
+  const scale = Math.max(0.1, Math.min(1, availableW / sheetW));
   stage.style.transform = 'scale(' + scale + ')';
 
-  // Mantém o container com a altura visual correta para não sobrar scroll falso.
   const pageGap = 12;
   const sheets = stage.querySelectorAll('.official-sheet').length || 1;
   const visualHeight = (sheetH * sheets + pageGap * Math.max(0, sheets - 1)) * scale;
   stage.style.height = Math.ceil(visualHeight) + 'px';
   stage.style.width = Math.ceil(sheetW * scale) + 'px';
+  content.scrollTop = 0;
 }
 window.addEventListener('resize', fitOfficialViewerToScreen);
 window.addEventListener('orientationchange', ()=>setTimeout(fitOfficialViewerToScreen, 250));
@@ -4149,27 +4167,17 @@ function buildOfficialDocxXml(){
   const {pages, ficha} = getOfficialPdfPages();
   const body = [];
   pages.forEach((page, idx)=>{
+    const pageNumber = idx + 1;
     body.push(docxP('ENGENALMARINST Nº 85-13A', {jc:'right', size:22}));
-    body.push(docxP(page.isFirst ? `Anexo ${String(ficha.anexoPrimeiraPagina || 'A')}` : 'Anexo B', {jc:'right', size:22}));
-    body.push(docxP(page.isFirst ? `- ${String(ficha.anexoPrimeiraPagina || 'A')} - ${page.pageNumber} -` : `- B - ${page.pageNumber} -`, {jc:'center', size:24}));
+    body.push(docxP('Anexo B', {jc:'right', size:22}));
+    body.push(docxP(`- B - ${pageNumber} -`, {jc:'center', size:24}));
     body.push(docxTable([
       docxRow([
         docxCell(docxP('REGISTRO HISTÓRICO DE EQUIPAMENTOS DE\nMÁQUINAS',{jc:'center',bold:true,size:26}), 6200),
         docxCell(docxP('FICHA Nº\n' + (ficha.fichaNumero || ''),{jc:'center',bold:true,size:20}), 1400),
-        docxCell(docxP('FOLHA Nº\n' + page.pageNumber,{jc:'center',bold:true,size:20}), 1700)
+        docxCell(docxP('FOLHA Nº\n' + pageNumber,{jc:'center',bold:true,size:20}), 1700)
       ])
     ]));
-    if(page.isFirst){
-      const metaRows = [
-        ['NAVIO:', ficha.navio || ''], ['SISTEMA:', ficha.sistemaFicha || ''], ['EQUIPAMENTO:', ficha.equipamentoFicha || ''],
-        ['MANUAL E/OU PLANO:', ficha.manualPlano || ''], ['FABRICANTE:', ficha.fabricante || ''], ['DADOS DE PLACA:', ficha.dadosPlaca || '']
-      ].map(([l,v]) => docxRow([docxCell(docxP(l + ' ' + v, {bold:false,size:21}), 9300)]));
-      metaRows.push(docxRow([
-        docxCell(docxP('LOCALIZAÇÃO: ' + (ficha.localizacao || ''), {size:21}), 4650),
-        docxCell(docxP('Nº DE SÉRIE: ' + (ficha.numeroSerie || ''), {size:21}), 4650)
-      ]));
-      body.push(docxTable(metaRows));
-    }
     const histRows = [docxRow([
       docxCell(docxP('DATA E Nº DE HORAS DE\nFUNCIONAMENTO',{jc:'center',bold:true,size:20}), 2800, {shade:'F2F2F2'}),
       docxCell(docxP('REGISTRO HISTÓRICO',{jc:'center',bold:true,size:20}), 6500, {shade:'F2F2F2'})
@@ -4186,7 +4194,7 @@ function buildOfficialDocxXml(){
       ]));
     });
     body.push(docxTable(histRows));
-    body.push(docxP('\n_______________________________                         _______________________________', {jc:'center', size:20}));
+    body.push(docxP('\n\n\n_______________________________                         _______________________________', {jc:'center', size:20}));
     body.push(docxP('Encarregado do Sistema MO-1                         Encarregado da Divisão de Máquinas', {jc:'center', size:19}));
     if(idx < pages.length - 1){
       body.push('<w:p><w:r><w:br w:type="page"/></w:r></w:p>');
