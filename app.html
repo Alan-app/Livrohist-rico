@@ -1147,6 +1147,17 @@
 .hist-table tr{page-break-inside:avoid !important;break-inside:avoid !important;}
 </style>
 
+
+<style id="v18-fixes">
+  .relatorio-bigrama-btn{
+    width:42px!important;height:42px!important;min-width:42px!important;
+    border-radius:50%!important;border:1px solid rgba(255,255,255,.18)!important;
+    background:#114d97!important;color:#fff!important;font-size:1rem!important;
+    font-weight:900!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;
+    padding:0!important;line-height:1!important;box-shadow:none!important;
+  }
+  .relatorio-bigrama-btn:active{transform:scale(.96);}
+</style>
 </head>
 <body>
 <div class="app">
@@ -3216,7 +3227,16 @@ function makePage(pageNumber, rowsHtml, isFirst){
   const titleTable=`<table class="doc-title-table"><tr><td class="doc-title" style="width:68%;">REGISTRO HISTÓRICO DE EQUIPAMENTOS DE<br>MÁQUINAS</td><td style="width:14%;text-align:center;"><span class="box-label">FICHA Nº</span><br>${escapeHtml(ficha.fichaNumero||'')}</td><td style="width:18%;text-align:center;"><span class="box-label">FOLHA Nº</span><br>${pageNumber}</td></tr></table>`;
   return `<div class="official-sheet"><div class="official-page-body">${headerTop}<div class="page-code">${pageCode}</div>${titleTable}<table class="hist-table" style="margin-top:8px;"><thead><tr><th style="width:30%;">DATA E Nº DE HORAS DE FUNCIONAMENTO</th><th style="width:70%;">REGISTRO HISTÓRICO</th></tr></thead><tbody>${rowsHtml || ''}</tbody></table></div><div class="signature-bar"><div class="signature-box"><div class="signature-line"></div>Encarregado do Sistema MO-1</div><div class="signature-box"><div class="signature-line"></div>Encarregado da Divisão de Máquinas</div></div></div>`;
 }
-function getPrintableOpenRecords(){ return getFilteredRecords().filter(r=>r.status!=='fechado'); }
+function getPrintableOpenRecords(){
+  // v18: documento oficial usa SOMENTE lançamentos em aberto do bigrama selecionado.
+  // Não depende dos filtros da tela Histórico, para não omitir lançamento aberto por engano.
+  return getCurrentRecords()
+    .filter(r => r.status === 'aberto')
+    .sort((a,b)=>{
+      const byDate = String(a.dataInicio || '').localeCompare(String(b.dataInicio || ''));
+      return byDate !== 0 ? byDate : (a.createdAt || 0) - (b.createdAt || 0);
+    });
+}
 function renderDocument(){
   const host=$('printHost'), records=getPrintableOpenRecords(), ficha=getFichaForSelected();
   const pages = paginateOfficialRecords(records, ficha);
@@ -4432,48 +4452,18 @@ function makeZip(files){
   return new Blob([arr], {type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
 }
 function buildOfficialDocxBlob(){
-  // v16: o arquivo baixado usa exatamente o mesmo HTML paginado da visualização.
+  // v18: DOCX real (ZIP OOXML), não HTML disfarçado com extensão .docx.
+  // Usa as mesmas páginas paginadas da visualização atual.
   renderDocument();
-  const content = $('printHost') ? $('printHost').innerHTML : '';
-  const html = `<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<title>Livro Histórico</title>
-<style>
-  @page{ size:A4; margin:0; }
-  html,body{ margin:0; padding:0; background:#fff; color:#000; }
-  body{ font-family:"Times New Roman", Times, serif; }
-  .official-sheet{
-    background:#fff !important; color:#000 !important;
-    width:210mm !important; height:297mm !important; min-height:297mm !important;
-    padding:18mm 12mm 18mm 12mm !important; margin:0 !important;
-    box-shadow:none !important; page-break-after:always !important;
-    font-family:"Times New Roman", Times, serif !important; position:relative !important;
-    overflow:hidden !important;
-  }
-  .official-page-body{ height:224mm !important; max-height:224mm !important; overflow:hidden !important; }
-  .sheet-top-right{text-align:right;font-size:11pt;line-height:1.2;margin-bottom:8px;color:#000!important;}
-  .page-code{text-align:center;font-size:12pt;margin:10px 0;letter-spacing:.16em;color:#000!important;}
-  .doc-title-table,.hist-table{width:100%;border-collapse:collapse;table-layout:fixed;color:#000!important;}
-  .doc-title-table td,.hist-table td,.hist-table th{border:1px solid #000;padding:4px 6px;vertical-align:top;font-size:10.5pt;color:#000!important;line-height:1.18;}
-  .doc-title{font-weight:700;font-size:13pt!important;text-align:center;line-height:1.15;color:#000!important;}
-  .box-label{font-weight:700;color:#000!important;}
-  .hist-table th{font-weight:700;text-align:center;background:#f2f2f2;vertical-align:middle;color:#000!important;}
-  .hist-table tr{page-break-inside:avoid;break-inside:avoid;}
-  .left-col{width:30%;text-align:center;vertical-align:top!important;font-size:10.5pt;padding:4px 6px!important;color:#000!important;}
-  .right-col{width:70%;padding:4px 6px!important;vertical-align:top!important;color:#000!important;}
-  .rh-block{line-height:1.18!important;color:#000!important;}
-  .rh-block p{margin:0 0 2px 0!important;color:#000!important;line-height:1.18!important;}
-  .rh-block b{color:#000!important;}
-  .signature-bar{position:absolute!important;left:12mm!important;right:12mm!important;bottom:10mm!important;display:flex!important;justify-content:space-between!important;align-items:flex-end!important;gap:20mm!important;color:#000!important;}
-  .signature-box{width:44%!important;text-align:center!important;font-size:10pt!important;color:#000!important;}
-  .signature-line{border-top:1px solid #000!important;margin-bottom:4px!important;height:0!important;}
-</style>
-</head>
-<body>${content}</body>
-</html>`;
-  return new Blob(['\ufeff', html], {type:'application/msword;charset=utf-8'});
+  const documentXml = buildOfficialDocxXml();
+  const footerXml = buildOfficialFooterXml();
+  return makeZip([
+    {name:'[Content_Types].xml', content:'<?xml version="1.0" encoding="UTF-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/footer1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"/></Types>'},
+    {name:'_rels/.rels', content:'<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>'},
+    {name:'word/_rels/document.xml.rels', content:'<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rIdFooter1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer" Target="footer1.xml"/></Relationships>'},
+    {name:'word/document.xml', content:documentXml},
+    {name:'word/footer1.xml', content:footerXml}
+  ]);
 }
 
 function downloadBlob(blob, filename){
@@ -4485,15 +4475,27 @@ function downloadBlob(blob, filename){
 }
 function downloadOfficialDocx(markPrinted=false){
   renderDocument();
+  const data = getOfficialPdfPages();
+  const usados = Array.isArray(data.records) ? data.records.filter(r => r.status === 'aberto') : [];
+  if(!usados.length){
+    showAppMessage('Livro Histórico','Não há lançamentos em aberto para baixar.');
+    return;
+  }
   const sigla = (getSelectedBigrama()||{}).sigla || 'Bigrama';
   const blob = buildOfficialDocxBlob();
   downloadBlob(blob, 'Documento_Oficial_' + sigla + '.docx');
-  if(markPrinted){
-    const data = getOfficialPdfPages();
-    data.records.forEach(r=>{ r.status='fechado'; r.updatedAt=Date.now(); });
-    AppState.save(); renderHistory(); renderDocument();
+
+  // v18: depois de acionar o download, fecha exatamente os lançamentos usados no documento.
+  usados.forEach(r=>{ r.status='fechado'; r.updatedAt=Date.now(); });
+  AppState.save();
+  renderHistory();
+  renderDocument();
+  if($('pdfViewerModal') && $('pdfViewerModal').classList.contains('show')){
+    closePdfViewerModal();
   }
+  showAppMessage('Livro Histórico','Documento baixado. Lançamentos usados foram marcados como fechados.');
 }
+
 function getJsPdfCtor(){
   return window.jspdf && window.jspdf.jsPDF ? window.jspdf.jsPDF : null;
 }
