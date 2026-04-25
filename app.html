@@ -1091,10 +1091,10 @@
 }
 
 
-/* v15: paginação real corrigida: preencher até sobrar 4 cm acima da assinatura */
+/* v16: paginação corrigida: preencher até o limite real mantendo 4 cm acima da assinatura */
 .official-page-body{
-  height:214mm !important;
-  max-height:214mm !important;
+  height:224mm !important;
+  max-height:224mm !important;
   overflow:hidden !important;
 }
 .official-sheet .signature-bar,
@@ -1141,6 +1141,10 @@
     overflow:hidden !important;
     z-index:2147483647 !important;
   }
+
+/* v16 final override: página mais preenchida, com 4 cm reais acima da assinatura */
+.official-page-body{height:224mm !important;max-height:224mm !important;overflow:hidden !important;}
+.hist-table tr{page-break-inside:avoid !important;break-inside:avoid !important;}
 </style>
 
 </head>
@@ -3148,27 +3152,30 @@ function estimateOfficialRowHeightMm(record){
   return Math.max(14, Math.ceil(Math.max(leftHeight, rightHeight)));
 }
 function paginateOfficialRecords(records, ficha){
-  // v14: paginação por medição real de DOM.
-  // A página só recebe um lançamento se a tabela continuar dentro da área útil,
-  // que termina 4 cm antes da assinatura. Isso evita tanto página vazia quanto corte.
+  // v16: mede a própria página B que será exibida/baixada.
+  // A área útil termina 4 cm antes da assinatura; se o próximo lançamento couber inteiro, entra.
+  // Se não couber inteiro, vai para a próxima página.
   if(!records.length){
     const pages = [{pageNumber: 1, isFirst: false, rows: []}];
     window._officialLastPages = pages;
     return pages;
   }
 
-  // Fallback seguro para ambientes onde a medição não esteja disponível.
   if(typeof document === 'undefined' || !document.body){
     const pages=[]; let current={pageNumber:1,isFirst:false,rows:[]}; let used=0;
-    const LIMIT=150;
-    records.forEach(r=>{ const h=estimateOfficialRowHeightMm(r); if(current.rows.length && used+h>LIMIT){pages.push(current);current={pageNumber:pages.length+1,isFirst:false,rows:[]};used=0;} current.rows.push(r); used+=h; });
+    const LIMIT=178;
+    records.forEach(r=>{
+      const h=estimateOfficialRowHeightMm(r);
+      if(current.rows.length && used+h>LIMIT){pages.push(current);current={pageNumber:pages.length+1,isFirst:false,rows:[]};used=0;}
+      current.rows.push(r); used+=h;
+    });
     if(current.rows.length) pages.push(current);
     window._officialLastPages = pages;
     return pages;
   }
 
   const measureHost = document.createElement('div');
-  measureHost.style.cssText = 'position:absolute;left:-10000px;top:0;width:210mm;visibility:hidden;pointer-events:none;z-index:-1;';
+  measureHost.style.cssText = 'position:absolute;left:-20000px;top:0;width:210mm;visibility:hidden;pointer-events:none;z-index:-1;background:#fff;';
   document.body.appendChild(measureHost);
 
   const pages = [];
@@ -3178,8 +3185,10 @@ function paginateOfficialRecords(records, ficha){
     measureHost.innerHTML = makePage(1, buildRowsHtml(rows), false);
     const body = measureHost.querySelector('.official-page-body');
     if(!body) return true;
-    // tolerância pequena para diferença de arredondamento entre Android/WebView/Chrome
-    return body.scrollHeight <= body.clientHeight + 2;
+    body.style.height = '224mm';
+    body.style.maxHeight = '224mm';
+    body.style.overflow = 'hidden';
+    return body.scrollHeight <= body.clientHeight + 3;
   }
 
   records.forEach((record)=>{
@@ -3187,8 +3196,6 @@ function paginateOfficialRecords(records, ficha){
     if(current.length && !fits(candidate)){
       pages.push({pageNumber: pages.length + 1, isFirst: false, rows: current});
       current = [record];
-      // Se um lançamento sozinho for maior que a área útil, ele fica sozinho na página.
-      // Melhor isso do que cortar ou entrar em loop.
     }else{
       current = candidate;
     }
@@ -4425,18 +4432,50 @@ function makeZip(files){
   return new Blob([arr], {type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
 }
 function buildOfficialDocxBlob(){
-  // v15: DOCX real, usando exatamente as mesmas páginas calculadas para a visualização.
+  // v16: o arquivo baixado usa exatamente o mesmo HTML paginado da visualização.
   renderDocument();
-  const documentXml = buildOfficialDocxXml();
-  const footerXml = buildOfficialFooterXml();
-  return makeZip([
-    {name:'[Content_Types].xml', content:'<?xml version="1.0" encoding="UTF-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/footer1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"/></Types>'},
-    {name:'_rels/.rels', content:'<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>'},
-    {name:'word/_rels/document.xml.rels', content:'<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rIdFooter1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer" Target="footer1.xml"/></Relationships>'},
-    {name:'word/document.xml', content:documentXml},
-    {name:'word/footer1.xml', content:footerXml}
-  ]);
+  const content = $('printHost') ? $('printHost').innerHTML : '';
+  const html = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Livro Histórico</title>
+<style>
+  @page{ size:A4; margin:0; }
+  html,body{ margin:0; padding:0; background:#fff; color:#000; }
+  body{ font-family:"Times New Roman", Times, serif; }
+  .official-sheet{
+    background:#fff !important; color:#000 !important;
+    width:210mm !important; height:297mm !important; min-height:297mm !important;
+    padding:18mm 12mm 18mm 12mm !important; margin:0 !important;
+    box-shadow:none !important; page-break-after:always !important;
+    font-family:"Times New Roman", Times, serif !important; position:relative !important;
+    overflow:hidden !important;
+  }
+  .official-page-body{ height:224mm !important; max-height:224mm !important; overflow:hidden !important; }
+  .sheet-top-right{text-align:right;font-size:11pt;line-height:1.2;margin-bottom:8px;color:#000!important;}
+  .page-code{text-align:center;font-size:12pt;margin:10px 0;letter-spacing:.16em;color:#000!important;}
+  .doc-title-table,.hist-table{width:100%;border-collapse:collapse;table-layout:fixed;color:#000!important;}
+  .doc-title-table td,.hist-table td,.hist-table th{border:1px solid #000;padding:4px 6px;vertical-align:top;font-size:10.5pt;color:#000!important;line-height:1.18;}
+  .doc-title{font-weight:700;font-size:13pt!important;text-align:center;line-height:1.15;color:#000!important;}
+  .box-label{font-weight:700;color:#000!important;}
+  .hist-table th{font-weight:700;text-align:center;background:#f2f2f2;vertical-align:middle;color:#000!important;}
+  .hist-table tr{page-break-inside:avoid;break-inside:avoid;}
+  .left-col{width:30%;text-align:center;vertical-align:top!important;font-size:10.5pt;padding:4px 6px!important;color:#000!important;}
+  .right-col{width:70%;padding:4px 6px!important;vertical-align:top!important;color:#000!important;}
+  .rh-block{line-height:1.18!important;color:#000!important;}
+  .rh-block p{margin:0 0 2px 0!important;color:#000!important;line-height:1.18!important;}
+  .rh-block b{color:#000!important;}
+  .signature-bar{position:absolute!important;left:12mm!important;right:12mm!important;bottom:10mm!important;display:flex!important;justify-content:space-between!important;align-items:flex-end!important;gap:20mm!important;color:#000!important;}
+  .signature-box{width:44%!important;text-align:center!important;font-size:10pt!important;color:#000!important;}
+  .signature-line{border-top:1px solid #000!important;margin-bottom:4px!important;height:0!important;}
+</style>
+</head>
+<body>${content}</body>
+</html>`;
+  return new Blob(['\ufeff', html], {type:'application/msword;charset=utf-8'});
 }
+
 function downloadBlob(blob, filename){
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
