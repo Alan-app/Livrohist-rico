@@ -1091,10 +1091,10 @@
 }
 
 
-/* v14: paginação real com 4 cm livres acima da assinatura */
+/* v15: paginação real corrigida: preencher até sobrar 4 cm acima da assinatura */
 .official-page-body{
-  height:188mm !important;
-  max-height:188mm !important;
+  height:214mm !important;
+  max-height:214mm !important;
   overflow:hidden !important;
 }
 .official-sheet .signature-bar,
@@ -4425,33 +4425,17 @@ function makeZip(files){
   return new Blob([arr], {type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
 }
 function buildOfficialDocxBlob(){
-  // v14: o DOCX baixado passa a usar o mesmo HTML/CSS da visualização.
-  // Assim a paginação e o espaçamento ficam iguais ao que aparece na tela.
+  // v15: DOCX real, usando exatamente as mesmas páginas calculadas para a visualização.
   renderDocument();
-  const content = ($('printHost') && $('printHost').innerHTML) ? $('printHost').innerHTML : '';
-  const styles = `
-    @page{size:A4;margin:0;}
-    html,body{margin:0;padding:0;background:#fff;color:#000;}
-    *{box-sizing:border-box;}
-    .official-sheet{background:#fff;color:#000;width:210mm;height:297mm;min-height:297mm;padding:18mm 12mm 18mm 12mm;margin:0 auto;page-break-after:always;font-family:"Times New Roman", Times, serif;position:relative;overflow:hidden;}
-    .official-page-body{height:188mm;max-height:188mm;overflow:hidden;}
-    .sheet-top-right{text-align:right;font-size:11pt;line-height:1.2;margin-bottom:8px;}
-    .page-code{text-align:center;font-size:12pt;margin:10px 0;letter-spacing:.16em;}
-    .doc-title-table,.hist-table{width:100%;border-collapse:collapse;table-layout:fixed;}
-    .doc-title-table td,.hist-table td,.hist-table th{border:1px solid #2b2b2b;padding:4px 6px;vertical-align:top;font-size:10.5pt;color:#000;line-height:1.18;}
-    .doc-title{font-weight:700;font-size:13pt!important;text-align:center;line-height:1.15;}
-    .box-label{font-weight:700;}
-    .hist-table th{font-weight:700;text-align:center;background:#f2f2f2;vertical-align:middle;}
-    .left-col{width:30%;text-align:center;vertical-align:top!important;color:#000;}
-    .right-col{width:70%;vertical-align:top!important;color:#000;}
-    .rh-block,.rh-block p,.rh-block b{color:#000;line-height:1.18;}
-    .rh-block p{margin:0 0 2px 0;}
-    .signature-bar{position:absolute;left:12mm;right:12mm;bottom:10mm;display:flex;justify-content:space-between;align-items:flex-end;gap:20mm;}
-    .signature-box{width:44%;text-align:center;font-size:10pt;color:#000;}
-    .signature-line{border-top:1px solid #222;margin-bottom:4px;height:0;}
-  `;
-  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>${styles}</style></head><body>${content}</body></html>`;
-  return new Blob(['\ufeff', html], {type:'application/msword'});
+  const documentXml = buildOfficialDocxXml();
+  const footerXml = buildOfficialFooterXml();
+  return makeZip([
+    {name:'[Content_Types].xml', content:'<?xml version="1.0" encoding="UTF-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/footer1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"/></Types>'},
+    {name:'_rels/.rels', content:'<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>'},
+    {name:'word/_rels/document.xml.rels', content:'<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rIdFooter1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer" Target="footer1.xml"/></Relationships>'},
+    {name:'word/document.xml', content:documentXml},
+    {name:'word/footer1.xml', content:footerXml}
+  ]);
 }
 function downloadBlob(blob, filename){
   const url = URL.createObjectURL(blob);
