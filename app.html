@@ -1090,6 +1090,33 @@
   margin:0 0 2px 0 !important;
 }
 
+
+/* v14: paginação real com 4 cm livres acima da assinatura */
+.official-page-body{
+  height:188mm !important;
+  max-height:188mm !important;
+  overflow:hidden !important;
+}
+.official-sheet .signature-bar,
+#pdfViewerContent .official-sheet .signature-bar{
+  position:absolute !important;
+  left:12mm !important;
+  right:12mm !important;
+  bottom:10mm !important;
+}
+.hist-table td,.hist-table th{
+  color:#000 !important;
+  padding:4px 6px !important;
+  line-height:1.18 !important;
+}
+.rh-block,.rh-block p,.rh-block b{
+  color:#000 !important;
+  line-height:1.18 !important;
+}
+.rh-block p{
+  margin:0 0 2px 0 !important;
+}
+
 </style>
 
 <style id="pdf-viewer-overlay-fix">
@@ -3121,33 +3148,57 @@ function estimateOfficialRowHeightMm(record){
   return Math.max(14, Math.ceil(Math.max(leftHeight, rightHeight)));
 }
 function paginateOfficialRecords(records, ficha){
-  // v12: substitui a medição DOM da v10/v11, que superestimava altura em alguns Androids
-  // e acabava mandando quase um lançamento por página.
-  // A página B usa A4 com assinatura fixa no rodapé; a área útil abaixo reserva 4 cm totais.
+  // v14: paginação por medição real de DOM.
+  // A página só recebe um lançamento se a tabela continuar dentro da área útil,
+  // que termina 4 cm antes da assinatura. Isso evita tanto página vazia quanto corte.
   if(!records.length){
-    return [{pageNumber: 1, isFirst: false, rows: []}];
+    const pages = [{pageNumber: 1, isFirst: false, rows: []}];
+    window._officialLastPages = pages;
+    return pages;
   }
 
-  const PAGE_LIMIT_MM = 168; // v13: limite realista para manter 4 cm livres antes da assinatura
+  // Fallback seguro para ambientes onde a medição não esteja disponível.
+  if(typeof document === 'undefined' || !document.body){
+    const pages=[]; let current={pageNumber:1,isFirst:false,rows:[]}; let used=0;
+    const LIMIT=150;
+    records.forEach(r=>{ const h=estimateOfficialRowHeightMm(r); if(current.rows.length && used+h>LIMIT){pages.push(current);current={pageNumber:pages.length+1,isFirst:false,rows:[]};used=0;} current.rows.push(r); used+=h; });
+    if(current.rows.length) pages.push(current);
+    window._officialLastPages = pages;
+    return pages;
+  }
+
+  const measureHost = document.createElement('div');
+  measureHost.style.cssText = 'position:absolute;left:-10000px;top:0;width:210mm;visibility:hidden;pointer-events:none;z-index:-1;';
+  document.body.appendChild(measureHost);
+
   const pages = [];
-  let current = {pageNumber: 1, isFirst: false, rows: []};
-  let used = 0;
+  let current = [];
+
+  function fits(rows){
+    measureHost.innerHTML = makePage(1, buildRowsHtml(rows), false);
+    const body = measureHost.querySelector('.official-page-body');
+    if(!body) return true;
+    // tolerância pequena para diferença de arredondamento entre Android/WebView/Chrome
+    return body.scrollHeight <= body.clientHeight + 2;
+  }
 
   records.forEach((record)=>{
-    const h = estimateOfficialRowHeightMm(record);
-    if(current.rows.length && (used + h > PAGE_LIMIT_MM)){
-      pages.push(current);
-      current = {pageNumber: pages.length + 1, isFirst: false, rows: []};
-      used = 0;
+    const candidate = current.concat([record]);
+    if(current.length && !fits(candidate)){
+      pages.push({pageNumber: pages.length + 1, isFirst: false, rows: current});
+      current = [record];
+      // Se um lançamento sozinho for maior que a área útil, ele fica sozinho na página.
+      // Melhor isso do que cortar ou entrar em loop.
+    }else{
+      current = candidate;
     }
-    current.rows.push(record);
-    used += h;
   });
 
-  if(current.rows.length){
-    pages.push(current);
+  if(current.length){
+    pages.push({pageNumber: pages.length + 1, isFirst: false, rows: current});
   }
-
+  measureHost.remove();
+  window._officialLastPages = pages;
   return pages;
 }
 function makePage(pageNumber, rowsHtml, isFirst){
@@ -3163,6 +3214,7 @@ function renderDocument(){
   const host=$('printHost'), records=getPrintableOpenRecords(), ficha=getFichaForSelected();
   const pages = paginateOfficialRecords(records, ficha);
   host.innerHTML=pages.map(p=>makePage(p.pageNumber, buildRowsHtml(p.rows), p.isFirst)).join('');
+  window._officialLastPages = pages;
 }
 function openPrintChoiceModal(){ $('printChoiceModal').classList.add('show'); }
 function closePrintChoiceModal(){ $('printChoiceModal').classList.remove('show'); }
@@ -4373,15 +4425,33 @@ function makeZip(files){
   return new Blob([arr], {type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
 }
 function buildOfficialDocxBlob(){
-  const documentXml = buildOfficialDocxXml();
-  const files = [
-    {name:'[Content_Types].xml', content:'<?xml version="1.0" encoding="UTF-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>'},
-    {name:'_rels/.rels', content:'<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>'},
-    {name:'word/_rels/document.xml.rels', content:'<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rIdFooter1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer" Target="footer1.xml"/></Relationships>'},
-    {name:'word/document.xml', content:documentXml},
-    {name:'word/footer1.xml', content:buildOfficialFooterXml()}
-  ];
-  return makeZip(files);
+  // v14: o DOCX baixado passa a usar o mesmo HTML/CSS da visualização.
+  // Assim a paginação e o espaçamento ficam iguais ao que aparece na tela.
+  renderDocument();
+  const content = ($('printHost') && $('printHost').innerHTML) ? $('printHost').innerHTML : '';
+  const styles = `
+    @page{size:A4;margin:0;}
+    html,body{margin:0;padding:0;background:#fff;color:#000;}
+    *{box-sizing:border-box;}
+    .official-sheet{background:#fff;color:#000;width:210mm;height:297mm;min-height:297mm;padding:18mm 12mm 18mm 12mm;margin:0 auto;page-break-after:always;font-family:"Times New Roman", Times, serif;position:relative;overflow:hidden;}
+    .official-page-body{height:188mm;max-height:188mm;overflow:hidden;}
+    .sheet-top-right{text-align:right;font-size:11pt;line-height:1.2;margin-bottom:8px;}
+    .page-code{text-align:center;font-size:12pt;margin:10px 0;letter-spacing:.16em;}
+    .doc-title-table,.hist-table{width:100%;border-collapse:collapse;table-layout:fixed;}
+    .doc-title-table td,.hist-table td,.hist-table th{border:1px solid #2b2b2b;padding:4px 6px;vertical-align:top;font-size:10.5pt;color:#000;line-height:1.18;}
+    .doc-title{font-weight:700;font-size:13pt!important;text-align:center;line-height:1.15;}
+    .box-label{font-weight:700;}
+    .hist-table th{font-weight:700;text-align:center;background:#f2f2f2;vertical-align:middle;}
+    .left-col{width:30%;text-align:center;vertical-align:top!important;color:#000;}
+    .right-col{width:70%;vertical-align:top!important;color:#000;}
+    .rh-block,.rh-block p,.rh-block b{color:#000;line-height:1.18;}
+    .rh-block p{margin:0 0 2px 0;}
+    .signature-bar{position:absolute;left:12mm;right:12mm;bottom:10mm;display:flex;justify-content:space-between;align-items:flex-end;gap:20mm;}
+    .signature-box{width:44%;text-align:center;font-size:10pt;color:#000;}
+    .signature-line{border-top:1px solid #222;margin-bottom:4px;height:0;}
+  `;
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>${styles}</style></head><body>${content}</body></html>`;
+  return new Blob(['\ufeff', html], {type:'application/msword'});
 }
 function downloadBlob(blob, filename){
   const url = URL.createObjectURL(blob);
@@ -4428,7 +4498,7 @@ function drawCell(doc, x, y, w, h, label, value, opts={}){
 function getOfficialPdfPages(){
   const records = getPrintableOpenRecords();
   const ficha = getFichaForSelected();
-  const pages = paginateOfficialRecords(records, ficha);
+  const pages = (window._officialLastPages && window._officialLastPages.length) ? window._officialLastPages : paginateOfficialRecords(records, ficha);
   return {pages, ficha, records};
 }
 function getOfficialPdfRowHeight(doc, r){
