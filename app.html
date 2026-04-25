@@ -1005,6 +1005,62 @@
   color:#000 !important;
 }
 
+
+/* v12: relatório compacto com círculo preservado */
+.relatorio-bigrama-btn{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:38px !important;
+  height:38px !important;
+  min-width:38px !important;
+  min-height:38px !important;
+  padding:0 !important;
+  border-radius:50% !important;
+  background:#114d97 !important;
+  border:1px solid rgba(255,255,255,.18) !important;
+  color:#fff !important;
+  font-weight:900 !important;
+  font-size:.92rem !important;
+  line-height:1 !important;
+  box-shadow:0 4px 10px rgba(0,0,0,.18) !important;
+}
+.relatorio-bigrama-btn:active{
+  transform:scale(.94) !important;
+  background:#0c4d96 !important;
+  color:var(--gold) !important;
+}
+
+/* v12: páginas B mais cheias; assinatura fixa no rodapé */
+.official-sheet{
+  height:297mm !important;
+  min-height:297mm !important;
+  overflow:hidden !important;
+}
+.official-page-body{
+  height:calc(297mm - 36mm) !important;
+  overflow:hidden !important;
+}
+.official-sheet .hist-table{
+  margin-bottom:0 !important;
+}
+.official-sheet .signature-bar{
+  position:absolute !important;
+  left:12mm !important;
+  right:12mm !important;
+  bottom:10mm !important;
+}
+.hist-table td,.hist-table th{
+  padding:4px 6px !important;
+  line-height:1.22 !important;
+}
+.rh-block{
+  line-height:1.22 !important;
+}
+.rh-block p{
+  margin:0 0 3px 0 !important;
+}
+
 </style>
 
 <style id="pdf-viewer-overlay-fix">
@@ -3015,125 +3071,54 @@ function buildRowsHtml(records){
   return records.map(r=>`<tr><td class="left-col">${nl2br(dateRangeLabel(r))||'&nbsp;'}</td><td class="right-col">${formatOfficialRhHtml(r)}</td></tr>`).join('');
 }
 function estimateOfficialRowHeightMm(record){
+  // v12: estimativa mais realista e menos conservadora.
+  // O objetivo é preencher a página, mantendo a assinatura fixa no rodapé.
   const leftText = String(dateRangeLabel(record)||'');
-  const tipo = String(record.tipoRegistroLabel || 'Avaria');
   const avaria = String(record.avaria || '');
   const solucao = String(record.solucao || '');
   const observacao = String(record.observacao || '');
-  const charsPerLineLeft = 18;
-  const charsPerLineRight = 42;
-  const leftLines = Math.max(1, ...[leftText].map(t => Math.ceil((t || '').length / charsPerLineLeft) || 1));
-  const rightLines = (
-    1 + Math.ceil(avaria.length / charsPerLineRight) +
-    1 + Math.ceil(solucao.length / charsPerLineRight) +
-    1 + Math.ceil(observacao.length / charsPerLineRight)
-  );
-  const leftHeight = 8 + leftLines * 4.4;
-  const rightHeight = 10 + rightLines * 4.6;
-  return Math.max(22, leftHeight, rightHeight);
+
+  const charsPerLineLeft = 22;
+  const charsPerLineRight = 68;
+
+  const leftLines = Math.max(1, Math.ceil(leftText.length / charsPerLineLeft) || 1);
+  const countLines = (txt)=> Math.max(1, Math.ceil(String(txt||'').length / charsPerLineRight) || 1);
+
+  // Só conta bloco vazio como mínimo visual pequeno; não trata campo vazio como parágrafo grande.
+  const rightLines = 1 + countLines(avaria) + (solucao.trim() ? 1 + countLines(solucao) : 1) + (observacao.trim() ? 1 + countLines(observacao) : 1);
+
+  const leftHeight = 6 + leftLines * 3.8;
+  const rightHeight = 7 + rightLines * 3.9;
+  return Math.max(14, Math.ceil(Math.max(leftHeight, rightHeight)));
 }
 function paginateOfficialRecords(records, ficha){
-  // v10: paginação por medição real do DOM.
-  // Regra: preencher a página ao máximo, mantendo 4 cm livres acima da assinatura.
-  const SIGNATURE_CLEARANCE_MM = 40;
+  // v12: substitui a medição DOM da v10/v11, que superestimava altura em alguns Androids
+  // e acabava mandando quase um lançamento por página.
+  // A página B usa A4 com assinatura fixa no rodapé; a área útil abaixo reserva 4 cm totais.
   if(!records.length){
     return [{pageNumber: 1, isFirst: false, rows: []}];
   }
 
-  function fallbackPaginate(){
-    const pages = [];
-    const pageLimit = 236; // v11: fallback mais cheio, reserva 4 cm totais no rodapé
-    let current = {pageNumber: 1, isFirst: false, rows: []};
-    let used = 0;
-    records.forEach((record)=>{
-      const h = estimateOfficialRowHeightMm(record);
-      if(current.rows.length && (used + h > pageLimit)){
-        pages.push(current);
-        current = {pageNumber: pages.length + 1, isFirst: false, rows: []};
-        used = 0;
-      }
-      current.rows.push(record);
-      used += h;
-    });
-    pages.push(current);
-    return pages;
-  }
-
-  if(typeof document === 'undefined' || !document.body){
-    return fallbackPaginate();
-  }
-
-  const measureHost = document.createElement('div');
-  measureHost.style.position = 'fixed';
-  measureHost.style.left = '-10000px';
-  measureHost.style.top = '0';
-  measureHost.style.width = '210mm';
-  measureHost.style.visibility = 'hidden';
-  measureHost.style.pointerEvents = 'none';
-  measureHost.style.zIndex = '-1';
-  document.body.appendChild(measureHost);
-
+  const PAGE_LIMIT_MM = 248; // mais agressivo que v11; preserva aproximadamente 4 cm finais/assinatura
   const pages = [];
-  let currentRows = [];
-  let pageNumber = 1;
+  let current = {pageNumber: 1, isFirst: false, rows: []};
+  let used = 0;
 
-  const makeMeasureSheet = (num)=>{
-    const pageCode = `- B - ${num} -`;
-    const headerTop = `<div class="sheet-top-right">ENGENALMARINST Nº 85-13A<br>Anexo B</div>`;
-    const titleTable = `<table class="doc-title-table"><tr><td class="doc-title" style="width:68%;">REGISTRO HISTÓRICO DE EQUIPAMENTOS DE<br>MÁQUINAS</td><td style="width:14%;text-align:center;"><span class="box-label">FICHA Nº</span><br>${escapeHtml(ficha.fichaNumero||'')}</td><td style="width:18%;text-align:center;"><span class="box-label">FOLHA Nº</span><br>${num}</td></tr></table>`;
-    measureHost.innerHTML = `<div class="official-sheet"><div class="official-page-body">${headerTop}<div class="page-code">${pageCode}</div>${titleTable}<table class="hist-table" style="margin-top:8px;"><thead><tr><th style="width:30%;">DATA E Nº DE HORAS DE FUNCIONAMENTO</th><th style="width:70%;">REGISTRO HISTÓRICO</th></tr></thead><tbody></tbody></table></div><div class="signature-bar"><div class="signature-box"><div class="signature-line"></div>Encarregado do Sistema MO-1</div><div class="signature-box"><div class="signature-line"></div>Encarregado da Divisão de Máquinas</div></div></div>`;
-    return measureHost.querySelector('.official-sheet');
-  };
-
-  let sheet = makeMeasureSheet(pageNumber);
-  let tbody = sheet.querySelector('tbody');
-  let table = sheet.querySelector('.hist-table');
-  let signature = sheet.querySelector('.signature-bar');
-  const pxPerMm = (sheet.getBoundingClientRect().height || sheet.offsetHeight || 1123) / 297;
-  const clearancePx = SIGNATURE_CLEARANCE_MM * pxPerMm;
-
-  const canFitCurrentSheet = ()=>{
-    const sheetRect = sheet.getBoundingClientRect();
-    const tableBottom = table.getBoundingClientRect().bottom;
-    // v11: os 4 cm são a área total reservada no rodapé para assinatura,
-    // não 4 cm extras acima da assinatura. Isso libera mais lançamentos por página.
-    const usableBottom = sheetRect.top + sheetRect.height - clearancePx;
-    return tableBottom <= usableBottom;
-  };
-
-  try{
-    records.forEach((record)=>{
-      const temp = document.createElement('tbody');
-      temp.innerHTML = buildRowsHtml([record]);
-      const row = temp.firstElementChild;
-      tbody.appendChild(row);
-
-      if(!canFitCurrentSheet() && currentRows.length){
-        tbody.removeChild(row);
-        pages.push({pageNumber, isFirst:false, rows:currentRows});
-        pageNumber += 1;
-        currentRows = [];
-        sheet = makeMeasureSheet(pageNumber);
-        tbody = sheet.querySelector('tbody');
-        table = sheet.querySelector('.hist-table');
-        signature = sheet.querySelector('.signature-bar');
-        tbody.appendChild(row);
-      }
-
-      // Se um lançamento sozinho for maior que a área útil, ele entra sozinho mesmo assim.
-      // Isso evita loop infinito e preserva a regra de não quebrar o lançamento no meio.
-      currentRows.push(record);
-    });
-
-    if(currentRows.length){
-      pages.push({pageNumber, isFirst:false, rows:currentRows});
+  records.forEach((record)=>{
+    const h = estimateOfficialRowHeightMm(record);
+    if(current.rows.length && (used + h > PAGE_LIMIT_MM)){
+      pages.push(current);
+      current = {pageNumber: pages.length + 1, isFirst: false, rows: []};
+      used = 0;
     }
-  }catch(err){
-    document.body.removeChild(measureHost);
-    return fallbackPaginate();
+    current.rows.push(record);
+    used += h;
+  });
+
+  if(current.rows.length){
+    pages.push(current);
   }
 
-  document.body.removeChild(measureHost);
   return pages;
 }
 function makePage(pageNumber, rowsHtml, isFirst){
