@@ -1,12 +1,10 @@
-Refatoração limpa
+Livro Histórico — versão v19
 
-Base refeita para estabilidade:
-- navegação por bigrama
-- PWA com instalação obrigatória
-- mensagens e confirmações no padrão do app
-- importação por merge com tela de conflito lado a lado
-- relatório de importação em modal
-- logo corrigida
+Correção principal:
+- O DOCX do Livro Histórico agora é gerado a partir do mesmo HTML/CSS da visualização.
+- O DOCX do Pedido de Serviço agora é gerado a partir do mesmo HTML/CSS da visualização.
+- Removido o gerador Word paralelo simplificado que mudava layout, zoom, tabelas e espaçamentos.
+- Cache do PWA atualizado para forçar atualização da versão instalada.
 
 Publicação:
 1. apague todos os arquivos antigos do repositório
