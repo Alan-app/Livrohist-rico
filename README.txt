@@ -13,3 +13,6 @@ Publicação:
 4. remova o app antigo do celular
 5. abra o link em aba anônima se necessário
 6. instale novamente
+
+
+V20: corrigido Word do Livro Histórico para DOCX nativo com margens A4 e assinaturas em rodapé real, lado a lado. Pedido de Serviço mantido para etapa seguinte.
