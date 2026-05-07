@@ -1158,6 +1158,26 @@
   }
   .relatorio-bigrama-btn:active{transform:scale(.96);}
 </style>
+
+
+<style id="v23-livro-layout-fixes">
+  :root{--app-version:"V03";}
+  .app-version-footer{margin-top:16px;text-align:center;font-size:.78rem;color:rgba(255,255,255,.55);font-weight:700;letter-spacing:.08em;}
+  .official-sheet{box-sizing:border-box!important;width:210mm!important;height:297mm!important;min-height:297mm!important;padding:20mm 15mm 24mm 15mm!important;overflow:hidden!important;}
+  .official-page-body{height:239mm!important;max-height:239mm!important;overflow:hidden!important;}
+  .sheet-top-right{font-size:10.5pt!important;line-height:1.2!important;margin-bottom:10px!important;}
+  .page-code{position:absolute!important;left:0!important;right:0!important;bottom:31mm!important;text-align:center!important;margin:0!important;font-size:12pt!important;letter-spacing:.16em!important;}
+  .doc-title-table,.hist-table{width:100%!important;max-width:100%!important;table-layout:fixed!important;border-collapse:collapse!important;}
+  .doc-title-table td,.hist-table td,.hist-table th{box-sizing:border-box!important;overflow-wrap:anywhere!important;word-break:normal!important;white-space:normal!important;color:#000!important;}
+  .hist-table td,.hist-table th{font-size:10.2pt!important;padding:4px 6px!important;line-height:1.18!important;}
+  .left-col{width:31%!important;text-align:center!important;}
+  .right-col{width:69%!important;}
+  .rh-block p{margin:0 0 7px 0!important;}
+  .signature-bar{position:absolute!important;left:15mm!important;right:15mm!important;bottom:14mm!important;display:flex!important;justify-content:space-between!important;gap:38mm!important;align-items:flex-end!important;}
+  .signature-box{width:43%!important;text-align:center!important;font-size:9.5pt!important;}
+  .signature-line{border-top:1px solid #222!important;margin-bottom:4px!important;height:0!important;width:100%!important;}
+  #pdfViewerContent .official-sheet{box-sizing:border-box!important;width:210mm!important;height:297mm!important;min-height:297mm!important;padding:20mm 15mm 24mm 15mm!important;overflow:hidden!important;}
+</style>
 </head>
 <body>
 <div class="app">
@@ -1479,6 +1499,7 @@
           <span class="menu-item-arrow">›</span>
         </button>
       </div>
+      <div class="app-version-footer">VERSÃO V03</div>
     </div>
   </div>
 
@@ -3136,7 +3157,7 @@ function handleFichaSubmit(e){
 }
 
 function formatOfficialRhHtml(r){
-  return `<div class="rh-block"><p><b>${escapeHtml(r.tipoRegistroLabel||'Avaria')}:</b> ${nl2br(r.avaria||'')}</p><p><b>Solução:</b> ${nl2br(r.solucao||'')}</p><p><b>Observação:</b> ${nl2br(r.observacao||'')}</p></div>`;
+  return `<div class="rh-block"><p><b>${escapeHtml(r.tipoRegistroLabel||'Avaria')}:</b> ${nl2br(r.avaria||'')}</p><p><b>Solução:</b> ${nl2br(r.solucao||'')}</p></div>`;
 }
 function buildRowsHtml(records){
   return records.map(r=>`<tr><td class="left-col">${nl2br(dateRangeLabel(r))||'&nbsp;'}</td><td class="right-col">${formatOfficialRhHtml(r)}</td></tr>`).join('');
@@ -3221,11 +3242,10 @@ function paginateOfficialRecords(records, ficha){
 }
 function makePage(pageNumber, rowsHtml, isFirst){
   const ficha=getFichaForSelected();
-  // v09: somente Anexo B, sequência B-1, B-2, B-3...
   const pageCode=`- B - ${pageNumber} -`;
   const headerTop=`<div class="sheet-top-right">ENGENALMARINST Nº 85-13A<br>Anexo B</div>`;
-  const titleTable=`<table class="doc-title-table"><tr><td class="doc-title" style="width:68%;">REGISTRO HISTÓRICO DE EQUIPAMENTOS DE<br>MÁQUINAS</td><td style="width:14%;text-align:center;"><span class="box-label">FICHA Nº</span><br>${escapeHtml(ficha.fichaNumero||'')}</td><td style="width:18%;text-align:center;"><span class="box-label">FOLHA Nº</span><br>${pageNumber}</td></tr></table>`;
-  return `<div class="official-sheet"><div class="official-page-body">${headerTop}<div class="page-code">${pageCode}</div>${titleTable}<table class="hist-table" style="margin-top:8px;"><thead><tr><th style="width:30%;">DATA E Nº DE HORAS DE FUNCIONAMENTO</th><th style="width:70%;">REGISTRO HISTÓRICO</th></tr></thead><tbody>${rowsHtml || ''}</tbody></table></div><div class="signature-bar"><div class="signature-box"><div class="signature-line"></div>Encarregado do Sistema MO-1</div><div class="signature-box"><div class="signature-line"></div>Encarregado da Divisão de Máquinas</div></div></div>`;
+  const titleTable=`<table class="doc-title-table"><tr><td class="doc-title" style="width:68%;">REGISTRO HISTÓRICO DE EQUIPAMENTOS DE<br>MÁQUINAS</td><td style="width:15%;text-align:center;"><span class="box-label">FICHA Nº</span><br>${escapeHtml(ficha.fichaNumero||'')}</td><td style="width:17%;text-align:center;"><span class="box-label">FOLHA Nº</span><br>${pageNumber}</td></tr></table>`;
+  return `<div class="official-sheet"><div class="official-page-body">${headerTop}${titleTable}<table class="hist-table" style="margin-top:8px;"><thead><tr><th style="width:31%;">DATA E Nº DE HORAS DE FUNCIONAMENTO</th><th style="width:69%;">REGISTRO HISTÓRICO</th></tr></thead><tbody>${rowsHtml || ''}</tbody></table></div><div class="page-code">${pageCode}</div><div class="signature-bar"><div class="signature-box"><div class="signature-line"></div>Encarregado do Sistema MO-1</div><div class="signature-box"><div class="signature-line"></div>Encarregado da Divisão de Máquinas</div></div></div>`;
 }
 function getPrintableOpenRecords(){
   // v18: documento oficial usa SOMENTE lançamentos em aberto do bigrama selecionado.
@@ -3927,7 +3947,27 @@ function printRelatorio(){
   iframe.style.cssText='position:fixed;width:1px;height:1px;right:0;bottom:0;opacity:0;border:0;';
   document.body.appendChild(iframe);
   const doc = iframe.contentWindow.document;
-  doc.open(); doc.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Relatório Geral</title>${styles}</head><body>${tableHtml}</body></html>`); doc.close();
+  doc.open(); doc.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Relatório Geral</title>${styles}
+
+<style id="v23-livro-layout-fixes">
+  :root{--app-version:"V03";}
+  .app-version-footer{margin-top:16px;text-align:center;font-size:.78rem;color:rgba(255,255,255,.55);font-weight:700;letter-spacing:.08em;}
+  .official-sheet{box-sizing:border-box!important;width:210mm!important;height:297mm!important;min-height:297mm!important;padding:20mm 15mm 24mm 15mm!important;overflow:hidden!important;}
+  .official-page-body{height:239mm!important;max-height:239mm!important;overflow:hidden!important;}
+  .sheet-top-right{font-size:10.5pt!important;line-height:1.2!important;margin-bottom:10px!important;}
+  .page-code{position:absolute!important;left:0!important;right:0!important;bottom:31mm!important;text-align:center!important;margin:0!important;font-size:12pt!important;letter-spacing:.16em!important;}
+  .doc-title-table,.hist-table{width:100%!important;max-width:100%!important;table-layout:fixed!important;border-collapse:collapse!important;}
+  .doc-title-table td,.hist-table td,.hist-table th{box-sizing:border-box!important;overflow-wrap:anywhere!important;word-break:normal!important;white-space:normal!important;color:#000!important;}
+  .hist-table td,.hist-table th{font-size:10.2pt!important;padding:4px 6px!important;line-height:1.18!important;}
+  .left-col{width:31%!important;text-align:center!important;}
+  .right-col{width:69%!important;}
+  .rh-block p{margin:0 0 7px 0!important;}
+  .signature-bar{position:absolute!important;left:15mm!important;right:15mm!important;bottom:14mm!important;display:flex!important;justify-content:space-between!important;gap:38mm!important;align-items:flex-end!important;}
+  .signature-box{width:43%!important;text-align:center!important;font-size:9.5pt!important;}
+  .signature-line{border-top:1px solid #222!important;margin-bottom:4px!important;height:0!important;width:100%!important;}
+  #pdfViewerContent .official-sheet{box-sizing:border-box!important;width:210mm!important;height:297mm!important;min-height:297mm!important;padding:20mm 15mm 24mm 15mm!important;overflow:hidden!important;}
+</style>
+</head><body>${tableHtml}</body></html>`); doc.close();
   iframe.onload = () => setTimeout(()=>{ iframe.contentWindow.focus(); iframe.contentWindow.print(); }, 250);
   setTimeout(()=>{ iframe.contentWindow.focus(); iframe.contentWindow.print(); }, 700);
 }
@@ -4277,6 +4317,26 @@ function openPdfInNewTab(doc, fallbackName){
   .btn-secondary{background:#fff;color:#111;text-decoration:none;display:inline-flex;align-items:center}
   iframe{width:100%;height:calc(100% - 60px);border:none;background:#fff}
 </style>
+
+
+<style id="v23-livro-layout-fixes">
+  :root{--app-version:"V03";}
+  .app-version-footer{margin-top:16px;text-align:center;font-size:.78rem;color:rgba(255,255,255,.55);font-weight:700;letter-spacing:.08em;}
+  .official-sheet{box-sizing:border-box!important;width:210mm!important;height:297mm!important;min-height:297mm!important;padding:20mm 15mm 24mm 15mm!important;overflow:hidden!important;}
+  .official-page-body{height:239mm!important;max-height:239mm!important;overflow:hidden!important;}
+  .sheet-top-right{font-size:10.5pt!important;line-height:1.2!important;margin-bottom:10px!important;}
+  .page-code{position:absolute!important;left:0!important;right:0!important;bottom:31mm!important;text-align:center!important;margin:0!important;font-size:12pt!important;letter-spacing:.16em!important;}
+  .doc-title-table,.hist-table{width:100%!important;max-width:100%!important;table-layout:fixed!important;border-collapse:collapse!important;}
+  .doc-title-table td,.hist-table td,.hist-table th{box-sizing:border-box!important;overflow-wrap:anywhere!important;word-break:normal!important;white-space:normal!important;color:#000!important;}
+  .hist-table td,.hist-table th{font-size:10.2pt!important;padding:4px 6px!important;line-height:1.18!important;}
+  .left-col{width:31%!important;text-align:center!important;}
+  .right-col{width:69%!important;}
+  .rh-block p{margin:0 0 7px 0!important;}
+  .signature-bar{position:absolute!important;left:15mm!important;right:15mm!important;bottom:14mm!important;display:flex!important;justify-content:space-between!important;gap:38mm!important;align-items:flex-end!important;}
+  .signature-box{width:43%!important;text-align:center!important;font-size:9.5pt!important;}
+  .signature-line{border-top:1px solid #222!important;margin-bottom:4px!important;height:0!important;width:100%!important;}
+  #pdfViewerContent .official-sheet{box-sizing:border-box!important;width:210mm!important;height:297mm!important;min-height:297mm!important;padding:20mm 15mm 24mm 15mm!important;overflow:hidden!important;}
+</style>
 </head>
 <body>
   <div class="topbar">
@@ -4317,7 +4377,27 @@ function openPdfBlobUrl(doc, fallbackName, mode){
       const dataUri = doc.output('datauristring');
       $('pdfViewerTitle').textContent = String(fallbackName || 'Documento');
       const stage = $('pdfViewerStage');
-      const viewerHtml = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><style>html,body{margin:0;height:100%;background:#2b2b2b} iframe,embed,object{border:0;width:100%;height:100%;display:block;background:#fff}</style></head><body><embed src="${dataUri}" type="application/pdf"></body></html>`;
+      const viewerHtml = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><style>html,body{margin:0;height:100%;background:#2b2b2b} iframe,embed,object{border:0;width:100%;height:100%;display:block;background:#fff}</style>
+
+<style id="v23-livro-layout-fixes">
+  :root{--app-version:"V03";}
+  .app-version-footer{margin-top:16px;text-align:center;font-size:.78rem;color:rgba(255,255,255,.55);font-weight:700;letter-spacing:.08em;}
+  .official-sheet{box-sizing:border-box!important;width:210mm!important;height:297mm!important;min-height:297mm!important;padding:20mm 15mm 24mm 15mm!important;overflow:hidden!important;}
+  .official-page-body{height:239mm!important;max-height:239mm!important;overflow:hidden!important;}
+  .sheet-top-right{font-size:10.5pt!important;line-height:1.2!important;margin-bottom:10px!important;}
+  .page-code{position:absolute!important;left:0!important;right:0!important;bottom:31mm!important;text-align:center!important;margin:0!important;font-size:12pt!important;letter-spacing:.16em!important;}
+  .doc-title-table,.hist-table{width:100%!important;max-width:100%!important;table-layout:fixed!important;border-collapse:collapse!important;}
+  .doc-title-table td,.hist-table td,.hist-table th{box-sizing:border-box!important;overflow-wrap:anywhere!important;word-break:normal!important;white-space:normal!important;color:#000!important;}
+  .hist-table td,.hist-table th{font-size:10.2pt!important;padding:4px 6px!important;line-height:1.18!important;}
+  .left-col{width:31%!important;text-align:center!important;}
+  .right-col{width:69%!important;}
+  .rh-block p{margin:0 0 7px 0!important;}
+  .signature-bar{position:absolute!important;left:15mm!important;right:15mm!important;bottom:14mm!important;display:flex!important;justify-content:space-between!important;gap:38mm!important;align-items:flex-end!important;}
+  .signature-box{width:43%!important;text-align:center!important;font-size:9.5pt!important;}
+  .signature-line{border-top:1px solid #222!important;margin-bottom:4px!important;height:0!important;width:100%!important;}
+  #pdfViewerContent .official-sheet{box-sizing:border-box!important;width:210mm!important;height:297mm!important;min-height:297mm!important;padding:20mm 15mm 24mm 15mm!important;overflow:hidden!important;}
+</style>
+</head><body><embed src="${dataUri}" type="application/pdf"></body></html>`;
       stage.innerHTML = '<iframe style="width:100vw;height:calc(100vh - 66px);border:0;background:#fff;"></iframe>';
       stage.querySelector('iframe').srcdoc = viewerHtml;
       $('pdfViewerModal').classList.add('show');
@@ -4332,7 +4412,27 @@ function openPdfBlobUrl(doc, fallbackName, mode){
       return;
     }
     const safeName = String(fallbackName || 'documento.pdf').replace(/"/g, '');
-    const viewerHtml = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${safeName}</title><style>html,body{margin:0;height:100%;font-family:Arial,Helvetica,sans-serif;background:#0b1f33}.topbar{display:flex;gap:10px;align-items:center;justify-content:center;padding:12px;background:#183c6b;position:sticky;top:0;z-index:10}.btn{border:none;border-radius:12px;padding:12px 14px;font-weight:700;font-size:14px}.btn-primary{background:#f0c419;color:#111}.btn-secondary{background:#fff;color:#111;text-decoration:none;display:inline-flex;align-items:center}iframe{width:100%;height:calc(100% - 60px);border:none;background:#fff}</style></head><body><div class="topbar"><a class="btn btn-secondary" href="${url}" download="${safeName}">Salvar PDF</a><button class="btn btn-primary" onclick="window.open('${url}','_blank')">Visualizar documento direto</button></div><iframe src="${url}"></iframe></body></html>`;
+    const viewerHtml = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${safeName}</title><style>html,body{margin:0;height:100%;font-family:Arial,Helvetica,sans-serif;background:#0b1f33}.topbar{display:flex;gap:10px;align-items:center;justify-content:center;padding:12px;background:#183c6b;position:sticky;top:0;z-index:10}.btn{border:none;border-radius:12px;padding:12px 14px;font-weight:700;font-size:14px}.btn-primary{background:#f0c419;color:#111}.btn-secondary{background:#fff;color:#111;text-decoration:none;display:inline-flex;align-items:center}iframe{width:100%;height:calc(100% - 60px);border:none;background:#fff}</style>
+
+<style id="v23-livro-layout-fixes">
+  :root{--app-version:"V03";}
+  .app-version-footer{margin-top:16px;text-align:center;font-size:.78rem;color:rgba(255,255,255,.55);font-weight:700;letter-spacing:.08em;}
+  .official-sheet{box-sizing:border-box!important;width:210mm!important;height:297mm!important;min-height:297mm!important;padding:20mm 15mm 24mm 15mm!important;overflow:hidden!important;}
+  .official-page-body{height:239mm!important;max-height:239mm!important;overflow:hidden!important;}
+  .sheet-top-right{font-size:10.5pt!important;line-height:1.2!important;margin-bottom:10px!important;}
+  .page-code{position:absolute!important;left:0!important;right:0!important;bottom:31mm!important;text-align:center!important;margin:0!important;font-size:12pt!important;letter-spacing:.16em!important;}
+  .doc-title-table,.hist-table{width:100%!important;max-width:100%!important;table-layout:fixed!important;border-collapse:collapse!important;}
+  .doc-title-table td,.hist-table td,.hist-table th{box-sizing:border-box!important;overflow-wrap:anywhere!important;word-break:normal!important;white-space:normal!important;color:#000!important;}
+  .hist-table td,.hist-table th{font-size:10.2pt!important;padding:4px 6px!important;line-height:1.18!important;}
+  .left-col{width:31%!important;text-align:center!important;}
+  .right-col{width:69%!important;}
+  .rh-block p{margin:0 0 7px 0!important;}
+  .signature-bar{position:absolute!important;left:15mm!important;right:15mm!important;bottom:14mm!important;display:flex!important;justify-content:space-between!important;gap:38mm!important;align-items:flex-end!important;}
+  .signature-box{width:43%!important;text-align:center!important;font-size:9.5pt!important;}
+  .signature-line{border-top:1px solid #222!important;margin-bottom:4px!important;height:0!important;width:100%!important;}
+  #pdfViewerContent .official-sheet{box-sizing:border-box!important;width:210mm!important;height:297mm!important;min-height:297mm!important;padding:20mm 15mm 24mm 15mm!important;overflow:hidden!important;}
+</style>
+</head><body><div class="topbar"><a class="btn btn-secondary" href="${url}" download="${safeName}">Salvar PDF</a><button class="btn btn-primary" onclick="window.open('${url}','_blank')">Visualizar documento direto</button></div><iframe src="${url}"></iframe></body></html>`;
     win.document.open();
     win.document.write(viewerHtml);
     win.document.close();
@@ -4379,40 +4479,45 @@ function buildOfficialDocxXml(){
   const body = [];
   pages.forEach((page, idx)=>{
     const pageNumber = idx + 1;
-    body.push(docxP('ENGENALMARINST Nº 85-13A', {jc:'right', size:22}));
-    body.push(docxP('Anexo B', {jc:'right', size:22}));
-    body.push(docxP(`- B - ${pageNumber} -`, {jc:'center', size:24}));
+    body.push(docxP('ENGENALMARINST Nº 85-13A', {jc:'right', size:21}));
+    body.push(docxP('Anexo B', {jc:'right', size:21}));
     body.push(docxTable([
       docxRow([
-        docxCell(docxP('REGISTRO HISTÓRICO DE EQUIPAMENTOS DE\nMÁQUINAS',{jc:'center',bold:true,size:26}), 6200),
-        docxCell(docxP('FICHA Nº\n' + (ficha.fichaNumero || ''),{jc:'center',bold:true,size:20}), 1400),
-        docxCell(docxP('FOLHA Nº\n' + pageNumber,{jc:'center',bold:true,size:20}), 1700)
+        docxCell(docxP('REGISTRO HISTÓRICO DE EQUIPAMENTOS DE
+MÁQUINAS',{jc:'center',bold:true,size:25}), 5700),
+        docxCell(docxP('FICHA Nº
+' + (ficha.fichaNumero || ''),{jc:'center',bold:true,size:19}), 1250),
+        docxCell(docxP('FOLHA Nº
+' + pageNumber,{jc:'center',bold:true,size:19}), 1400)
       ])
     ]));
     const histRows = [docxRow([
-      docxCell(docxP('DATA E Nº DE HORAS DE\nFUNCIONAMENTO',{jc:'center',bold:true,size:20}), 2800, {shade:'F2F2F2'}),
-      docxCell(docxP('REGISTRO HISTÓRICO',{jc:'center',bold:true,size:20}), 6500, {shade:'F2F2F2'})
+      docxCell(docxP('DATA E Nº DE HORAS DE
+FUNCIONAMENTO',{jc:'center',bold:true,size:19}), 2550, {shade:'F2F2F2'}),
+      docxCell(docxP('REGISTRO HISTÓRICO',{jc:'center',bold:true,size:19}), 5800, {shade:'F2F2F2'})
     ])];
     (page.rows || []).forEach(r=>{
       const right = [
         `${r.tipoRegistroLabel || 'Avaria'}: ${r.avaria || ''}`,
-        `Solução: ${r.solucao || ''}`,
-        `Observação: ${r.observacao || ''}`
-      ].join('\n');
+        `Solução: ${r.solucao || ''}`
+      ].join('
+
+');
       histRows.push(docxRow([
-        docxCell(docxP(dateRangeLabel(r) || '', {jc:'center', size:20}), 2800),
-        docxCell(docxP(right, {size:20}), 6500)
+        docxCell(docxP(dateRangeLabel(r) || '', {jc:'center', size:19}), 2550),
+        docxCell(docxP(right, {size:19}), 5800)
       ]));
     });
     body.push(docxTable(histRows));
+    body.push(docxP(`- B - ${pageNumber} -`, {jc:'center', size:24}));
     if(idx < pages.length - 1){
       body.push('<w:p><w:r><w:br w:type="page"/></w:r></w:p>');
     }
   });
-  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><w:body>${body.join('')}<w:sectPr><w:footerReference w:type="default" r:id="rIdFooter1"/><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1021" w:right="680" w:bottom="2268" w:left="680" w:header="708" w:footer="567" w:gutter="0"/></w:sectPr></w:body></w:document>`;
+  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><w:body>${body.join('')}<w:sectPr><w:footerReference w:type="default" r:id="rIdFooter1"/><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1134" w:right="850" w:bottom="2268" w:left="850" w:header="708" w:footer="567" w:gutter="0"/></w:sectPr></w:body></w:document>`;
 }
 function buildOfficialFooterXml(){
-  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:ftr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:tbl><w:tblPr><w:tblW w:w="0" w:type="auto"/><w:tblLayout w:type="fixed"/><w:tblBorders><w:top w:val="nil"/><w:left w:val="nil"/><w:bottom w:val="nil"/><w:right w:val="nil"/><w:insideH w:val="nil"/><w:insideV w:val="nil"/></w:tblBorders></w:tblPr><w:tr><w:tc><w:tcPr><w:tcW w:w="4650" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="8" w:space="0" w:color="000000"/><w:left w:val="nil"/><w:bottom w:val="nil"/><w:right w:val="nil"/></w:tcBorders></w:tcPr>${docxP('Encarregado do Sistema MO-1',{jc:'center',size:18})}</w:tc><w:tc><w:tcPr><w:tcW w:w="4650" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="8" w:space="0" w:color="000000"/><w:left w:val="nil"/><w:bottom w:val="nil"/><w:right w:val="nil"/></w:tcBorders></w:tcPr>${docxP('Encarregado da Divisão de Máquinas',{jc:'center',size:18})}</w:tc></w:tr></w:tbl></w:ftr>`;
+  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:ftr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:tbl><w:tblPr><w:tblW w:w="8350" w:type="dxa"/><w:tblLayout w:type="fixed"/><w:tblBorders><w:top w:val="nil"/><w:left w:val="nil"/><w:bottom w:val="nil"/><w:right w:val="nil"/><w:insideH w:val="nil"/><w:insideV w:val="nil"/></w:tblBorders></w:tblPr><w:tr><w:tc><w:tcPr><w:tcW w:w="3100" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="8" w:space="0" w:color="000000"/><w:left w:val="nil"/><w:bottom w:val="nil"/><w:right w:val="nil"/></w:tcBorders></w:tcPr>${docxP('Encarregado do Sistema MO-1',{jc:'center',size:18})}</w:tc><w:tc><w:tcPr><w:tcW w:w="2150" w:type="dxa"/><w:tcBorders><w:top w:val="nil"/><w:left w:val="nil"/><w:bottom w:val="nil"/><w:right w:val="nil"/></w:tcBorders></w:tcPr>${docxP('',{jc:'center',size:18})}</w:tc><w:tc><w:tcPr><w:tcW w:w="3100" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="8" w:space="0" w:color="000000"/><w:left w:val="nil"/><w:bottom w:val="nil"/><w:right w:val="nil"/></w:tcBorders></w:tcPr>${docxP('Encarregado da Divisão de Máquinas',{jc:'center',size:18})}</w:tc></w:tr></w:tbl></w:ftr>`;
 }
 
 function crc32(str){
@@ -4831,7 +4936,27 @@ function buildPsPreviewHtml(ps, imgs=[]){
     .img-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;width:100%}
     .img-grid img{width:100%;height:180px;object-fit:contain;background:#fff}
     .sig{text-align:center;margin-top:14mm;font-family:"Times New Roman",Times,serif}
-  </style></head><body>
+  </style>
+
+<style id="v23-livro-layout-fixes">
+  :root{--app-version:"V03";}
+  .app-version-footer{margin-top:16px;text-align:center;font-size:.78rem;color:rgba(255,255,255,.55);font-weight:700;letter-spacing:.08em;}
+  .official-sheet{box-sizing:border-box!important;width:210mm!important;height:297mm!important;min-height:297mm!important;padding:20mm 15mm 24mm 15mm!important;overflow:hidden!important;}
+  .official-page-body{height:239mm!important;max-height:239mm!important;overflow:hidden!important;}
+  .sheet-top-right{font-size:10.5pt!important;line-height:1.2!important;margin-bottom:10px!important;}
+  .page-code{position:absolute!important;left:0!important;right:0!important;bottom:31mm!important;text-align:center!important;margin:0!important;font-size:12pt!important;letter-spacing:.16em!important;}
+  .doc-title-table,.hist-table{width:100%!important;max-width:100%!important;table-layout:fixed!important;border-collapse:collapse!important;}
+  .doc-title-table td,.hist-table td,.hist-table th{box-sizing:border-box!important;overflow-wrap:anywhere!important;word-break:normal!important;white-space:normal!important;color:#000!important;}
+  .hist-table td,.hist-table th{font-size:10.2pt!important;padding:4px 6px!important;line-height:1.18!important;}
+  .left-col{width:31%!important;text-align:center!important;}
+  .right-col{width:69%!important;}
+  .rh-block p{margin:0 0 7px 0!important;}
+  .signature-bar{position:absolute!important;left:15mm!important;right:15mm!important;bottom:14mm!important;display:flex!important;justify-content:space-between!important;gap:38mm!important;align-items:flex-end!important;}
+  .signature-box{width:43%!important;text-align:center!important;font-size:9.5pt!important;}
+  .signature-line{border-top:1px solid #222!important;margin-bottom:4px!important;height:0!important;width:100%!important;}
+  #pdfViewerContent .official-sheet{box-sizing:border-box!important;width:210mm!important;height:297mm!important;min-height:297mm!important;padding:20mm 15mm 24mm 15mm!important;overflow:hidden!important;}
+</style>
+</head><body>
   <div class="viewport"><div id="stage" class="stage"><div id="wrap" class="wrap">
     <div class="ps-page">
       <div class="hdr"><div class="a">DOCUMENTO PREPARATÓRIO – ACESSO RESTRITO</div><div class="b">Art. 3º, Inciso XII, e Art. 20 do Dec nº 7.724, de 16 de maio de 2012</div></div>
