@@ -629,6 +629,16 @@
       padding:6px 9px;
       font-size:.8rem;
     }
+    
+/* v26/V05: histórico agrupado por equipamento */
+.equip-group{display:grid;gap:10px}
+.equip-group-btn{width:100%;border:none;border-radius:18px;background:linear-gradient(180deg,rgba(31,67,116,.98),rgba(28,63,109,.98));color:#fff;padding:14px 16px;text-align:left;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:var(--shadow);border-left:6px solid var(--gold);font-weight:800}
+.equip-group-title{display:flex;flex-direction:column;gap:3px;min-width:0}
+.equip-group-name{font-size:1.05rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.equip-group-sub{font-size:.86rem;color:var(--muted);font-weight:700}
+.equip-group-content{display:grid;gap:12px;margin-left:8px}
+.equip-group-content.hidden{display:none!important}
+
     #mainMenuModal .app-version{
       margin-top:12px;
       padding-top:10px;
@@ -1279,7 +1289,7 @@
               </select>
             </div>
           </div>
-          <div class="field"><label for="equipamento">Equipamento</label><input id="equipamento" type="text" placeholder="Nome do equipamento (ex.: Bomba DA00002)" /></div>
+          <div class="field"><label for="equipamento">Equipamento</label><input id="equipamento" type="text" list="equipamentoSugestoes" placeholder="Nome do equipamento (ex.: Bomba DA00002)" /><datalist id="equipamentoSugestoes"></datalist></div>
           <div class="field"><label for="avaria">Avaria / Registro *</label><textarea id="avaria" placeholder="Descreva a avaria ocorrida ou o fato histórico." required></textarea></div>
           <div class="field"><label for="solucao">Solução</label><textarea id="solucao" placeholder="Descreva a solução aplicada"></textarea></div>
           <div class="field"><label for="observacao">Observação</label><textarea id="observacao" placeholder="Observações adicionais"></textarea></div>
@@ -1499,7 +1509,7 @@
           <span class="menu-item-arrow">›</span>
         </button>
       </div>
-      <div class="app-version">VERSÃO V04</div>
+      <div class="app-version">VERSÃO V05</div>
     </div>
   </div>
 
@@ -2925,6 +2935,7 @@ function resetRecordForm(){
   $('submitRecordBtn').textContent='Salvar Registro';
   $('formHeading').textContent='Novo Registro';
   resetAttachmentInput();
+  syncEquipmentSuggestions();
 }
 function recordTypeLabel(value){ return {avaria:'Avaria',manutencao:'Manutenção',rotina:'Rotina de manutenção',ocorrencia:'Ocorrência',anotacao:'Anotação'}[value]||'Avaria'; }
 function dateRangeLabel(rec){
@@ -2976,7 +2987,7 @@ async function handleRecordSubmit(e){
     AppState.data.registros.push({id:uid('rec'), ...payload, createdAt:Date.now(), updatedAt:Date.now()});
     setStatus('recordStatus','Registro salvo.');
   }
-  AppState.save(); resetRecordForm(); renderHistory(); renderDocument();
+  AppState.save(); syncEquipmentSuggestions(); resetRecordForm(); renderHistory(); renderDocument();
 }
 function getCurrentRecords(){ return AppState.data.registros.filter(r=>r.bigramaId===AppState.data.selectedBigramaId); }
 function getFilteredRecords(){
@@ -2991,40 +3002,14 @@ function getFilteredRecords(){
   }).sort((a,b)=>{ const byDate=b.dataInicio.localeCompare(a.dataInicio); return byDate!==0?byDate:(b.createdAt||0)-(a.createdAt||0); });
 }
 function renderHistory(){
-  const records=getFilteredRecords(); const abertos=records.filter(r=>r.status!=='fechado').length;
-  $('historyStats').innerHTML=`<b>Total filtrado:</b> ${records.length} registro(s)<br><b>Abertos aptos para documento:</b> ${abertos}<br><b>Sistema:</b> ${escapeHtml(getBigramaLabel(AppState.data.selectedBigramaId))}`;
-  const list=$('recordList');
-  if(!records.length){ list.innerHTML='<div class="empty">Nenhum registro encontrado com os filtros atuais.</div>'; renderDocument(); return; }
-  list.innerHTML=records.map(r=>{
-    const b=getBigramaById(r.bigramaId); const sigla=b?b.sigla:'??';
-    return `<div class="record-card">
-      <div class="record-head">
-        <div class="record-head-left">
-          <div class="sigla">${escapeHtml(sigla)}</div>
-          <div class="record-title">
-            <div class="date">${escapeHtml(formatDateBR(r.dataInicio))}${r.dataFim?' à '+escapeHtml(formatDateBR(r.dataFim)):''}</div>
-            <div class="meta"><span class="chip ${r.status==='fechado'?'status-closed':'status-open'}">${r.status==='fechado'?'Fechado':'Em aberto'}</span></div>
-          </div>
-        </div>
-        <div class="record-actions">
-          <button class="icon-btn view" title="Visualizar" onclick="previewSingleRecord('${r.id}')">👁</button>
-          <button class="icon-btn edit" title="Editar" onclick="editRecord('${r.id}')">✎</button>
-          <button class="icon-btn done" title="${r.status==='fechado'?'Marcar como aberto':'Marcar como fechado'}" onclick="toggleRecordStatus('${r.id}')">${r.status==='fechado'?'✖':'✔'}</button>
-          <button class="icon-btn delete" title="Excluir" onclick="deleteRecord('${r.id}')">🗑</button>
-        </div>
-      </div>
-      <div class="record-body">
-        <div class="label-block"><b>Equipamento:</b> ${escapeHtml(r.equipamento||'Sem equipamento')}</div>
-        <div class="label-block"><b>${escapeHtml(r.tipoRegistroLabel||'Avaria')}:</b> ${nl2br(r.avaria||'—')}</div>
-        <div class="label-block"><b>Solução:</b> ${nl2br(r.solucao||'—')}</div>
-        <div class="label-block"><b>Observação:</b> ${nl2br(r.observacao||'—')}</div>
-        ${renderRecordAttachments(r)}
-      </div>
-    </div>`;
-  }).join('');
-  hydrateAttachmentThumbs();
-  renderDocument();
+  syncEquipmentSuggestions();
+  const records=getFilteredRecords(); const abertos=records.filter(r=>r.status!=='fechado').length; const groups=groupRecordsByEquipment(records);
+  $('historyStats').innerHTML=`<b>Total filtrado:</b> ${records.length} registro(s)<br><b>Equipamentos:</b> ${groups.length}<br><b>Abertos aptos para documento:</b> ${abertos}<br><b>Sistema:</b> ${escapeHtml(getBigramaLabel(AppState.data.selectedBigramaId))}`;
+  const list=$('recordList'); if(!records.length){ list.innerHTML='<div class="empty">Nenhum registro encontrado com os filtros atuais.</div>'; renderDocument(); return; }
+  list.innerHTML=groups.map(group=>{ const openCount=group.records.filter(r=>r.status!=='fechado').length; const content=group.records.map(r=>{ const b=getBigramaById(r.bigramaId); const sigla=b?b.sigla:'??'; return `<div class="record-card"><div class="record-head"><div class="record-head-left"><div class="sigla">${escapeHtml(sigla)}</div><div class="record-title"><div class="date">${escapeHtml(formatDateBR(r.dataInicio))}${r.dataFim?' à '+escapeHtml(formatDateBR(r.dataFim)):''}</div><div class="meta"><span class="chip ${r.status==='fechado'?'status-closed':'status-open'}">${r.status==='fechado'?'Fechado':'Em aberto'}</span></div></div></div><div class="record-actions"><button class="icon-btn view" title="Visualizar" onclick="previewSingleRecord('${r.id}')">👁</button><button class="icon-btn edit" title="Editar" onclick="editRecord('${r.id}')">✎</button><button class="icon-btn done" title="${r.status==='fechado'?'Marcar como aberto':'Marcar como fechado'}" onclick="toggleRecordStatus('${r.id}')">${r.status==='fechado'?'✖':'✔'}</button><button class="icon-btn delete" title="Excluir" onclick="deleteRecord('${r.id}')">🗑</button></div></div><div class="record-body"><div class="label-block"><b>Equipamento:</b> ${escapeHtml(r.equipamento||'Sem equipamento')}</div><div class="label-block"><b>${escapeHtml(r.tipoRegistroLabel||'Avaria')}:</b> ${nl2br(r.avaria||'—')}</div><div class="label-block"><b>Solução:</b> ${nl2br(r.solucao||'—')}</div>${renderRecordAttachments(r)}</div></div>`; }).join(''); return `<div class="equip-group"><button class="equip-group-btn" type="button" onclick="toggleEquipmentGroup('${group.key}')"><span class="equip-group-title"><span class="equip-group-name">${escapeHtml(group.name)}</span><span class="equip-group-sub">${group.records.length} lançamento(s) · ${openCount} em aberto</span></span><span id="equipArrow-${group.key}">▾</span></button><div id="equipGroup-${group.key}" class="equip-group-content">${content}</div></div>`; }).join('');
+  hydrateAttachmentThumbs(); renderDocument();
 }
+function toggleEquipmentGroup(key){ const el=$('equipGroup-'+key), ar=$('equipArrow-'+key); if(!el) return; const hidden=!el.classList.contains('hidden'); el.classList.toggle('hidden',hidden); if(ar) ar.textContent=hidden?'▸':'▾'; }
 function previewSingleRecord(id){
   const r=AppState.data.registros.find(x=>x.id===id); if(!r) return;
   const qtdImagens = Array.isArray(r.anexos) ? r.anexos.length : 0;
@@ -3158,113 +3143,56 @@ function handleFichaSubmit(e){
   renderDocument(); setStatus('fichaStatus','Dados da ficha salvos.');
 }
 
-function formatOfficialRhHtml(r){
-  return `<div class="rh-block"><p><b>${escapeHtml(r.tipoRegistroLabel||'Avaria')}:</b> ${nl2br(r.avaria||'')}</p><p><b>Solução:</b> ${nl2br(r.solucao||'')}</p></div>`;
+
+function getRecordEquipmentName(r){ return String((r && r.equipamento) || '').trim() || 'Sem equipamento'; }
+function normalizeEquipmentKey(name){ return String(name || 'Sem equipamento').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' '); }
+function getKnownEquipments(){
+  const map = new Map();
+  AppState.data.registros.forEach(r=>{ if(r.bigramaId !== AppState.data.selectedBigramaId) return; const name=getRecordEquipmentName(r); const key=normalizeEquipmentKey(name); if(!map.has(key)) map.set(key,name); });
+  return Array.from(map.values()).sort((a,b)=>a.localeCompare(b,'pt-BR'));
 }
-function buildRowsHtml(records){
-  return records.map(r=>`<tr><td class="left-col">${nl2br(dateRangeLabel(r))||'&nbsp;'}</td><td class="right-col">${formatOfficialRhHtml(r)}</td></tr>`).join('');
+function syncEquipmentSuggestions(){ const dl=$('equipamentoSugestoes'); if(!dl) return; dl.innerHTML=getKnownEquipments().map(n=>`<option value="${escapeHtml(n)}"></option>`).join(''); }
+function groupRecordsByEquipment(records){
+  const map = new Map();
+  records.forEach(r=>{ const name=getRecordEquipmentName(r); const key=normalizeEquipmentKey(name); if(!map.has(key)) map.set(key,{key,name,records:[]}); map.get(key).records.push(r); });
+  return Array.from(map.values()).sort((a,b)=>a.name.localeCompare(b.name,'pt-BR'));
 }
+function formatOfficialRhHtml(r){ return `<div class="rh-block"><p><b>${escapeHtml(r.tipoRegistroLabel||'Avaria')}:</b> ${nl2br(r.avaria||'')}</p><p><b>Solução:</b> ${nl2br(r.solucao||'')}</p></div>`; }
+function buildRowsHtml(records){ return records.map(r=>`<tr><td class="left-col">${nl2br(dateRangeLabel(r))||'&nbsp;'}</td><td class="right-col">${formatOfficialRhHtml(r)}</td></tr>`).join(''); }
 function estimateOfficialRowHeightMm(record){
-  // v12: estimativa mais realista e menos conservadora.
-  // O objetivo é preencher a página, mantendo a assinatura fixa no rodapé.
-  const leftText = String(dateRangeLabel(record)||'');
-  const avaria = String(record.avaria || '');
-  const solucao = String(record.solucao || '');
-
-  const charsPerLineLeft = 22;
-  const charsPerLineRight = 68;
-
-  const leftLines = Math.max(1, Math.ceil(leftText.length / charsPerLineLeft) || 1);
-  const countLines = (txt)=> Math.max(1, Math.ceil(String(txt||'').length / charsPerLineRight) || 1);
-
-  // Só conta bloco vazio como mínimo visual pequeno; não trata campo vazio como parágrafo grande.
-  const rightLines = 1 + countLines(avaria) + (solucao.trim() ? 1 + countLines(solucao) : 1);
-
-  const leftHeight = 6 + leftLines * 3.8;
-  const rightHeight = 7 + rightLines * 3.9;
-  return Math.max(14, Math.ceil(Math.max(leftHeight, rightHeight)));
+  const leftText=String(dateRangeLabel(record)||''), avaria=String(record.avaria||''), solucao=String(record.solucao||'');
+  const leftLines=Math.max(1,Math.ceil(leftText.length/22)||1); const countLines=(txt)=>Math.max(1,Math.ceil(String(txt||'').length/68)||1);
+  const rightLines=1+countLines(avaria)+(solucao.trim()?1+countLines(solucao):1);
+  return Math.max(14,Math.ceil(Math.max(6+leftLines*3.8,7+rightLines*3.9)));
 }
-function paginateOfficialRecords(records, ficha){
-  // v16: mede a própria página B que será exibida/baixada.
-  // A área útil termina 4 cm antes da assinatura; se o próximo lançamento couber inteiro, entra.
-  // Se não couber inteiro, vai para a próxima página.
-  if(!records.length){
-    const pages = [{pageNumber: 1, isFirst: false, rows: []}];
-    window._officialLastPages = pages;
-    return pages;
-  }
-
-  if(typeof document === 'undefined' || !document.body){
-    const pages=[]; let current={pageNumber:1,isFirst:false,rows:[]}; let used=0;
-    const LIMIT=178;
-    records.forEach(r=>{
-      const h=estimateOfficialRowHeightMm(r);
-      if(current.rows.length && used+h>LIMIT){pages.push(current);current={pageNumber:pages.length+1,isFirst:false,rows:[]};used=0;}
-      current.rows.push(r); used+=h;
-    });
-    if(current.rows.length) pages.push(current);
-    window._officialLastPages = pages;
-    return pages;
-  }
-
-  const measureHost = document.createElement('div');
-  measureHost.style.cssText = 'position:absolute;left:-20000px;top:0;width:210mm;visibility:hidden;pointer-events:none;z-index:-1;background:#fff;';
-  document.body.appendChild(measureHost);
-
-  const pages = [];
-  let current = [];
-
-  function fits(rows){
-    measureHost.innerHTML = makePage(1, buildRowsHtml(rows), false);
-    const body = measureHost.querySelector('.official-page-body');
-    if(!body) return true;
-    body.style.height = '224mm';
-    body.style.maxHeight = '224mm';
-    body.style.overflow = 'hidden';
+function makePage(pageNumber, rowsHtml, isFirst, equipmentName){
+  const ficha=getFichaForSelected(); const equip=equipmentName||ficha.equipamentoFicha||'';
+  const pageCode=isFirst?`- A - ${pageNumber} -`:`- B - ${pageNumber} -`;
+  const headerTop=`<div class="sheet-top-right">ENGENALMARINST Nº 85-13A<br>${isFirst?'Anexo A':'Anexo B'}</div>`;
+  const titleTable=`<table class="doc-title-table"><tr><td class="doc-title" style="width:68%;">REGISTRO HISTÓRICO DE EQUIPAMENTOS DE<br>MÁQUINAS</td><td style="width:14%;text-align:center;"><span class="box-label">FICHA Nº</span><br>${escapeHtml(ficha.fichaNumero||'')}</td><td style="width:18%;text-align:center;"><span class="box-label">FOLHA Nº</span><br>${pageNumber}</td></tr></table>`;
+  const fichaTable=isFirst?`<table class="meta-table"><tr><td colspan="2"><span class="box-label">NAVIO:</span> ${escapeHtml(ficha.navio||'')}</td></tr><tr><td colspan="2"><span class="box-label">SISTEMA:</span> ${escapeHtml(ficha.sistemaFicha||getBigramaLabel(AppState.data.selectedBigramaId)||'')}</td></tr><tr><td colspan="2"><span class="box-label">EQUIPAMENTO:</span> ${escapeHtml(equip)}</td></tr><tr><td colspan="2"><span class="box-label">MANUAL E/OU PLANO:</span> ${escapeHtml(ficha.manualPlano||'')}</td></tr><tr><td colspan="2"><span class="box-label">FABRICANTE:</span> ${escapeHtml(ficha.fabricante||'')}</td></tr><tr><td colspan="2"><span class="box-label">DADOS DE PLACA:</span> ${escapeHtml(ficha.dadosPlaca||'')}</td></tr><tr><td style="width:50%;"><span class="box-label">LOCALIZAÇÃO:</span> ${escapeHtml(ficha.localizacao||'')}</td><td style="width:50%;"><span class="box-label">Nº DE SÉRIE:</span> ${escapeHtml(ficha.numeroSerie||'')}</td></tr></table>`:'';
+  return `<div class="official-sheet"><div class="official-page-body">${headerTop}${titleTable}${fichaTable}<table class="hist-table" style="margin-top:8px;"><thead><tr><th style="width:30%;">DATA E Nº DE HORAS DE FUNCIONAMENTO</th><th style="width:70%;">REGISTRO HISTÓRICO</th></tr></thead><tbody>${rowsHtml||''}</tbody></table></div><div class="signature-bar"><div class="signature-box"><div class="signature-line"></div>Encarregado do Sistema MO-1</div><div class="signature-box"><div class="signature-line"></div>Encarregado da Divisão de Máquinas</div></div><div class="page-code">${pageCode}</div></div>`;
+}
+function paginateEquipmentRecords(records, equipmentName){
+  const measureHost=(typeof document!=='undefined'&&document.body)?document.createElement('div'):null;
+  if(measureHost){ measureHost.style.cssText='position:absolute;left:-20000px;top:0;width:210mm;visibility:hidden;pointer-events:none;z-index:-1;background:#fff;'; document.body.appendChild(measureHost); }
+  const pages=[]; let current=[]; let currentIsFirst=true;
+  function fits(rows,isFirst){
+    if(!measureHost){ const used=rows.reduce((sum,r)=>sum+estimateOfficialRowHeightMm(r),0); return used <= (isFirst?126:178); }
+    measureHost.innerHTML=makePage(isFirst?1:2, buildRowsHtml(rows), isFirst, equipmentName);
+    const body=measureHost.querySelector('.official-page-body'); if(!body) return true;
+    body.style.height=isFirst?'171mm':'224mm'; body.style.maxHeight=body.style.height; body.style.overflow='hidden';
     return body.scrollHeight <= body.clientHeight + 3;
   }
-
-  records.forEach((record)=>{
-    const candidate = current.concat([record]);
-    if(current.length && !fits(candidate)){
-      pages.push({pageNumber: pages.length + 1, isFirst: false, rows: current});
-      current = [record];
-    }else{
-      current = candidate;
-    }
-  });
-
-  if(current.length){
-    pages.push({pageNumber: pages.length + 1, isFirst: false, rows: current});
-  }
-  measureHost.remove();
-  window._officialLastPages = pages;
-  return pages;
+  records.forEach(record=>{ const candidate=current.concat([record]); if(current.length && !fits(candidate,currentIsFirst)){ pages.push({pageNumber:pages.length+1,isFirst:currentIsFirst,equipmentName,rows:current}); current=[record]; currentIsFirst=false; } else current=candidate; });
+  if(current.length || !pages.length) pages.push({pageNumber:pages.length+1,isFirst:currentIsFirst,equipmentName,rows:current});
+  if(measureHost) measureHost.remove(); return pages;
 }
-function makePage(pageNumber, rowsHtml, isFirst){
-  const ficha=getFichaForSelected();
-  // v09: somente Anexo B, sequência B-1, B-2, B-3...
-  const pageCode=`- B - ${pageNumber} -`;
-  const headerTop=`<div class="sheet-top-right">ENGENALMARINST Nº 85-13A<br>Anexo B</div>`;
-  const titleTable=`<table class="doc-title-table"><tr><td class="doc-title" style="width:68%;">REGISTRO HISTÓRICO DE EQUIPAMENTOS DE<br>MÁQUINAS</td><td style="width:14%;text-align:center;"><span class="box-label">FICHA Nº</span><br>${escapeHtml(ficha.fichaNumero||'')}</td><td style="width:18%;text-align:center;"><span class="box-label">FOLHA Nº</span><br>${pageNumber}</td></tr></table>`;
-  return `<div class="official-sheet"><div class="official-page-body">${headerTop}${titleTable}<table class="hist-table" style="margin-top:8px;"><thead><tr><th style="width:30%;">DATA E Nº DE HORAS DE FUNCIONAMENTO</th><th style="width:70%;">REGISTRO HISTÓRICO</th></tr></thead><tbody>${rowsHtml || ''}</tbody></table></div><div class="signature-bar"><div class="signature-box"><div class="signature-line"></div>Encarregado do Sistema MO-1</div><div class="signature-box"><div class="signature-line"></div>Encarregado da Divisão de Máquinas</div></div><div class="page-code">${pageCode}</div></div>`;
-}
+function paginateOfficialRecords(records, ficha){ const pages=[]; groupRecordsByEquipment(records).forEach(group=>pages.push(...paginateEquipmentRecords(group.records, group.name))); window._officialLastPages=pages; return pages; }
 function getPrintableOpenRecords(){
-  // v18: documento oficial usa SOMENTE lançamentos em aberto do bigrama selecionado.
-  // Não depende dos filtros da tela Histórico, para não omitir lançamento aberto por engano.
-  return getCurrentRecords()
-    .filter(r => r.status === 'aberto')
-    .sort((a,b)=>{
-      const byDate = String(a.dataInicio || '').localeCompare(String(b.dataInicio || ''));
-      return byDate !== 0 ? byDate : (a.createdAt || 0) - (b.createdAt || 0);
-    });
+  return getCurrentRecords().filter(r=>r.status==='aberto').sort((a,b)=>{ const byEquip=getRecordEquipmentName(a).localeCompare(getRecordEquipmentName(b),'pt-BR'); if(byEquip!==0) return byEquip; const byDate=String(a.dataInicio||'').localeCompare(String(b.dataInicio||'')); return byDate!==0?byDate:(a.createdAt||0)-(b.createdAt||0); });
 }
-function renderDocument(){
-  const host=$('printHost'), records=getPrintableOpenRecords(), ficha=getFichaForSelected();
-  const pages = paginateOfficialRecords(records, ficha);
-  host.innerHTML=pages.map(p=>makePage(p.pageNumber, buildRowsHtml(p.rows), p.isFirst)).join('');
-  window._officialLastPages = pages;
-}
+function renderDocument(){ const host=$('printHost'), records=getPrintableOpenRecords(), ficha=getFichaForSelected(); const pages=paginateOfficialRecords(records,ficha); host.innerHTML=pages.map(p=>makePage(p.pageNumber, buildRowsHtml(p.rows), p.isFirst, p.equipmentName)).join(''); window._officialLastPages=pages; }
 function openPrintChoiceModal(){ $('printChoiceModal').classList.add('show'); }
 function closePrintChoiceModal(){ $('printChoiceModal').classList.remove('show'); }
 function previewPdfOnly(){
@@ -4405,37 +4333,24 @@ function buildOfficialDocxXml(){
   const {pages, ficha} = getOfficialPdfPages();
   const body = [];
   pages.forEach((page, idx)=>{
-    const pageNumber = idx + 1;
+    const pageNumber = page.pageNumber || (idx + 1);
+    const isFirst = !!page.isFirst;
+    const equip = page.equipmentName || ficha.equipamentoFicha || '';
     body.push(docxP('ENGENALMARINST Nº 85-13A', {jc:'right', size:22}));
-    body.push(docxP('Anexo B', {jc:'right', size:22}));
-    body.push(docxTable([
-      docxRow([
-        docxCell(docxP('REGISTRO HISTÓRICO DE EQUIPAMENTOS DE\nMÁQUINAS',{jc:'center',bold:true,size:22}), 6300, {vAlign:'center'}),
-        docxCell(docxP('FICHA Nº\n' + (ficha.fichaNumero || ''),{jc:'center',bold:true,size:18}), 1500, {vAlign:'center'}),
-        docxCell(docxP('FOLHA Nº\n' + pageNumber,{jc:'center',bold:true,size:18}), 1800, {vAlign:'center'})
-      ])
-    ], [6300,1500,1800]));
-    const histRows = [docxRow([
-      docxCell(docxP('DATA E Nº DE HORAS DE\nFUNCIONAMENTO',{jc:'center',bold:true,size:18}), 2700, {shade:'F2F2F2', vAlign:'center'}),
-      docxCell(docxP('REGISTRO HISTÓRICO',{jc:'center',bold:true,size:18}), 6900, {shade:'F2F2F2', vAlign:'center'})
-    ])];
-    (page.rows || []).forEach(r=>{
-      const right = [
-        `${r.tipoRegistroLabel || 'Avaria'}: ${r.avaria || ''}`,
-        `Solução: ${r.solucao || ''}`
-      ].join('\n');
-      histRows.push(docxRow([
-        docxCell(docxP(dateRangeLabel(r) || '', {jc:'center', size:18}), 2700),
-        docxCell(docxP(right, {size:18}), 6900)
-      ]));
-    });
-    body.push(docxTable(histRows, [2700,6900]));
-    body.push(docxP(`- B - ${pageNumber} -`, {jc:'center', size:24}));
-    if(idx < pages.length - 1){
-      body.push('<w:p><w:r><w:br w:type="page"/></w:r></w:p>');
+    body.push(docxP(isFirst ? 'Anexo A' : 'Anexo B', {jc:'right', size:22}));
+    body.push(docxTable([docxRow([docxCell(docxP('REGISTRO HISTÓRICO DE EQUIPAMENTOS DE\nMÁQUINAS',{jc:'center',bold:true,size:22}), 6250, {vAlign:'center'}),docxCell(docxP('FICHA Nº\n' + (ficha.fichaNumero || ''),{jc:'center',bold:true,size:18}), 1450, {vAlign:'center'}),docxCell(docxP('FOLHA Nº\n' + pageNumber,{jc:'center',bold:true,size:18}), 1700, {vAlign:'center'})])], [6250,1450,1700]));
+    if(isFirst){
+      const metaRows = [['NAVIO:', ficha.navio || ''],['SISTEMA:', ficha.sistemaFicha || getBigramaLabel(AppState.data.selectedBigramaId) || ''],['EQUIPAMENTO:', equip],['MANUAL E/OU PLANO:', ficha.manualPlano || ''],['FABRICANTE:', ficha.fabricante || ''],['DADOS DE PLACA:', ficha.dadosPlaca || '']].map(([label,value])=>docxRow([docxCell(docxP(label + ' ' + value, {size:18}), 9400)]));
+      metaRows.push(docxRow([docxCell(docxP('LOCALIZAÇÃO: ' + (ficha.localizacao || ''), {size:18}), 4700),docxCell(docxP('Nº DE SÉRIE: ' + (ficha.numeroSerie || ''), {size:18}), 4700)]));
+      body.push(docxTable(metaRows, [9400]));
     }
+    const histRows = [docxRow([docxCell(docxP('DATA E Nº DE HORAS DE\nFUNCIONAMENTO',{jc:'center',bold:true,size:18}), 2650, {shade:'F2F2F2', vAlign:'center'}),docxCell(docxP('REGISTRO HISTÓRICO',{jc:'center',bold:true,size:18}), 6750, {shade:'F2F2F2', vAlign:'center'})])];
+    (page.rows || []).forEach(r=>{ const right=[`${r.tipoRegistroLabel || 'Avaria'}: ${r.avaria || ''}`,`Solução: ${r.solucao || ''}`].join('\n'); histRows.push(docxRow([docxCell(docxP(dateRangeLabel(r) || '', {jc:'center', size:18}), 2650),docxCell(docxP(right, {size:18}), 6750)])); });
+    body.push(docxTable(histRows, [2650,6750]));
+    body.push(docxP(isFirst ? `- A - ${pageNumber} -` : `- B - ${pageNumber} -`, {jc:'center', size:24}));
+    if(idx < pages.length - 1) body.push('<w:p><w:r><w:br w:type="page"/></w:r></w:p>');
   });
-  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><w:body>${body.join('')}<w:sectPr><w:footerReference w:type="default" r:id="rIdFooter1"/><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1021" w:right="567" w:bottom="2268" w:left="1134" w:header="708" w:footer="567" w:gutter="0"/></w:sectPr></w:body></w:document>`;
+  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><w:body>${body.join('')}<w:sectPr><w:footerReference w:type="default" r:id="rIdFooter1"/><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1021" w:right="567" w:bottom="2268" w:left="850" w:header="708" w:footer="567" w:gutter="0"/></w:sectPr></w:body></w:document>`;
 }
 function buildOfficialFooterXml(){
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:ftr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:tbl><w:tblPr><w:tblW w:w="9600" w:type="dxa"/><w:tblLayout w:type="fixed"/><w:tblBorders><w:top w:val="nil"/><w:left w:val="nil"/><w:bottom w:val="nil"/><w:right w:val="nil"/><w:insideH w:val="nil"/><w:insideV w:val="nil"/></w:tblBorders></w:tblPr><w:tr><w:tc><w:tcPr><w:tcW w:w="3900" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="8" w:space="0" w:color="000000"/><w:left w:val="nil"/><w:bottom w:val="nil"/><w:right w:val="nil"/></w:tcBorders></w:tcPr>${docxP('Encarregado do Sistema MO-1',{jc:'center',size:18})}</w:tc><w:tc><w:tcPr><w:tcW w:w="1800" w:type="dxa"/><w:tcBorders><w:top w:val="nil"/><w:left w:val="nil"/><w:bottom w:val="nil"/><w:right w:val="nil"/></w:tcBorders></w:tcPr>${docxP('',{jc:'center',size:18})}</w:tc><w:tc><w:tcPr><w:tcW w:w="3900" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="8" w:space="0" w:color="000000"/><w:left w:val="nil"/><w:bottom w:val="nil"/><w:right w:val="nil"/></w:tcBorders></w:tcPr>${docxP('Encarregado da Divisão de Máquinas',{jc:'center',size:18})}</w:tc></w:tr></w:tbl></w:ftr>`;
@@ -4589,7 +4504,7 @@ function drawCell(doc, x, y, w, h, label, value, opts={}){
 function getOfficialPdfPages(){
   const records = getPrintableOpenRecords();
   const ficha = getFichaForSelected();
-  const pages = (window._officialLastPages && window._officialLastPages.length) ? window._officialLastPages : paginateOfficialRecords(records, ficha);
+  const pages = paginateOfficialRecords(records, ficha);
   return {pages, ficha, records};
 }
 function getOfficialPdfRowHeight(doc, r){
@@ -4599,9 +4514,8 @@ function getOfficialPdfRowHeight(doc, r){
   const tipoLabel = `${r.tipoRegistroLabel || 'Avaria'}:`;
   const avariaLines = doc.splitTextToSize(String(r.avaria || ''), 112);
   const solucaoLines = doc.splitTextToSize(String(r.solucao || ''), 112);
-  const obsLines = doc.splitTextToSize(String(r.observacao || ''), 112);
   const leftHeight = Math.max(12, leftLines.length * 4.2 + 8);
-  const rightHeight = 6 + 4 + avariaLines.length * 4.2 + 3 + 4 + solucaoLines.length * 4.2 + 3 + 4 + obsLines.length * 4.2 + 6;
+  const rightHeight = 6 + 4 + avariaLines.length * 4.2 + 3 + 4 + solucaoLines.length * 4.2 + 6;
   return Math.max(22, leftHeight, rightHeight);
 }
 function renderOfficialPdf(doc, page, ficha){
@@ -4612,9 +4526,9 @@ function renderOfficialPdf(doc, page, ficha){
   doc.text('ENGENALMARINST Nº 85-13A', W - m, 12, {align:'right'});
   doc.text(page.isFirst ? `Anexo ${String(ficha.anexoPrimeiraPagina || 'A')}` : 'Anexo B', W - m, 17, {align:'right'});
   doc.setFontSize(12);
-  doc.text(page.isFirst ? `- ${String(ficha.anexoPrimeiraPagina || 'A')} - ${page.pageNumber} -` : `- B - ${page.pageNumber} -`, W/2, 27, {align:'center'});
+  const pdfPageCode = page.isFirst ? `- A - ${page.pageNumber} -` : `- B - ${page.pageNumber} -`;
 
-  let y = 31;
+  let y = 24;
   doc.rect(m, y, 118, 18);
   doc.rect(130, y, 24, 18);
   doc.rect(154, y, 32, 18);
@@ -4671,11 +4585,10 @@ function renderOfficialPdf(doc, page, ficha){
     doc.setFont('times','normal'); ty = pdfText(doc, r.avaria || '', m+55, ty+5, 112, {size:10, lh:4.2});
     doc.setFont('times','bold'); doc.text('Solução:', m+55, ty+2); doc.setFont('times','normal');
     ty = pdfText(doc, r.solucao || '', m+55, ty+7, 112, {size:10, lh:4.2});
-    doc.setFont('times','bold'); doc.text('Observação:', m+55, ty+2); doc.setFont('times','normal');
-    pdfText(doc, r.observacao || '', m+55, ty+7, 112, {size:10, lh:4.2});
     y += rowH;
   });
 
+  doc.setFontSize(12); doc.text(pdfPageCode, W/2, H-13, {align:'center'});
   const sigLineY = H - 7.5;
   const sigTextY = H - 3.8;
   doc.line(25, sigLineY, 82, sigLineY);

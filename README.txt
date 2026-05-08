@@ -19,3 +19,12 @@ V20: corrigido Word do Livro Histórico para DOCX nativo com margens A4 e assina
 
 
 V25/App V04: corrigidas margens do DOCX do Livro Histórico, numeração no rodapé, assinaturas separadas, remoção de Observação na visualização/DOCX e cache offline atualizado.
+
+
+V26 / App V05:
+- Registros históricos agrupados por equipamento.
+- Campo Equipamento com sugestões dos equipamentos já lançados.
+- Página A1 criada como capa/ficha do equipamento.
+- Páginas B criadas automaticamente como continuação quando A1 lota.
+- Observação fora da visualização e do DOCX.
+- Cache offline atualizado.
