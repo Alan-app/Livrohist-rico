@@ -1,10 +1,18 @@
-Livro Histórico — v28 / App V07
+Livro Histórico — versão v19
 
-Base: v26 funcional.
-Correções reais desta versão:
-- Cards de equipamentos no Histórico com quebra de linha e largura segura, sem corte em nomes longos.
-- Grupos de equipamentos sempre iniciam recolhidos ao entrar/reabrir Histórico.
-- Versão no menu atualizada para V07.
-- Cache offline atualizado para forçar troca da versão instalada.
+Correção principal:
+- O DOCX do Livro Histórico agora é gerado a partir do mesmo HTML/CSS da visualização.
+- O DOCX do Pedido de Serviço agora é gerado a partir do mesmo HTML/CSS da visualização.
+- Removido o gerador Word paralelo simplificado que mudava layout, zoom, tabelas e espaçamentos.
+- Cache do PWA atualizado para forçar atualização da versão instalada.
 
-Observação: após publicar no GitHub Pages, remova o app antigo do celular e instale novamente se o PWA continuar mostrando cache antigo.
+Publicação:
+1. apague todos os arquivos antigos do repositório
+2. envie estes arquivos
+3. aguarde o GitHub Pages atualizar
+4. remova o app antigo do celular
+5. abra o link em aba anônima se necessário
+6. instale novamente
+
+
+V20: corrigido Word do Livro Histórico para DOCX nativo com margens A4 e assinaturas em rodapé real, lado a lado. Pedido de Serviço mantido para etapa seguinte.
