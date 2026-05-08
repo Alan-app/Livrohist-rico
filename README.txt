@@ -16,3 +16,6 @@ Publicação:
 
 
 V20: corrigido Word do Livro Histórico para DOCX nativo com margens A4 e assinaturas em rodapé real, lado a lado. Pedido de Serviço mantido para etapa seguinte.
+
+
+V25/App V04: corrigidas margens do DOCX do Livro Histórico, numeração no rodapé, assinaturas separadas, remoção de Observação na visualização/DOCX e cache offline atualizado.

@@ -231,7 +231,7 @@
       font-size:.95rem;
     }
 
-    .official-sheet{background:#fff;color:#111;padding:18mm 12mm 18mm 12mm;width:210mm;min-height:297mm;margin:0 auto 18px;box-shadow:0 10px 25px rgba(0,0,0,.28);page-break-after:always;font-family:"Times New Roman", Times, serif;position:relative}
+    .official-sheet{background:#fff;color:#111;padding:18mm 8mm 18mm 12mm;width:210mm;min-height:297mm;margin:0 auto 18px;box-shadow:0 10px 25px rgba(0,0,0,.28);page-break-after:always;font-family:"Times New Roman", Times, serif;position:relative}
     .sheet-top-right{text-align:right;font-size:11pt;line-height:1.2;margin-bottom:8px}
     .page-code{text-align:center;font-size:12pt;margin:10px 0;letter-spacing:.16em}
     .doc-title-table,.meta-table,.hist-table{width:100%;border-collapse:collapse;table-layout:fixed}
@@ -245,7 +245,7 @@
     .right-col{width:70%;padding:10px!important;vertical-align:top!important}
     .rh-block{line-height:1.35;min-height:0;display:block;page-break-inside:auto;break-inside:auto}
     .rh-block p{margin:0 0 6px 0;page-break-inside:auto;break-inside:auto}
-    .signature-bar{position:absolute;left:12mm;right:12mm;bottom:10mm;display:flex;justify-content:space-between;align-items:flex-end;gap:20mm}
+    .signature-bar{position:absolute;left:12mm;right:8mm;bottom:16mm;display:flex;justify-content:space-between;align-items:flex-end;gap:20mm}
     .signature-box{width:44%;text-align:center;font-size:10pt}
     .signature-line{border-top:1px solid #222;margin-bottom:4px;height:0}
     .print-note{font-size:.92rem;line-height:1.45;color:var(--muted)}
@@ -1127,6 +1127,16 @@
   margin:0 0 2px 0 !important;
 }
 
+
+/* v25/App V04: Livro Histórico - margens DOCX/visualização, numeração no rodapé, assinaturas separadas */
+.official-sheet{padding:18mm 8mm 18mm 12mm !important;}
+#pdfViewerContent .official-sheet{padding:18mm 8mm 18mm 12mm !important;}
+.official-page-body{height:224mm !important;max-height:224mm !important;overflow:hidden !important;}
+.official-sheet .page-code{position:absolute !important;left:0 !important;right:0 !important;bottom:4mm !important;margin:0 !important;text-align:center !important;}
+.official-sheet .signature-bar,#pdfViewerContent .official-sheet .signature-bar{left:12mm !important;right:8mm !important;bottom:16mm !important;gap:16mm !important;}
+.official-sheet .signature-box{width:42% !important;text-align:center !important;}
+.official-sheet .signature-line{border-top:1px solid #222 !important;margin:0 auto 4px auto !important;width:100% !important;height:0 !important;}
+
 </style>
 
 <style id="pdf-viewer-overlay-fix">
@@ -1489,7 +1499,7 @@
           <span class="menu-item-arrow">›</span>
         </button>
       </div>
-      <div class="app-version">VERSÃO V01</div>
+      <div class="app-version">VERSÃO V04</div>
     </div>
   </div>
 
@@ -3149,7 +3159,7 @@ function handleFichaSubmit(e){
 }
 
 function formatOfficialRhHtml(r){
-  return `<div class="rh-block"><p><b>${escapeHtml(r.tipoRegistroLabel||'Avaria')}:</b> ${nl2br(r.avaria||'')}</p><p><b>Solução:</b> ${nl2br(r.solucao||'')}</p><p><b>Observação:</b> ${nl2br(r.observacao||'')}</p></div>`;
+  return `<div class="rh-block"><p><b>${escapeHtml(r.tipoRegistroLabel||'Avaria')}:</b> ${nl2br(r.avaria||'')}</p><p><b>Solução:</b> ${nl2br(r.solucao||'')}</p></div>`;
 }
 function buildRowsHtml(records){
   return records.map(r=>`<tr><td class="left-col">${nl2br(dateRangeLabel(r))||'&nbsp;'}</td><td class="right-col">${formatOfficialRhHtml(r)}</td></tr>`).join('');
@@ -3160,7 +3170,6 @@ function estimateOfficialRowHeightMm(record){
   const leftText = String(dateRangeLabel(record)||'');
   const avaria = String(record.avaria || '');
   const solucao = String(record.solucao || '');
-  const observacao = String(record.observacao || '');
 
   const charsPerLineLeft = 22;
   const charsPerLineRight = 68;
@@ -3169,7 +3178,7 @@ function estimateOfficialRowHeightMm(record){
   const countLines = (txt)=> Math.max(1, Math.ceil(String(txt||'').length / charsPerLineRight) || 1);
 
   // Só conta bloco vazio como mínimo visual pequeno; não trata campo vazio como parágrafo grande.
-  const rightLines = 1 + countLines(avaria) + (solucao.trim() ? 1 + countLines(solucao) : 1) + (observacao.trim() ? 1 + countLines(observacao) : 1);
+  const rightLines = 1 + countLines(avaria) + (solucao.trim() ? 1 + countLines(solucao) : 1);
 
   const leftHeight = 6 + leftLines * 3.8;
   const rightHeight = 7 + rightLines * 3.9;
@@ -3238,7 +3247,7 @@ function makePage(pageNumber, rowsHtml, isFirst){
   const pageCode=`- B - ${pageNumber} -`;
   const headerTop=`<div class="sheet-top-right">ENGENALMARINST Nº 85-13A<br>Anexo B</div>`;
   const titleTable=`<table class="doc-title-table"><tr><td class="doc-title" style="width:68%;">REGISTRO HISTÓRICO DE EQUIPAMENTOS DE<br>MÁQUINAS</td><td style="width:14%;text-align:center;"><span class="box-label">FICHA Nº</span><br>${escapeHtml(ficha.fichaNumero||'')}</td><td style="width:18%;text-align:center;"><span class="box-label">FOLHA Nº</span><br>${pageNumber}</td></tr></table>`;
-  return `<div class="official-sheet"><div class="official-page-body">${headerTop}<div class="page-code">${pageCode}</div>${titleTable}<table class="hist-table" style="margin-top:8px;"><thead><tr><th style="width:30%;">DATA E Nº DE HORAS DE FUNCIONAMENTO</th><th style="width:70%;">REGISTRO HISTÓRICO</th></tr></thead><tbody>${rowsHtml || ''}</tbody></table></div><div class="signature-bar"><div class="signature-box"><div class="signature-line"></div>Encarregado do Sistema MO-1</div><div class="signature-box"><div class="signature-line"></div>Encarregado da Divisão de Máquinas</div></div></div>`;
+  return `<div class="official-sheet"><div class="official-page-body">${headerTop}${titleTable}<table class="hist-table" style="margin-top:8px;"><thead><tr><th style="width:30%;">DATA E Nº DE HORAS DE FUNCIONAMENTO</th><th style="width:70%;">REGISTRO HISTÓRICO</th></tr></thead><tbody>${rowsHtml || ''}</tbody></table></div><div class="signature-bar"><div class="signature-box"><div class="signature-line"></div>Encarregado do Sistema MO-1</div><div class="signature-box"><div class="signature-line"></div>Encarregado da Divisão de Máquinas</div></div><div class="page-code">${pageCode}</div></div>`;
 }
 function getPrintableOpenRecords(){
   // v18: documento oficial usa SOMENTE lançamentos em aberto do bigrama selecionado.
@@ -4399,38 +4408,37 @@ function buildOfficialDocxXml(){
     const pageNumber = idx + 1;
     body.push(docxP('ENGENALMARINST Nº 85-13A', {jc:'right', size:22}));
     body.push(docxP('Anexo B', {jc:'right', size:22}));
-    body.push(docxP(`- B - ${pageNumber} -`, {jc:'center', size:24}));
     body.push(docxTable([
       docxRow([
-        docxCell(docxP('REGISTRO HISTÓRICO DE EQUIPAMENTOS DE\nMÁQUINAS',{jc:'center',bold:true,size:22}), 5600, {vAlign:'center'}),
-        docxCell(docxP('FICHA Nº\n' + (ficha.fichaNumero || ''),{jc:'center',bold:true,size:18}), 1400, {vAlign:'center'}),
-        docxCell(docxP('FOLHA Nº\n' + pageNumber,{jc:'center',bold:true,size:18}), 1500, {vAlign:'center'})
+        docxCell(docxP('REGISTRO HISTÓRICO DE EQUIPAMENTOS DE\nMÁQUINAS',{jc:'center',bold:true,size:22}), 6300, {vAlign:'center'}),
+        docxCell(docxP('FICHA Nº\n' + (ficha.fichaNumero || ''),{jc:'center',bold:true,size:18}), 1500, {vAlign:'center'}),
+        docxCell(docxP('FOLHA Nº\n' + pageNumber,{jc:'center',bold:true,size:18}), 1800, {vAlign:'center'})
       ])
-    ], [5600,1400,1500]));
+    ], [6300,1500,1800]));
     const histRows = [docxRow([
-      docxCell(docxP('DATA E Nº DE HORAS DE\nFUNCIONAMENTO',{jc:'center',bold:true,size:18}), 2400, {shade:'F2F2F2', vAlign:'center'}),
-      docxCell(docxP('REGISTRO HISTÓRICO',{jc:'center',bold:true,size:18}), 6100, {shade:'F2F2F2', vAlign:'center'})
+      docxCell(docxP('DATA E Nº DE HORAS DE\nFUNCIONAMENTO',{jc:'center',bold:true,size:18}), 2700, {shade:'F2F2F2', vAlign:'center'}),
+      docxCell(docxP('REGISTRO HISTÓRICO',{jc:'center',bold:true,size:18}), 6900, {shade:'F2F2F2', vAlign:'center'})
     ])];
     (page.rows || []).forEach(r=>{
       const right = [
         `${r.tipoRegistroLabel || 'Avaria'}: ${r.avaria || ''}`,
-        `Solução: ${r.solucao || ''}`,
-        `Observação: ${r.observacao || ''}`
+        `Solução: ${r.solucao || ''}`
       ].join('\n');
       histRows.push(docxRow([
-        docxCell(docxP(dateRangeLabel(r) || '', {jc:'center', size:18}), 2400),
-        docxCell(docxP(right, {size:18}), 6100)
+        docxCell(docxP(dateRangeLabel(r) || '', {jc:'center', size:18}), 2700),
+        docxCell(docxP(right, {size:18}), 6900)
       ]));
     });
-    body.push(docxTable(histRows, [2400,6100]));
+    body.push(docxTable(histRows, [2700,6900]));
+    body.push(docxP(`- B - ${pageNumber} -`, {jc:'center', size:24}));
     if(idx < pages.length - 1){
       body.push('<w:p><w:r><w:br w:type="page"/></w:r></w:p>');
     }
   });
-  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><w:body>${body.join('')}<w:sectPr><w:footerReference w:type="default" r:id="rIdFooter1"/><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1021" w:right="1134" w:bottom="2268" w:left="1134" w:header="708" w:footer="567" w:gutter="0"/></w:sectPr></w:body></w:document>`;
+  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><w:body>${body.join('')}<w:sectPr><w:footerReference w:type="default" r:id="rIdFooter1"/><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1021" w:right="567" w:bottom="2268" w:left="1134" w:header="708" w:footer="567" w:gutter="0"/></w:sectPr></w:body></w:document>`;
 }
 function buildOfficialFooterXml(){
-  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:ftr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:tbl><w:tblPr><w:tblW w:w="0" w:type="auto"/><w:tblLayout w:type="fixed"/><w:tblBorders><w:top w:val="nil"/><w:left w:val="nil"/><w:bottom w:val="nil"/><w:right w:val="nil"/><w:insideH w:val="nil"/><w:insideV w:val="nil"/></w:tblBorders></w:tblPr><w:tr><w:tc><w:tcPr><w:tcW w:w="4250" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="8" w:space="0" w:color="000000"/><w:left w:val="nil"/><w:bottom w:val="nil"/><w:right w:val="nil"/></w:tcBorders></w:tcPr>${docxP('Encarregado do Sistema MO-1',{jc:'center',size:18})}</w:tc><w:tc><w:tcPr><w:tcW w:w="4250" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="8" w:space="0" w:color="000000"/><w:left w:val="nil"/><w:bottom w:val="nil"/><w:right w:val="nil"/></w:tcBorders></w:tcPr>${docxP('Encarregado da Divisão de Máquinas',{jc:'center',size:18})}</w:tc></w:tr></w:tbl></w:ftr>`;
+  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:ftr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:tbl><w:tblPr><w:tblW w:w="9600" w:type="dxa"/><w:tblLayout w:type="fixed"/><w:tblBorders><w:top w:val="nil"/><w:left w:val="nil"/><w:bottom w:val="nil"/><w:right w:val="nil"/><w:insideH w:val="nil"/><w:insideV w:val="nil"/></w:tblBorders></w:tblPr><w:tr><w:tc><w:tcPr><w:tcW w:w="3900" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="8" w:space="0" w:color="000000"/><w:left w:val="nil"/><w:bottom w:val="nil"/><w:right w:val="nil"/></w:tcBorders></w:tcPr>${docxP('Encarregado do Sistema MO-1',{jc:'center',size:18})}</w:tc><w:tc><w:tcPr><w:tcW w:w="1800" w:type="dxa"/><w:tcBorders><w:top w:val="nil"/><w:left w:val="nil"/><w:bottom w:val="nil"/><w:right w:val="nil"/></w:tcBorders></w:tcPr>${docxP('',{jc:'center',size:18})}</w:tc><w:tc><w:tcPr><w:tcW w:w="3900" w:type="dxa"/><w:tcBorders><w:top w:val="single" w:sz="8" w:space="0" w:color="000000"/><w:left w:val="nil"/><w:bottom w:val="nil"/><w:right w:val="nil"/></w:tcBorders></w:tcPr>${docxP('Encarregado da Divisão de Máquinas',{jc:'center',size:18})}</w:tc></w:tr></w:tbl></w:ftr>`;
 }
 
 function crc32(str){
@@ -4489,7 +4497,7 @@ function buildOfficialDocHtml(){
     @page{size:A4;margin:0}
     html,body{margin:0;padding:0;background:#fff;color:#111;font-family:"Times New Roman",Times,serif}
     *{box-sizing:border-box}
-    .official-sheet{background:#fff;color:#111;padding:18mm 12mm 18mm 12mm;width:210mm;height:297mm;min-height:297mm;margin:0;box-shadow:none;page-break-after:always;font-family:"Times New Roman",Times,serif;position:relative;overflow:hidden}
+    .official-sheet{background:#fff;color:#111;padding:18mm 8mm 18mm 12mm;width:210mm;height:297mm;min-height:297mm;margin:0;box-shadow:none;page-break-after:always;font-family:"Times New Roman",Times,serif;position:relative;overflow:hidden}
     .official-page-body{height:224mm;max-height:224mm;overflow:hidden}
     .sheet-top-right{text-align:right;font-size:11pt;line-height:1.2;margin-bottom:8px}
     .page-code{text-align:center;font-size:12pt;margin:10px 0;letter-spacing:.16em}
@@ -4504,7 +4512,7 @@ function buildOfficialDocHtml(){
     .rh-block,.rh-block p,.rh-block b{color:#000;line-height:1.18}
     .rh-block{min-height:0;display:block;page-break-inside:auto;break-inside:auto}
     .rh-block p{margin:0 0 2px 0;page-break-inside:auto;break-inside:auto}
-    .signature-bar{position:absolute;left:12mm;right:12mm;bottom:10mm;display:flex;justify-content:space-between;align-items:flex-end;gap:20mm}
+    .signature-bar{position:absolute;left:12mm;right:8mm;bottom:16mm;display:flex;justify-content:space-between;align-items:flex-end;gap:20mm}
     .signature-box{width:44%;text-align:center;font-size:10pt}
     .signature-line{border-top:1px solid #222;margin-bottom:4px;height:0}
   </style></head><body>${content}</body></html>`;
