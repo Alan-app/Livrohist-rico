@@ -1,4 +1,4 @@
-const CACHE_NAME = 'livro-historico-v49-app-v23-scroll-real-corrigido-20260510-1';
+const CACHE_NAME = 'livro-historico-v50-app-v23-scroll-real-final-20260510-3';
 const APP_ASSETS = ['./','./index.html','./app.html','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_ASSETS)));

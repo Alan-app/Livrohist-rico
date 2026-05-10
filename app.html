@@ -1184,49 +1184,25 @@ html,body,.app{touch-action:manipulation;overscroll-behavior:none}
 #imageViewerSwipeArea{touch-action:none!important;overflow:hidden!important}
 #imageViewerImg{transform-origin:center center;will-change:transform;max-width:none!important;max-height:none!important}
 
-    /* v41/App V23: rolagem vertical real e isolada do Bloco de Notas */
-    html.notes-screen,
-    body.notes-screen{
-      width:100% !important;
-      height:100dvh !important;
-      min-height:100dvh !important;
-      overflow:hidden !important;
-      position:relative !important;
-    }
-    body.notes-screen .app{
-      height:100dvh !important;
-      min-height:100dvh !important;
-      overflow:hidden !important;
-    }
-    body.notes-screen .content{
-      height:calc(100dvh - var(--topbar-height, 88px)) !important;
-      min-height:0 !important;
-      overflow:hidden !important;
-      padding-bottom:0 !important;
-    }
-    body.notes-screen #screen-notas{
-      height:100% !important;
-      min-height:0 !important;
-      max-height:100% !important;
-      overflow-y:auto !important;
-      overflow-x:hidden !important;
-      -webkit-overflow-scrolling:touch !important;
-      overscroll-behavior:contain !important;
-      touch-action:pan-y !important;
-      padding-bottom:150px !important;
-      display:block !important;
-    }
-    body.notes-screen #screen-notas.hidden{display:none !important;}
-    body.notes-screen #screen-notas .card,
-    body.notes-screen #screen-notas .keep-shell,
-    body.notes-screen #screen-notas .keep-grid{
-      overflow:visible !important;
-    }
-    body.notes-screen #notesList{
-      padding-bottom:150px !important;
-    }
-
-
+    /* V23: Notas sem trava de altura/overflow */
+body.notes-screen,
+html.notes-screen{
+  height:auto !important;
+  min-height:100% !important;
+  overflow-y:auto !important;
+}
+body.notes-screen .app,
+body.notes-screen .content,
+body.notes-screen #screen-notas{
+  height:auto !important;
+  min-height:auto !important;
+  max-height:none !important;
+  overflow-y:visible !important;
+  overflow-x:hidden !important;
+}
+body.notes-screen #screen-notas{
+  padding-bottom:150px !important;
+}
 /* V21: Notas - FAB real só na tela Bloco de Notas, sem faixa/container */
 #addNoteFab.notes-fab,
 #addNoteFab{
@@ -1247,21 +1223,29 @@ body:not(.notes-screen) #addNoteFab{display:none !important;}
 .keep-trash-empty.hidden{display:none !important;}
 
 
-/* V23: correção cirúrgica da rolagem vertical */
+/* V23: rolagem vertical global destravada */
 html, body{
-  overflow-y:auto !important;
+  height:auto !important;
+  min-height:100% !important;
+  max-height:none !important;
   overflow-x:hidden !important;
-  height:auto !important;
-  max-height:none !important;
-}
-body.lock-scroll{
   overflow-y:auto !important;
+}
+body.lock-scroll:not(.modal-open):not(.image-zoom-open){
   height:auto !important;
   max-height:none !important;
+  overflow-y:auto !important;
   position:static !important;
 }
 .app, .content{
+  height:auto !important;
+  min-height:100vh !important;
+  max-height:none !important;
   overflow-x:hidden !important;
+  overflow-y:visible !important;
+}
+.section:not(.hidden){
+  overflow:visible !important;
 }
 
 </style>
@@ -4050,7 +4034,33 @@ function printRelatorio(){
   iframe.style.cssText='position:fixed;width:1px;height:1px;right:0;bottom:0;opacity:0;border:0;';
   document.body.appendChild(iframe);
   const doc = iframe.contentWindow.document;
-  doc.open(); doc.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Relatório Geral</title>${styles}</head><body>${tableHtml}</body></html>`); doc.close();
+  doc.open(); doc.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Relatório Geral</title>${styles}</head><body>${tableHtml}
+<script>
+/* V23: libera rolagem quando não há modal aberto */
+(function(){
+  function fixScroll(){
+    var modalOpen = !!document.querySelector('.modal-overlay.show');
+    var imageOpen = document.body.classList.contains('image-zoom-open');
+    document.body.classList.toggle('modal-open', modalOpen);
+    if (!modalOpen && !imageOpen) {
+      document.body.classList.remove('lock-scroll');
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+      document.body.style.overflowY = '';
+      document.body.style.height = '';
+      document.body.style.maxHeight = '';
+      document.body.style.position = '';
+    }
+  }
+  document.addEventListener('DOMContentLoaded', fixScroll);
+  window.addEventListener('load', fixScroll);
+  window.addEventListener('pageshow', fixScroll);
+  document.addEventListener('click', function(){ setTimeout(fixScroll, 50); }, true);
+  document.addEventListener('touchend', function(){ setTimeout(fixScroll, 50); }, true);
+})();
+</script>
+
+</body></html>`); doc.close();
   iframe.onload = () => setTimeout(()=>{ iframe.contentWindow.focus(); iframe.contentWindow.print(); }, 250);
   setTimeout(()=>{ iframe.contentWindow.focus(); iframe.contentWindow.print(); }, 700);
 }
