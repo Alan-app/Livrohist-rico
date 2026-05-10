@@ -1,0 +1,11 @@
+{
+  "base": "LivroHistorico_v48_App_V22_SCROLL_FAB_FIX.zip",
+  "versao": "v50 / App V24",
+  "validacoes": {
+    "VERSAO_V24": true,
+    "article_focusout": true,
+    "finishNoteEditing": true,
+    "outside_pointerdown": true,
+    "cache_v50_v24": true
+  }
+}
