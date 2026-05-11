@@ -33,6 +33,11 @@
     .section{display:grid;gap:12px}
     .banner{padding:14px 16px;border-radius:18px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);line-height:1.45;color:#d9e5f2}
     .folder-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:18px;row-gap:18px}
+    .app-launcher-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:18px;row-gap:18px}
+    .app-launcher-btn{background:linear-gradient(180deg,rgba(24,60,107,.98),rgba(18,52,92,.98));border:1px solid rgba(255,255,255,.12);border-radius:24px;padding:28px 16px 22px;display:flex;flex-direction:column;align-items:center;gap:12px;color:#fff;cursor:pointer;box-shadow:var(--shadow);transition:transform .12s}
+    .app-launcher-btn:active{transform:scale(.96)}
+    .app-launcher-icon{font-size:3rem;line-height:1}
+    .app-launcher-label{font-size:1rem;font-weight:800;text-align:center;line-height:1.2}
     .folder-btn{border:none;background:transparent;color:#fff;text-align:center;padding:0;display:flex;flex-direction:column;align-items:center;gap:6px}
     .folder-icon{width:100%;aspect-ratio:1 / 0.9;border-radius:24px;background:linear-gradient(180deg,#f7c84a 0%, #e6ad18 100%);position:relative;box-shadow:var(--shadow);border:1px solid rgba(255,255,255,.16);max-width:220px}
     .folder-icon::before{content:"";position:absolute;left:10%;top:-10%;width:38%;height:24%;background:linear-gradient(180deg,#f6d16a 0%, #efbe36 100%);border-radius:18px 18px 0 0;border:1px solid rgba(255,255,255,.16);border-bottom:none}
@@ -102,7 +107,7 @@
     .equipment-card-title,.record-title .date,.record-title .meta,.record-title .meta *{white-space:normal !important;word-break:break-word !important;overflow-wrap:anywhere !important;}
     .keep-shell{display:grid;gap:14px}.keep-composer{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:12px;box-shadow:var(--shadow);display:grid;gap:8px}.keep-composer input,.keep-composer textarea{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.10);border-radius:14px;min-height:44px;padding:10px 12px}.keep-composer textarea{min-height:84px;resize:vertical}.keep-topbar{display:grid;gap:10px;grid-template-columns:1fr}@media(min-width:700px){.keep-topbar{grid-template-columns:1fr auto;align-items:center}}.keep-tabs{display:flex;gap:8px;flex-wrap:wrap}.keep-tab{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.07);color:#fff;border-radius:999px;padding:8px 12px;font-weight:800}.keep-tab.active{background:var(--gold);color:#111}.keep-grid{display:grid;grid-template-columns:1fr;gap:12px;align-items:start}@media(min-width:560px){.keep-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(min-width:960px){.keep-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}.keep-section-title{font-size:.9rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:8px 2px 2px}.keep-note{border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:12px;min-height:118px;box-shadow:0 10px 24px rgba(0,0,0,.20);position:relative;overflow:hidden;color:#0b1220;display:flex;flex-direction:column;gap:8px}.keep-note[data-color="default"]{background:#fff;color:#111}.keep-note[data-color="yellow"]{background:#fff3bf;color:#111}.keep-note[data-color="green"]{background:#d3f9d8;color:#111}.keep-note[data-color="blue"]{background:#d0ebff;color:#111}.keep-note[data-color="red"]{background:#ffe3e3;color:#111}.keep-note[data-color="purple"]{background:#e5dbff;color:#111}.keep-note-title{font-weight:900;font-size:1.02rem;line-height:1.25;white-space:normal;word-break:break-word;overflow-wrap:anywhere}.keep-note-text{font-size:.95rem;line-height:1.36;white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;flex:1}.keep-note-meta{font-size:.72rem;opacity:.65}.keep-actions{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:4px}.keep-action-group{display:flex;gap:6px;flex-wrap:wrap}.keep-icon{width:34px;height:34px;border-radius:11px;border:1px solid rgba(0,0,0,.10);background:rgba(255,255,255,.55);color:#111;display:flex;align-items:center;justify-content:center;font-size:1rem}.keep-icon.active{background:#111;color:#fff}.keep-colors{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.color-dot{width:30px;height:30px;border-radius:50%;border:2px solid rgba(255,255,255,.7);box-shadow:0 2px 8px rgba(0,0,0,.2)}.color-dot.active{outline:3px solid var(--gold)}.color-default{background:#fff}.color-yellow{background:#fff3bf}.color-green{background:#d3f9d8}.color-blue{background:#d0ebff}.color-red{background:#ffe3e3}.color-purple{background:#e5dbff}.keep-empty{padding:24px;border-radius:18px;background:rgba(255,255,255,.05);border:1px dashed rgba(255,255,255,.18);color:var(--muted);text-align:center}
     /* v41/App V21: correção da rolagem da tela Bloco de Notas */
-    #screen-notas{min-height:calc(100vh - var(--topbar-height, 88px));overflow:visible !important;padding-bottom:110px;}
+    #screen-notas{overflow:visible !important;}
     #screen-notas .card{overflow:visible !important;}
     #screen-notas .keep-shell,#screen-notas .keep-grid{overflow:visible !important;}
     body.notes-screen{overflow-y:auto !important;height:auto !important;}
@@ -1350,7 +1355,19 @@ body:not(.notes-screen) #addNoteFab{display:none !important;}
 
   <div class="content">
     <section id="screen-home" class="section">
-<div id="homeFolders" class="folder-grid"></div>
+      <div id="appLauncherGrid" class="app-launcher-grid">
+        <button class="app-launcher-btn" type="button" onclick="openLivroHistorico()">
+          <div class="app-launcher-icon">📚</div>
+          <div class="app-launcher-label">Livro Histórico</div>
+        </button>
+        <button class="app-launcher-btn" type="button" onclick="showScreen('notas')">
+          <div class="app-launcher-icon">🗒️</div>
+          <div class="app-launcher-label">Bloco de Notas</div>
+        </button>
+      </div>
+      <div id="livroHistoricoFolders" class="hidden">
+        <div id="homeFolders" class="folder-grid"></div>
+      </div>
     </section>
 
     <section id="screen-dashboard" class="section hidden">
@@ -1496,7 +1513,6 @@ body:not(.notes-screen) #addNoteFab{display:none !important;}
     </section>
     <section id="screen-notas" class="section hidden">
       <div class="card">
-        <h2>Bloco de Notas</h2>
         <div class="keep-shell">
           <div class="keep-topbar">
             <div class="field"><label for="noteSearch">Buscar notas</label><input id="noteSearch" type="text" placeholder="Buscar por título ou texto" oninput="renderNotes()" /></div>
@@ -1611,10 +1627,6 @@ body:not(.notes-screen) #addNoteFab{display:none !important;}
             </div>
           </div>
         </div>
-        <button class="menu-item" type="button" onclick="closeMainMenu();showScreen('notas')">
-          <span class="menu-item-label"><span>🗒️</span><span>Bloco de Notas</span></span>
-          <span class="menu-item-arrow">›</span>
-        </button>
         <button class="menu-item" type="button" onclick="openRelatorio()">
           <span class="menu-item-label"><span>📊</span><span>Relatório</span></span>
           <span class="menu-item-arrow">›</span>
@@ -2084,6 +2096,17 @@ function updateHomeToggleUI(){
   else { const el=$('btnOrdemUpdate'); if(el) el.classList.add('active'); }
   if(prefs.apresentacao==='lista') { const el=$('btnApresentacaoLista'); if(el) el.classList.add('active'); }
   else { const el=$('btnApresentacaoPasta'); if(el) el.classList.add('active'); }
+}
+function openLivroHistorico(){
+  UI.currentScreen = 'livrohistorico';
+  $('livroHistoricoFolders').classList.remove('hidden');
+  $('appLauncherGrid').classList.add('hidden');
+  updateTopbar();
+  renderHomeFolders();
+}
+function closeLivroHistorico(){
+  if($('livroHistoricoFolders')) $('livroHistoricoFolders').classList.add('hidden');
+  if($('appLauncherGrid')) $('appLauncherGrid').classList.remove('hidden');
 }
 function renderHomeFolders(){
   const wrap = $('homeFolders');
@@ -2962,7 +2985,7 @@ function updateTopbar(){
   const topSubtitle = $('topSubtitle');
   const topMenuBtn = $('topMenuBtn');
 
-  topBackBtn.classList.toggle('ghost', UI.currentScreen==='home');
+  topBackBtn.classList.toggle('ghost', UI.currentScreen==='home' || UI.currentScreen==='relatorio');
 
   // reset shared styles first
   topTitle.style.fontSize = '';
@@ -2973,6 +2996,12 @@ function updateTopbar(){
   topSubtitle.style.display = UI.currentScreen==='relatorio' ? 'none' : '';
 
   if(UI.currentScreen==='home'){
+    topTitle.textContent = 'INÍCIO';
+    topSubtitle.textContent = ''; topSubtitle.style.display='none';
+    topMenuBtn.style.visibility = 'visible';
+    topMenuBtn.onclick = openMainMenu;
+    topMenuBtn.setAttribute('aria-label', 'Menu');
+  }else if(UI.currentScreen==='livrohistorico'){
     topTitle.textContent = 'LIVRO HISTÓRICO';
     topSubtitle.textContent = ''; topSubtitle.style.display='none';
     topMenuBtn.style.visibility = 'visible';
@@ -3044,8 +3073,8 @@ function showScreen(screen){
     requestAnimationFrame(() => window.scrollTo({top:0, behavior:'auto'}));
   } applyFixedTopbarLayoutStable();
 }
-function goBack(){ if(UI.currentScreen==='home') return; if(UI.currentScreen==='dashboard' || UI.currentScreen==='relatorio' || UI.currentScreen==='notas') showScreen('home'); else showScreen('dashboard'); }
-function goHome(){ closeMainMenu(); closeManageBigramas(); showScreen('home'); }
+function goBack(){ if(UI.currentScreen==='home') return; if(UI.currentScreen==='livrohistorico'){ closeLivroHistorico(); UI.currentScreen='home'; updateTopbar(); return; } if(UI.currentScreen==='dashboard' || UI.currentScreen==='relatorio' || UI.currentScreen==='notas') showScreen('home'); else showScreen('dashboard'); }
+function goHome(){ closeMainMenu(); closeManageBigramas(); closeLivroHistorico(); showScreen('home'); }
 function toggleVisualPrefsMenu(){
   const panel = $('visualPrefsPanel');
   const arrow = $('visualPrefsArrow');
