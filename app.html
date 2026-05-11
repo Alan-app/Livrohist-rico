@@ -2098,12 +2098,17 @@ function updateHomeToggleUI(){
   else { const el=$('btnApresentacaoPasta'); if(el) el.classList.add('active'); }
 }
 function openLivroHistorico(){
-  UI.currentScreen = 'livrohistorico';
   $('livroHistoricoFolders').classList.remove('hidden');
   $('appLauncherGrid').classList.add('hidden');
-  updateTopbar();
+  // show screen-home with livrohistorico state
+  ['home','dashboard','novo','historico','ficha','documento','horas','relatorio','ps','notas'].forEach(s => $('screen-'+s).classList.toggle('hidden', s!=='home'));
+  UI.currentScreen = 'livrohistorico';
+  AppState.data.lastScreen = 'livrohistorico';
+  AppState.save();
+  updateTopbar(); updateSidebar();
   applyFixedTopbarLayoutStable();
   renderHomeFolders();
+  window.scrollTo({top:0, behavior:'auto'});
 }
 function closeLivroHistorico(){
   if($('livroHistoricoFolders')) $('livroHistoricoFolders').classList.add('hidden');
@@ -3074,7 +3079,17 @@ function showScreen(screen){
     requestAnimationFrame(() => window.scrollTo({top:0, behavior:'auto'}));
   } applyFixedTopbarLayoutStable();
 }
-function goBack(){ if(UI.currentScreen==='home') return; if(UI.currentScreen==='livrohistorico'){ closeLivroHistorico(); UI.currentScreen='home'; updateTopbar(); applyFixedTopbarLayoutStable(); return; } if(UI.currentScreen==='dashboard' || UI.currentScreen==='relatorio' || UI.currentScreen==='notas') showScreen('home'); else showScreen('dashboard'); }
+function goBack(){
+  if(UI.currentScreen==='home') return;
+  if(UI.currentScreen==='livrohistorico'){ closeLivroHistorico(); showScreen('home'); return; }
+  if(UI.currentScreen==='dashboard'){
+    const fromLivro = $('livroHistoricoFolders') && !$('livroHistoricoFolders').classList.contains('hidden');
+    if(fromLivro){ openLivroHistorico(); return; }
+    showScreen('home'); return;
+  }
+  if(UI.currentScreen==='relatorio' || UI.currentScreen==='notas') showScreen('home');
+  else showScreen('dashboard');
+}
 function goHome(){ closeMainMenu(); closeManageBigramas(); closeLivroHistorico(); showScreen('home'); }
 function toggleVisualPrefsMenu(){
   const panel = $('visualPrefsPanel');
