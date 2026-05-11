@@ -1364,6 +1364,10 @@ body:not(.notes-screen) #addNoteFab{display:none !important;}
           <div class="app-launcher-icon">🗒️</div>
           <div class="app-launcher-label">Bloco de Notas</div>
         </button>
+        <button class="app-launcher-btn" type="button" onclick="showScreen('horas')">
+          <div class="app-launcher-icon">🕐</div>
+          <div class="app-launcher-label">Horas de Funcionamento</div>
+        </button>
       </div>
       <div id="livroHistoricoFolders" class="hidden">
         <div id="homeFolders" class="folder-grid"></div>
@@ -1377,7 +1381,6 @@ body:not(.notes-screen) #addNoteFab{display:none !important;}
         <button class="menu-card secondary" type="button" onclick="showScreen('historico')"><div class="menu-icon">📚</div><div class="menu-text"><h2>Ver Histórico</h2><p>Visualizar, filtrar, editar, concluir e exportar registros.</p></div></button>
         <button class="menu-card tertiary" type="button" onclick="showScreen('ficha')"><div class="menu-icon">🗂️</div><div class="menu-text"><h2>Dados da Ficha</h2><p>Configurar campos fixos do modelo oficial.</p></div></button>
         <button class="menu-card secondary" type="button" onclick="showScreen('documento')"><div class="menu-icon">🖨️</div><div class="menu-text"><h2>Imprimir Livro Histórico</h2><p>Gerar visualização pronta e baixar em DOCX.</p></div></button>
-        <button class="menu-card tertiary" type="button" onclick="showScreen('horas')"><div class="menu-icon">⏱️</div><div class="menu-text"><h2>Horas de Funcionamento</h2><p>Cadastrar equipamentos, atualizar horas e configurar lembretes.</p></div></button>
         <button class="menu-card secondary" type="button" onclick="showScreen('ps')"><div class="menu-icon">📋</div><div class="menu-text"><h2>Pedido de Serviço</h2><p>Criar, visualizar e imprimir pedidos de serviço.</p></div></button>
       </div>
     </section>
@@ -1596,8 +1599,12 @@ body:not(.notes-screen) #addNoteFab{display:none !important;}
       <h3>Menu</h3>
       <p>Ações gerais do aplicativo.</p>
       <div class="menu-list">
-        <button id="menuOrganizacaoBtn" class="menu-item hidden" type="button" onclick="toggleVisualPrefsMenu()">
-          <span class="menu-item-label"><span>⚙️</span><span>Organização das pastas</span></span>
+        <button class="menu-item" type="button" onclick="openManageBigramas()">
+          <span class="menu-item-label"><span>➕</span><span>Adicionar Bigrama</span></span>
+          <span class="menu-item-arrow">›</span>
+        </button>
+        <button class="menu-item" type="button" onclick="toggleVisualPrefsMenu()">
+          <span class="menu-item-label"><span>⚙️</span><span>Organização da tela inicial</span></span>
           <span class="menu-item-arrow" id="visualPrefsArrow">▾</span>
         </button>
         <div id="visualPrefsPanel" class="submenu-panel hidden">
@@ -1629,6 +1636,10 @@ body:not(.notes-screen) #addNoteFab{display:none !important;}
           <span class="menu-item-arrow">›</span>
         </label>
         <input id="importBackup" class="hidden" type="file" accept=".json" />
+        <button class="menu-item" type="button" onclick="goHome()">
+          <span class="menu-item-label"><span>↩️</span><span>Trocar bigrama</span></span>
+          <span class="menu-item-arrow">›</span>
+        </button>
         <button class="menu-item" type="button" onclick="closeMainMenu()">
           <span class="menu-item-label"><span>✖</span><span>Fechar</span></span>
           <span class="menu-item-arrow">›</span>
@@ -1774,9 +1785,10 @@ body:not(.notes-screen) #addNoteFab{display:none !important;}
   <div id="addEquipModal" class="modal-overlay" onclick="if(event.target.id==='addEquipModal')closeAddEquipModal()">
     <div class="modal-box" onclick="event.stopPropagation()">
       <h3>Adicionar equipamento</h3>
-      <p>Cadastre um novo equipamento neste bigrama.</p>
+      <p>Cadastre um novo equipamento e selecione o bigrama.</p>
       <form id="horasForm" class="section">
         <div class="grid-2">
+          <div class="field"><label for="horasEquipBigrama">Bigrama *</label><select id="horasEquipBigrama" required></select></div>
           <div class="field"><label for="horasEquipNome">Equipamento *</label><input id="horasEquipNome" type="text" placeholder="Ex.: Bomba de esgoto BB1" required /></div>
           <div class="field"><label for="horasEquipValor">Horas atuais</label><input id="horasEquipValor" type="number" min="0" step="0.1" placeholder="Ex.: 1500" /></div>
         </div>
@@ -2496,7 +2508,14 @@ function bindImageViewerSwipe(){
 
 function openHorasMenu(){ $('horasMenuModal').classList.add('show'); }
 function closeHorasMenu(){ $('horasMenuModal').classList.remove('show'); }
-function openAddEquipModal(){ closeHorasMenu(); resetHorasForm(); $('addEquipModal').classList.add('show'); }
+function openAddEquipModal(){ closeHorasMenu(); resetHorasForm(); populateHorasBigramaSelect(); $('addEquipModal').classList.add('show'); }
+function populateHorasBigramaSelect(selectedId){
+  const sel = $('horasEquipBigrama');
+  if(!sel) return;
+  const bigramas = AppState.data.bigramas || [];
+  sel.innerHTML = '<option value="">Selecione o bigrama...</option>' +
+    bigramas.map(b => `<option value="${escapeHtml(b.id)}"${b.id===(selectedId||AppState.data.selectedBigramaId)?'selected':''}>${escapeHtml(b.sigla+' - '+b.nome)}</option>`).join('');
+}
 function closeAddEquipModal(){ $('addEquipModal').classList.remove('show'); }
 function openReminderPickerModal(){
   closeHorasMenu();
@@ -2513,25 +2532,29 @@ function closeManageEquipModal(){
   $('manageEquipModal').classList.remove('show');
 }
 function renderManageEquipList(){
-  const list = [...getHorasListForSelected()].sort((a,b)=>(a.nome||'').localeCompare(b.nome||''));
   const wrap = $('manageEquipList');
   if(!wrap) return;
-  if(!list.length){
-    wrap.innerHTML = '<div class="empty">Nenhum equipamento cadastrado neste bigrama.</div>';
-    return;
-  }
-  wrap.innerHTML = list.map(item => `
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 4px;border-bottom:1px solid rgba(255,255,255,.08);">
-      <div>
-        <div style="font-weight:800;font-size:.97rem;color:#fff;">${escapeHtml(item.nome || '')}</div>
-        <div style="font-size:.80rem;color:var(--muted);margin-top:2px;">${item.updatedAt ? new Date(item.updatedAt).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit'}) : '—'}</div>
+  const bigramas = AppState.data.bigramas || [];
+  let html = '';
+  bigramas.forEach(b => {
+    const list = [...getHorasListForBigrama(b.id)].sort((a,b2)=>(a.nome||'').localeCompare(b2.nome||''));
+    if(!list.length) return;
+    html += `<div style="font-weight:900;font-size:.85rem;letter-spacing:.06em;color:var(--gold);text-transform:uppercase;padding:10px 4px 4px;">${escapeHtml(b.sigla)} — ${escapeHtml(b.nome)}</div>`;
+    html += list.map(item => `
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 4px;border-bottom:1px solid rgba(255,255,255,.08);">
+        <div>
+          <div style="font-weight:800;font-size:.97rem;color:#fff;">${escapeHtml(item.nome || '')}</div>
+          <div style="font-size:.80rem;color:var(--muted);margin-top:2px;">${item.updatedAt ? new Date(item.updatedAt).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit'}) : '—'}</div>
+        </div>
+        <div style="display:flex;gap:8px;flex:0 0 auto;">
+          <button style="padding:6px 12px;border-radius:10px;border:none;background:#355f97;color:#fff;font-weight:700;font-size:.82rem;cursor:pointer;" type="button" onclick="editHorasEquip('${item.id}','${b.id}'); closeManageEquipModal();">✎ Editar</button>
+          <button style="padding:6px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.07);color:#ff9292;font-weight:700;font-size:.82rem;cursor:pointer;" type="button" onclick="deleteHorasEquip('${item.id}','${b.id}');">🗑</button>
+        </div>
       </div>
-      <div style="display:flex;gap:8px;flex:0 0 auto;">
-        <button style="padding:6px 12px;border-radius:10px;border:none;background:#355f97;color:#fff;font-weight:700;font-size:.82rem;cursor:pointer;" type="button" onclick="editHorasEquip('${item.id}'); closeManageEquipModal();">✎ Editar</button>
-        <button style="padding:6px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.07);color:#ff9292;font-weight:700;font-size:.82rem;cursor:pointer;" type="button" onclick="deleteHorasEquip('${item.id}');">🗑</button>
-      </div>
-    </div>
-  `).join('');
+    `).join('');
+  });
+  if(!html) html = '<div class="empty">Nenhum equipamento cadastrado.</div>';
+  wrap.innerHTML = html;
 }
 
 function renderReminderEquipList(){
@@ -2560,8 +2583,7 @@ function renderReminderEquipList(){
   }).join('');
 }
 
-function getHorasConfigForSelected(){
-  const id = AppState.data.selectedBigramaId;
+function getHorasConfigForBigrama(id){
   if(!id) return {equipamentos:[], reminder:{type:'none', startDate:'', lastNotifiedDate:''}};
   if(!AppState.data.horasData[id]) AppState.data.horasData[id] = {equipamentos:[], reminder:{type:'none', startDate:'', lastNotifiedDate:''}};
   if(Array.isArray(AppState.data.horasData[id])){
@@ -2571,9 +2593,14 @@ function getHorasConfigForSelected(){
   if(!AppState.data.horasData[id].reminder) AppState.data.horasData[id].reminder = {type:'none', startDate:'', lastNotifiedDate:''};
   return AppState.data.horasData[id];
 }
+function getHorasListForBigrama(id){
+  return getHorasConfigForBigrama(id).equipamentos;
+}
+function getHorasConfigForSelected(){
+  return getHorasConfigForBigrama(AppState.data.selectedBigramaId);
+}
 function getHorasListForSelected(){
-  const cfg = getHorasConfigForSelected();
-  return cfg.equipamentos;
+  return getHorasListForBigrama(AppState.data.selectedBigramaId);
 }
 function getReminderLabel(reminder){
   if(!reminder || !reminder.type || reminder.type === 'none') return 'Sem lembrete';
@@ -2582,6 +2609,7 @@ function getReminderLabel(reminder){
 }
 function resetHorasForm(){
   UI.editingHorasEquipId = null;
+  UI.editingHorasBigramaId = null;
   $('horasForm').reset();
   $('horasSubmitBtn').textContent = 'Adicionar equipamento';
 }
@@ -2589,15 +2617,16 @@ function handleHorasSubmit(e){
   e.preventDefault();
   const nome = ($('horasEquipNome').value || '').trim();
   const horas = ($('horasEquipValor').value || '').trim();
-  if(!AppState.data.selectedBigramaId){
-    setStatus('horasStatus', 'Selecione um bigrama antes.', true);
+  const bigramaId = UI.editingHorasBigramaId || ($('horasEquipBigrama') ? $('horasEquipBigrama').value : '');
+  if(!bigramaId){
+    setStatus('horasStatus', 'Selecione um bigrama.', true);
     return;
   }
   if(!nome){
     setStatus('horasStatus', 'Informe o nome do equipamento.', true);
     return;
   }
-  const list = getHorasListForSelected();
+  const list = getHorasListForBigrama(bigramaId);
   if(UI.editingHorasEquipId){
     const idx = list.findIndex(x => x.id === UI.editingHorasEquipId);
     if(idx >= 0){
@@ -2613,11 +2642,11 @@ function handleHorasSubmit(e){
   closeAddEquipModal();
   renderHorasFuncionamento();
 }
-function saveHorasInline(id){
+function saveHorasInline(id, bigramaId){
   const input = $('hinput-' + id);
   if(!input) return;
   const horas = input.value.trim();
-  const list = getHorasListForSelected();
+  const list = getHorasListForBigrama(bigramaId);
   const idx = list.findIndex(x => x.id === id);
   if(idx < 0) return;
   list[idx] = {...list[idx], horas, updatedAt: Date.now()};
@@ -2625,26 +2654,30 @@ function saveHorasInline(id){
   setStatus('horasStatus', 'Horas atualizadas.');
   renderHorasFuncionamento();
 }
-function editHorasEquip(id){
-  const item = getHorasListForSelected().find(x => x.id === id);
+function editHorasEquip(id, bigramaId){
+  const item = getHorasListForBigrama(bigramaId).find(x => x.id === id);
   if(!item) return;
   UI.editingHorasEquipId = id;
+  UI.editingHorasBigramaId = bigramaId;
+  populateHorasBigramaSelect(bigramaId);
   $('horasEquipNome').value = item.nome || '';
   $('horasEquipValor').value = item.horas || '';
   $('horasSubmitBtn').textContent = 'Salvar edição';
-  showScreen('horas');
   $('addEquipModal').classList.add('show');
-  (document.body.classList.contains('notes-screen') && $('screen-notas') ? $('screen-notas').scrollTo({top:0,behavior:'smooth'}) : window.scrollTo({top:0,behavior:'smooth'}));
+  window.scrollTo({top:0,behavior:'smooth'});
 }
-async function deleteHorasEquip(id){
+async function deleteHorasEquip(id, bigramaId){
   closeManageEquipModal();
   const ok = await showAppConfirm('Excluir equipamento', 'Deseja realmente excluir este equipamento da lista de horas?');
   if(!ok){
     openManageEquipModal();
     return;
   }
-  const list = getHorasListForSelected();
-  AppState.data.horasData[AppState.data.selectedBigramaId] = list.filter(x => x.id !== id);
+  const list = getHorasListForBigrama(bigramaId);
+  AppState.data.horasData[bigramaId] = {
+    ...getHorasConfigForBigrama(bigramaId),
+    equipamentos: list.filter(x => x.id !== id)
+  };
   AppState.save();
   renderHorasFuncionamento();
   renderManageEquipList();
@@ -2719,32 +2752,35 @@ function handleReminderSubmit(e){
 }
 function renderHorasFuncionamento(){
   if(!$('horasList')) return;
-  const list = [...getHorasListForSelected()].sort((a,b) => (a.nome || '').localeCompare(b.nome || ''));
-  if(!list.length){
-    $('horasList').innerHTML = '<div class="empty">Nenhum equipamento cadastrado neste bigrama.</div>';
-    return;
-  }
-  $('horasList').innerHTML =
-    `<div class="hours-table-header">
-      <span>Equipamento</span>
-      <span>Horas</span>
-      <span>Data</span>
-    </div>` +
-    list.map(item => `
-      <div class="hours-table-row">
-        <div class="hours-col-nome">${escapeHtml(item.nome || '')}</div>
-        <div class="hours-col-horas">
-          <input
-            type="number" min="0" step="0.1"
-            value="${escapeHtml(String(item.horas || '0'))}"
-            id="hinput-${item.id}"
-            aria-label="Horas de ${escapeHtml(item.nome || '')}"
-          />
-          <button class="btn-save-h" title="Salvar horas" onclick="saveHorasInline('${item.id}')">✔</button>
-        </div>
-        <div class="hours-col-data">${item.updatedAt ? new Date(item.updatedAt).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit'}) : '—'}</div>
-      </div>
-    `).join('');
+  const bigramas = AppState.data.bigramas || [];
+  let html = '';
+  bigramas.forEach(b => {
+    const list = [...getHorasListForBigrama(b.id)].sort((a,b2) => (a.nome || '').localeCompare(b2.nome || ''));
+    html += `<div style="margin-bottom:22px;">
+      <div style="font-weight:900;font-size:.9rem;letter-spacing:.07em;color:var(--gold);text-transform:uppercase;padding:0 2px 8px;">${escapeHtml(b.sigla)} — ${escapeHtml(b.nome)}</div>`;
+    if(!list.length){
+      html += `<div class="empty" style="margin-bottom:4px;">Nenhum equipamento cadastrado.</div>`;
+    } else {
+      html += `<div class="hours-table-header"><span>Equipamento</span><span>Horas</span><span>Data</span></div>` +
+        list.map(item => `
+          <div class="hours-table-row">
+            <div class="hours-col-nome">${escapeHtml(item.nome || '')}</div>
+            <div class="hours-col-horas">
+              <input type="number" min="0" step="0.1"
+                value="${escapeHtml(String(item.horas || '0'))}"
+                id="hinput-${item.id}"
+                aria-label="Horas de ${escapeHtml(item.nome || '')}"
+              />
+              <button class="btn-save-h" title="Salvar horas" onclick="saveHorasInline('${item.id}','${b.id}')">✔</button>
+            </div>
+            <div class="hours-col-data">${item.updatedAt ? new Date(item.updatedAt).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit'}) : '—'}</div>
+          </div>
+        `).join('');
+    }
+    html += `</div>`;
+  });
+  if(!html) html = '<div class="empty">Nenhum bigrama cadastrado.</div>';
+  $('horasList').innerHTML = html;
 }
 async function requestReminderPermission(){
   if(!('Notification' in window)) return;
@@ -3036,7 +3072,7 @@ function updateContextUI(){
 }
 function selectBigrama(id){ AppState.data.selectedBigramaId=id; AppState.save(); updateContextUI(); showScreen('dashboard'); }
 function showScreen(screen){
-  if(screen!=='home' && screen!=='relatorio' && screen!=='notas' && !AppState.data.selectedBigramaId){ showAppMessage('Bigrama','Selecione primeiro um bigrama.'); return; }
+  if(screen!=='home' && screen!=='relatorio' && screen!=='notas' && screen!=='horas' && !AppState.data.selectedBigramaId){ showAppMessage('Bigrama','Selecione primeiro um bigrama.'); return; }
   document.body.classList.toggle('notes-screen', screen==='notas');
   document.documentElement.classList.toggle('notes-screen', screen==='notas');
   if($('addNoteFab')) $('addNoteFab').classList.toggle('hidden', screen!=='notas');
@@ -3089,13 +3125,7 @@ function toggleVisualPrefsMenu(){
   if(arrow) arrow.textContent = panel.classList.contains('hidden') ? '▾' : '▴';
 }
 
-function openMainMenu(){
-  const orgBtn = $('menuOrganizacaoBtn');
-  if(orgBtn){
-    orgBtn.classList.toggle('hidden', UI.currentScreen !== 'livrohistorico');
-  }
-  $('mainMenuModal').classList.add('show');
-}
+function openMainMenu(){ $('mainMenuModal').classList.add('show'); }
 function closeMainMenu(){
   $('mainMenuModal').classList.remove('show');
   const panel = $('visualPrefsPanel');
