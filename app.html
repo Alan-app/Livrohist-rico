@@ -1490,13 +1490,6 @@ body:not(.notes-screen) #addNoteFab{display:none !important;}
       <div id="horasList" class="hours-list"></div>
     </section>
     <section id="screen-relatorio" class="section hidden" style="margin-top:0;padding-top:0;">
-      <div class="card">
-        <h2>Relatório Geral</h2>
-        
-        <div class="toolbar" style="margin-bottom:4px;">
-          <button class="btn btn-primary" type="button" onclick="printRelatorio()">🖨️ Imprimir / Exportar DOCX</button>
-        </div>
-      </div>
       <div id="relatorioContent"></div>
     </section>
 
@@ -3033,6 +3026,11 @@ function updateTopbar(){
       topMenuBtn.style.visibility = 'visible';
       topMenuBtn.onclick = openHorasMenu;
       topMenuBtn.setAttribute('aria-label', 'Menu de Horas');
+    }else if(UI.currentScreen==='relatorio'){
+      topTitle.style.fontSize = '1.35rem';
+      topTitle.style.whiteSpace = 'normal';
+      topTitle.style.lineHeight = '1.15';
+      topMenuBtn.style.visibility = 'hidden';
     }else{
       topMenuBtn.style.visibility = 'hidden';
     }
