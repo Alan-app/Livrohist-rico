@@ -3112,12 +3112,24 @@ function showScreen(screen){
 function goBack(){
   if(UI.currentScreen==='home') return;
   if(UI.currentScreen==='livrohistorico'){ closeLivroHistorico(); showScreen('home'); return; }
+  if(UI.currentScreen==='horas'){ openLivroHistorico(); return; }
+  if(UI.currentScreen==='relatorio'){
+    if(typeof closeRelatorio === 'function'){
+      closeRelatorio();
+    }else{
+      const relatorio = $('screen-relatorio');
+      if(relatorio) relatorio.classList.add('hidden');
+      showScreen(AppState.data.lastScreen && AppState.data.lastScreen !== 'relatorio' ? AppState.data.lastScreen : 'home');
+    }
+    openMainMenu();
+    return;
+  }
   if(UI.currentScreen==='dashboard'){
     const fromLivro = $('livroHistoricoFolders') && !$('livroHistoricoFolders').classList.contains('hidden');
     if(fromLivro){ openLivroHistorico(); return; }
     showScreen('home'); return;
   }
-  if(UI.currentScreen==='relatorio' || UI.currentScreen==='notas' || (UI.currentScreen==='horas' && !AppState.data.selectedBigramaId)){
+  if(UI.currentScreen==='notas'){
     showScreen('home');
   }else{
     showScreen('dashboard');
@@ -3522,11 +3534,22 @@ function printOfficialDocument(markPrinted=false){ if(markPrinted){ return downl
 
 function openRelatorio(){
   closeMainMenu();
+  UI.previousScreenBeforeRelatorio = UI.currentScreen;
   UI.currentScreen = 'relatorio';
   ['home','dashboard','novo','historico','ficha','documento','relatorio'].forEach(s => $('screen-'+s).classList.toggle('hidden', s!=='relatorio'));
   renderRelatorio();
   updateTopbar(); updateSidebar();
+  applyFixedTopbarLayoutStable();
   (document.body.classList.contains('notes-screen') && $('screen-notas') ? $('screen-notas').scrollTo({top:0,behavior:'smooth'}) : window.scrollTo({top:0,behavior:'smooth'}));
+}
+function closeRelatorio(){
+  const previousScreen = UI.previousScreenBeforeRelatorio || 'livrohistorico';
+  UI.currentScreen = previousScreen;
+  if(previousScreen === 'livrohistorico'){
+    openLivroHistorico();
+  }else{
+    showScreen(previousScreen);
+  }
 }
 function renderRelatorio(){
   const host = $('relatorioContent');
