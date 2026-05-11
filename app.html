@@ -1212,46 +1212,11 @@ html,body,.app{touch-action:pan-x pan-y;overscroll-behavior-x:none}
 #imageViewerImg{transform-origin:center center;will-change:transform;max-width:none!important;max-height:none!important}
 
     /* v41/App V21: rolagem vertical real e isolada do Bloco de Notas */
-    html.notes-screen,
-    body.notes-screen{
-      width:100% !important;
-      height:100dvh !important;
-      min-height:100dvh !important;
-      overflow:hidden !important;
-      position:relative !important;
-    }
-    body.notes-screen .app{
-      height:100dvh !important;
-      min-height:100dvh !important;
-      overflow:hidden !important;
-    }
-    body.notes-screen .content{
-      height:calc(100dvh - var(--topbar-height, 88px)) !important;
-      min-height:0 !important;
-      overflow:hidden !important;
-      padding-bottom:0 !important;
-    }
     body.notes-screen #screen-notas{
-      height:100% !important;
-      min-height:0 !important;
-      max-height:100% !important;
-      overflow-y:auto !important;
-      overflow-x:hidden !important;
-      -webkit-overflow-scrolling:touch !important;
-      overscroll-behavior:contain !important;
-      touch-action:pan-y !important;
-      padding-bottom:150px !important;
       display:block !important;
+      padding-bottom:100px !important;
     }
     body.notes-screen #screen-notas.hidden{display:none !important;}
-    body.notes-screen #screen-notas .card,
-    body.notes-screen #screen-notas .keep-shell,
-    body.notes-screen #screen-notas .keep-grid{
-      overflow:visible !important;
-    }
-    body.notes-screen #notesList{
-      padding-bottom:150px !important;
-    }
 
 
 /* V21: Notas - FAB real só na tela Bloco de Notas, sem faixa/container */
@@ -3052,18 +3017,12 @@ function showScreen(screen){
   if($('addNoteFab')) $('addNoteFab').classList.toggle('hidden', screen!=='notas');
   if(screen==='notas'){
     closeMainMenu();
-    document.body.classList.remove('lock-scroll');
-    document.documentElement.style.overflow='hidden';
-    document.body.style.overflow='hidden';
-    document.body.style.overflowY='hidden';
-    document.body.style.height='100dvh';
-  }else{
-    document.body.classList.remove('lock-scroll');
-    document.documentElement.style.overflow='';
-    document.body.style.overflow='';
-    document.body.style.overflowY='';
-    document.body.style.height='';
   }
+  document.body.classList.remove('lock-scroll');
+  document.documentElement.style.overflow='';
+  document.body.style.overflow='';
+  document.body.style.overflowY='';
+  document.body.style.height='';
   UI.currentScreen=screen;
   AppState.data.lastScreen = screen;
   AppState.save();
