@@ -5374,9 +5374,9 @@ if($('noteForm')) $('noteForm').addEventListener('submit', saveNoteFromForm);
 </script>
 
 <script>
-/* LDS v46 - XLSX offline + IndexedDB */
+/* LDS v48 - XLSX offline + IndexedDB - busca corrigida */
 const LDS_DB_NAME='LivroHistorico_LDS_DB';
-const LDS_DB_VERSION=1;
+const LDS_DB_VERSION=2;
 const LDS_ITEM_STORE='items';
 const LDS_TOKEN_STORE='tokens';
 const LDS_META_STORE='meta';
@@ -5385,7 +5385,9 @@ let ldsSearchTimer=null;
 let ldsReadyBound=false;
 function lds$(id){return document.getElementById(id)}
 function ldsSetStatus(msg){const el=lds$('ldsStatus'); if(el) el.textContent=msg||''}
-function ldsNorm(v){return (v==null?'':String(v)).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim()}
+function ldsNorm(v){return (v==null?'':String(v)).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[\u00a0\r\n\t]+/g,' ').toLowerCase().replace(/\s+/g,' ').trim()}
+function ldsHeaderKey(v){return ldsNorm(v).replace(/[^a-z0-9]/g,'')}
+function ldsCompact(v){return ldsNorm(v).replace(/[^a-z0-9]/g,'')}
 function ldsEsc(v){return escapeHtml ? escapeHtml(v==null?'':String(v)) : String(v==null?'':v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function openLdsFilePicker(){const i=lds$('ldsFileInput'); if(i){ i.value=''; i.click(); }}
 function openLdsDb(){
@@ -5438,7 +5440,7 @@ async function ldsRenderMeta(){
   if(lds$('ldsMetaImportedAt')) lds$('ldsMetaImportedAt').textContent=m.importedAt||'-';
 }
 function ldsTokensForText(text){
-  const n=ldsNorm(text).replace(/[^a-z0-9]+/g,''); const out=new Set();
+  const n=ldsCompact(text); const out=new Set();
   if(!n) return [];
   if(n.length<3){out.add(n)} else { for(let i=0;i<=n.length-3;i++) out.add(n.slice(i,i+3)); }
   return Array.from(out);
@@ -5478,13 +5480,25 @@ function ldsCellValue(c,shared){
   if(t==='s') return shared[Number(v)]||'';
   return v;
 }
-function ldsSheetToRows(xml,shared){
+function ldsSheetToRows(xml,shared, requiredHeaders){
   const doc=ldsParseXml(xml); const rows=[];
   Array.from(doc.getElementsByTagName('row')).forEach(r=>{
     const arr=[]; Array.from(r.getElementsByTagName('c')).forEach(c=>{arr[ldsCellCol(c.getAttribute('r'))]=ldsCellValue(c,shared)}); rows.push(arr);
   });
-  const header=(rows.shift()||[]).map(h=>String(h||'').trim());
-  return rows.filter(r=>r.some(v=>String(v||'').trim())).map(r=>{const o={}; header.forEach((h,i)=>{if(h)o[h]=r[i]??''}); return o});
+  const req=(requiredHeaders||[]).map(ldsHeaderKey);
+  let headerIndex=0;
+  for(let i=0;i<Math.min(rows.length,30);i++){
+    const keys=(rows[i]||[]).map(ldsHeaderKey);
+    const hits=req.filter(k=>keys.includes(k)).length;
+    if(hits>=Math.max(1,Math.min(2,req.length))){headerIndex=i; break;}
+  }
+  const header=(rows[headerIndex]||[]).map(h=>String(h||'').replace(/[\r\n\t\u000b\f]+/g,' ').trim());
+  return rows.slice(headerIndex+1).filter(r=>r.some(v=>String(v||'').trim())).map(r=>{const o={}; header.forEach((h,i)=>{if(h)o[h]=r[i]??''}); return o});
+}
+function ldsFindSheetPath(sheets, wanted){
+  const wk=ldsHeaderKey(wanted);
+  for(const [name,path] of Object.entries(sheets)){const nk=ldsHeaderKey(name); if(nk===wk || nk.includes(wk) || wk.includes(nk)) return path;}
+  return '';
 }
 function ldsGetWorkbookSheets(entries){
   const wb=ldsParseXml(ldsXmlText(entries['xl/workbook.xml'])); const rels=ldsParseXml(ldsXmlText(entries['xl/_rels/workbook.xml.rels'])); const relMap={};
@@ -5500,12 +5514,18 @@ async function ldsReadXlsx(file){
     Array.from(doc.getElementsByTagName('si')).forEach(si=>{shared.push(Array.from(si.getElementsByTagName('t')).map(t=>t.textContent||'').join(''))});
   }
   const sheets=ldsGetWorkbookSheets(entries);
-  const treePath=sheets['Configured Items Tree']; const provPath=sheets['Provisioning Data'];
+  const treePath=ldsFindSheetPath(sheets,'Configured Items Tree'); const provPath=ldsFindSheetPath(sheets,'Provisioning Data');
   if(!treePath || !entries[treePath]) throw new Error('Aba "Configured Items Tree" não encontrada.');
   if(!provPath || !entries[provPath]) throw new Error('Aba "Provisioning Data" não encontrada.');
-  return {tree:ldsSheetToRows(ldsXmlText(entries[treePath]),shared), provisioning:ldsSheetToRows(ldsXmlText(entries[provPath]),shared)};
+  return {tree:ldsSheetToRows(ldsXmlText(entries[treePath]),shared,['Functional Mark','Parent Functional Mark','NSN']), provisioning:ldsSheetToRows(ldsXmlText(entries[provPath]),shared,['NSN'])};
 }
-function ldsPick(obj,names){for(const n of names){if(Object.prototype.hasOwnProperty.call(obj,n))return obj[n]} const lower={}; Object.keys(obj).forEach(k=>lower[ldsNorm(k)]=k); for(const n of names){const k=lower[ldsNorm(n)]; if(k)return obj[k]} return ''}
+function ldsPick(obj,names){
+  for(const n of names){if(Object.prototype.hasOwnProperty.call(obj,n))return obj[n]}
+  const lower={}, compact={};
+  Object.keys(obj).forEach(k=>{lower[ldsNorm(k)]=k; compact[ldsHeaderKey(k)]=k;});
+  for(const n of names){let k=lower[ldsNorm(n)]||compact[ldsHeaderKey(n)]; if(k)return obj[k]}
+  return ''
+}
 async function importLdsFile(file){
   try{
     ldsSetStatus('Importando e indexando LDS...');
@@ -5517,7 +5537,8 @@ async function importLdsFile(file){
     let id=1;
     for(const r of parsed.tree){
       const nsn=String(ldsPick(r,['NSN'])||'').trim(); const p=provByNsn.get(nsn)||{};
-      const item={id:id++,FunctionalMark:ldsPick(r,['Functional Mark']),ParentFunctionalMark:ldsPick(r,['Parent Functional Mark']),LongLCNNomenclature:ldsPick(r,['Long LCN Nomenclature']),EquipmentDescription:ldsPick(r,['Equipment Description']),ICC:ldsPick(r,['ICC']),NSN:nsn,TMNumber:ldsPick(r,['TM Number']),AllowOnBoard:ldsPick(p,['Allow on board','Allow On Board']),AllowShoreBase:ldsPick(p,['Allow ShoreBase','Allow Shore Base']),functionalMark_search:ldsNorm(ldsPick(r,['Functional Mark'])),parentFunctionalMark_search:ldsNorm(ldsPick(r,['Parent Functional Mark']))};
+      const fm=ldsPick(r,['Functional Mark','FunctionalMark']); const pfm=ldsPick(r,['Parent Functional Mark','ParentFunctionalMark']);
+      const item={id:id++,FunctionalMark:fm,ParentFunctionalMark:pfm,LongLCNNomenclature:ldsPick(r,['Long LCN Nomenclature','Long LCN']),EquipmentDescription:ldsPick(r,['Equipment Description','Equipment']),ICC:ldsPick(r,['ICC']),NSN:nsn,TMNumber:ldsPick(r,['TM Number','TM']),AllowOnBoard:ldsPick(p,['Allow on board','Allow On Board','Allow onboard']),AllowShoreBase:ldsPick(p,['Allow ShoreBase','Allow Shore Base','Allow Shore Base']),functionalMark_search:ldsNorm(fm),parentFunctionalMark_search:ldsNorm(pfm),functionalMark_compact:ldsCompact(fm),parentFunctionalMark_compact:ldsCompact(pfm)};
       itemStore.put(item);
       const toks=new Set([...ldsTokensForText(item.FunctionalMark),...ldsTokensForText(item.ParentFunctionalMark)]);
       toks.forEach(tok=>tokenStore.put({key:tok+'|'+item.id,token:tok,itemId:item.id}));
@@ -5529,13 +5550,13 @@ async function importLdsFile(file){
   }catch(err){console.error(err); ldsSetStatus('Erro ao importar LDS: '+(err&&err.message?err.message:err)); showAppMessage('LDS','Erro ao importar LDS: '+(err&&err.message?err.message:err));}
 }
 async function ldsSearch(term){
-  term=ldsNorm(term); if(!term){ldsRenderResults([]); ldsSetStatus('Digite para buscar na base LDS.'); return;}
-  const db=await openLdsDb(); const compact=term.replace(/[^a-z0-9]+/g,''); const token=compact.length>=3?compact.slice(0,3):compact;
+  term=ldsNorm(term); const compact=ldsCompact(term); if(!term&&!compact){ldsRenderResults([]); ldsSetStatus('Digite para buscar na base LDS.'); return;}
+  const db=await openLdsDb(); const token=compact.length>=3?compact.slice(0,3):compact;
   if(!token){ldsRenderResults([]); return;}
   const tx=db.transaction([LDS_TOKEN_STORE,LDS_ITEM_STORE],'readonly'); const idx=tx.objectStore(LDS_TOKEN_STORE).index('token_idx');
   const tokenRows=await idbReq(idx.getAll(IDBKeyRange.only(token))); const ids=[...new Set(tokenRows.map(x=>x.itemId))].slice(0,1200);
   const items=[]; const itemStore=tx.objectStore(LDS_ITEM_STORE);
-  for(const id of ids){const it=await idbReq(itemStore.get(id)); if(it && (it.functionalMark_search.includes(term)||it.parentFunctionalMark_search.includes(term))) items.push(it); if(items.length>=200) break;}
+  for(const id of ids){const it=await idbReq(itemStore.get(id)); if(it){const fm=it.functionalMark_search||ldsNorm(it.FunctionalMark); const pfm=it.parentFunctionalMark_search||ldsNorm(it.ParentFunctionalMark); const fmc=it.functionalMark_compact||ldsCompact(it.FunctionalMark); const pfmc=it.parentFunctionalMark_compact||ldsCompact(it.ParentFunctionalMark); if(fm.includes(term)||pfm.includes(term)||fmc.includes(compact)||pfmc.includes(compact)) items.push(it);} if(items.length>=200) break;}
   ldsRenderResults(items); ldsSetStatus(items.length?items.length+' resultado(s) exibido(s).':'Nenhum resultado encontrado.');
 }
 function ldsRenderResults(items){

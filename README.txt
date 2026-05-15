@@ -19,4 +19,4 @@ BUG 3 — Voltar após editar lançamento indo para tela errada
 - Comportamento do botão Voltar e demais telas não foi alterado.
 
 
-Versão v47: módulo LDS offline com IndexedDB.
+Versão v48: módulo LDS offline com IndexedDB.
