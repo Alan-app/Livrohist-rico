@@ -1214,7 +1214,8 @@
 html,body,.app{touch-action:pan-x pan-y;overscroll-behavior-x:none}
 #imageViewerModal,#imageViewerModal *{touch-action:none!important}
 #imageViewerSwipeArea{touch-action:none!important;overflow:hidden!important}
-#imageViewerImg{transform-origin:center center;will-change:transform;max-width:none!important;max-height:none!important}
+#imageViewerImg{transform-origin:center center;will-change:transform;max-width:100%!important;max-height:calc(100vh - var(--topbar-height, 88px) - 200px)!important}
+#imageViewerImg.zoomed{max-width:none!important;max-height:none!important}
 
     /* v41/App V21: rolagem vertical real e isolada do Bloco de Notas */
     body.notes-screen #screen-notas{
@@ -2362,8 +2363,12 @@ function openImageViewer(images, index = 0){
   if(!modal) return;
   viewerImages = Array.isArray(images) ? images.filter(Boolean) : [];
   viewerIndex = Math.max(0, Math.min(index, Math.max(0, viewerImages.length - 1)));
-  resetImageZoom();
+  // Reset zoom state first (sem applyImageZoom ainda)
+  imageZoomState = {scale:1,x:0,y:0,startDist:0,startScale:1,lastTap:0,drag:false,lastX:0,lastY:0};
   updateImageViewerUI();
+  // Aplica zoom reset após src ser definido
+  const img = $('imageViewerImg');
+  if(img){ img.style.transform = 'translate(0px,0px) scale(1)'; }
   modal.classList.add('show');
 }
 async function openPendingImageViewer(index){
@@ -3139,6 +3144,10 @@ function goBack(){
   }
   if(UI.currentScreen==='notas'){
     showScreen('home');
+  }else if(UI.currentScreen==='novo' && UI.editingRecordId){
+    // Estava editando um lançamento: cancelar edição e voltar para histórico
+    resetRecordForm();
+    showScreen('historico');
   }else{
     showScreen('dashboard');
   }
@@ -3254,7 +3263,19 @@ function renderHistory(){
   const records=getFilteredRecords(); const abertos=records.filter(r=>r.status!=='fechado').length; const groups=groupRecordsByEquipment(records);
   $('historyStats').innerHTML=`<b>Total filtrado:</b> ${records.length} registro(s)<br><b>Equipamentos:</b> ${groups.length}<br><b>Abertos aptos para documento:</b> ${abertos}<br><b>Sistema:</b> ${escapeHtml(getBigramaLabel(AppState.data.selectedBigramaId))}`;
   const list=$('recordList'); if(!records.length){ list.innerHTML='<div class="empty">Nenhum registro encontrado com os filtros atuais.</div>'; renderDocument(); return; }
+  // Salva quais grupos estavam expandidos antes de re-renderizar
+  const expandedKeys = new Set();
+  list.querySelectorAll('.equip-group-content:not(.hidden)').forEach(el => {
+    const key = el.id.replace('equipGroup-','');
+    if(key) expandedKeys.add(key);
+  });
   list.innerHTML=groups.map(group=>{ const openCount=group.records.filter(r=>r.status!=='fechado').length; const content=group.records.map(r=>{ const b=getBigramaById(r.bigramaId); const sigla=b?b.sigla:'??'; return `<div class="record-card"><div class="record-head"><div class="record-head-left"><div class="sigla">${escapeHtml(sigla)}</div><div class="record-title"><div class="date">${escapeHtml(formatDateBR(r.dataInicio))}${r.dataFim?' à '+escapeHtml(formatDateBR(r.dataFim)):''}</div><div class="meta"><span class="chip ${r.status==='fechado'?'status-closed':'status-open'}">${r.status==='fechado'?'Fechado':'Em aberto'}</span></div></div></div><div class="record-actions"><button class="icon-btn view" title="Visualizar" onclick="previewSingleRecord('${r.id}')">👁</button><button class="icon-btn edit" title="Editar" onclick="editRecord('${r.id}')">✎</button><button class="icon-btn done" title="${r.status==='fechado'?'Marcar como aberto':'Marcar como fechado'}" onclick="toggleRecordStatus('${r.id}')">${r.status==='fechado'?'✖':'✔'}</button><button class="icon-btn delete" title="Excluir" onclick="deleteRecord('${r.id}')">🗑</button></div></div><div class="record-body"><div class="label-block"><b>Equipamento:</b> ${escapeHtml(r.equipamento||'Sem equipamento')}</div><div class="label-block"><b>${escapeHtml(r.tipoRegistroLabel||'Avaria')}:</b> ${nl2br(r.avaria||'—')}</div><div class="label-block"><b>Solução:</b> ${nl2br(r.solucao||'—')}</div>${renderRecordAttachments(r)}</div></div>`; }).join(''); return `<div class="equip-group"><button class="equip-group-btn" type="button" onclick="toggleEquipmentGroup('${group.key}')"><span class="equip-group-title"><span class="equip-group-name">${escapeHtml(group.name)}</span><span class="equip-group-sub">${group.records.length} lançamento(s) · ${openCount} em aberto</span></span><span id="equipArrow-${group.key}" class="equip-group-arrow">▸</span></button><div id="equipGroup-${group.key}" class="equip-group-content hidden">${content}</div></div>`; }).join('');
+  // Restaura grupos que estavam expandidos antes do re-render
+  expandedKeys.forEach(key => {
+    const el = document.getElementById('equipGroup-'+key);
+    const ar = document.getElementById('equipArrow-'+key);
+    if(el){ el.classList.remove('hidden'); if(ar) ar.textContent='▾'; }
+  });
   hydrateAttachmentThumbs(); renderDocument();
 }
 function toggleEquipmentGroup(key){ const el=$('equipGroup-'+key), ar=$('equipArrow-'+key); if(!el) return; const hidden=!el.classList.contains('hidden'); el.classList.toggle('hidden',hidden); if(ar) ar.textContent=hidden?'▸':'▾'; }
@@ -4542,6 +4563,7 @@ let imageZoomState = {scale:1,x:0,y:0,startDist:0,startScale:1,lastTap:0,drag:fa
 function applyImageZoom(){
   const img = $('imageViewerImg'); if(!img) return;
   img.style.transform = `translate(${imageZoomState.x}px, ${imageZoomState.y}px) scale(${imageZoomState.scale})`;
+  img.classList.toggle('zoomed', imageZoomState.scale > 1.01);
 }
 function resetImageZoom(){ imageZoomState = {scale:1,x:0,y:0,startDist:0,startScale:1,lastTap:0,drag:false,lastX:0,lastY:0}; applyImageZoom(); }
 function touchDist(touches){ const dx=touches[0].clientX-touches[1].clientX, dy=touches[0].clientY-touches[1].clientY; return Math.hypot(dx,dy); }
