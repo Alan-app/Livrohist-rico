@@ -17,3 +17,6 @@ BUG 3 — Voltar após editar lançamento indo para tela errada
 - Após salvar edição de lançamento, o app agora navega automaticamente para Ver Histórico.
 - O fluxo correto foi restaurado: Ver Histórico → Editar → Salvar → Ver Histórico.
 - Comportamento do botão Voltar e demais telas não foi alterado.
+
+
+Versão v47: módulo LDS offline com IndexedDB.

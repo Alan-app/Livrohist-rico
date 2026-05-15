@@ -1278,6 +1278,21 @@ body:not(.app-ready) .app{visibility:hidden;}
 /* v16 final override: página mais preenchida, com 4 cm reais acima da assinatura */
 .official-page-body{height:224mm !important;max-height:224mm !important;overflow:hidden !important;}
 .hist-table tr{page-break-inside:avoid !important;break-inside:avoid !important;}
+
+
+/* LDS v46 - módulo offline em IndexedDB */
+.lds-wrap{display:flex;flex-direction:column;gap:14px;max-width:1100px;margin:0 auto;width:100%}
+.lds-toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.lds-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.lds-meta-box{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10);border-radius:16px;padding:12px;min-width:0}
+.lds-meta-label{font-size:.76rem;opacity:.72;font-weight:800;text-transform:uppercase;letter-spacing:.03em;margin-bottom:5px}
+.lds-meta-value{font-weight:800;overflow-wrap:anywhere;word-break:break-word}
+.lds-search-row{display:flex;flex-direction:column;gap:6px}.lds-search-row input{width:100%}
+.lds-status{font-size:.9rem;opacity:.82;min-height:1.25rem;overflow-wrap:anywhere}
+.lds-results{display:flex;flex-direction:column;gap:12px;padding-bottom:22px;scroll-behavior:smooth}
+.lds-card{background:rgba(11,31,58,.72);border:1px solid rgba(255,255,255,.12);box-shadow:0 10px 24px rgba(0,0,0,.20);border-radius:18px;padding:14px;overflow:hidden;user-select:text}
+.lds-card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px 12px}.lds-field{min-width:0;overflow-wrap:anywhere;word-break:break-word;line-height:1.35}.lds-field b{display:block;font-size:.76rem;opacity:.72;text-transform:uppercase;letter-spacing:.02em;margin-bottom:2px}.lds-empty{padding:18px;border:1px dashed rgba(255,255,255,.22);border-radius:16px;text-align:center;opacity:.85}
+@media(max-width:640px){.lds-toolbar .btn{flex:1 1 100%}.lds-card-grid{grid-template-columns:1fr}.lds-meta{grid-template-columns:1fr 1fr}}
 </style>
 
 
@@ -1290,11 +1305,6 @@ body:not(.app-ready) .app{visibility:hidden;}
     padding:0!important;line-height:1!important;box-shadow:none!important;
   }
   .relatorio-bigrama-btn:active{transform:scale(.96);}
-</style>
-
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<style>
-.lds-toolbar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px}.lds-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px}.lds-meta .card{padding:12px}.lds-results{display:flex;flex-direction:column;gap:12px;margin-top:16px}.lds-card{background:var(--card,#1e293b);border-radius:16px;padding:14px;border:1px solid rgba(255,255,255,.08);overflow-wrap:anywhere}.lds-card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}.lds-search{margin-top:12px}.lds-stat{font-size:.8rem;color:var(--muted)}
 </style>
 </head>
 <body>
@@ -1329,7 +1339,7 @@ body:not(.app-ready) .app{visibility:hidden;}
       <button class="sidebar-nav-item" id="sidePs" type="button" onclick="closeMainMenu();showScreen('ps')">
         <span class="nav-icon">📋</span> Pedido de Serviço
       </button>
-      <button class="sidebar-nav-item" type="button" onclick="closeMainMenu();showScreen('lds')">
+      <button class="sidebar-nav-item" id="sideLds" type="button" onclick="closeMainMenu();showScreen('lds')">
         <span class="nav-icon">🗃️</span> LDS
       </button>
       <button class="sidebar-nav-item" id="sideNotas" type="button" onclick="closeMainMenu();showScreen('notas')">
@@ -1404,27 +1414,32 @@ body:not(.app-ready) .app{visibility:hidden;}
       </div>
     </section>
 
-    
-<section id="screen-lds" class="section hidden">
-<div class="card">
-<h2>LDS Offline</h2>
-<div class="lds-toolbar">
-<button class="btn btn-primary" onclick="document.getElementById('ldsFileInput').click()">Importar LDS</button>
-<button class="btn btn-secondary" onclick="document.getElementById('ldsFileInput').click()">Atualizar LDS</button>
-<input id="ldsFileInput" type="file" accept=".xlsx" class="hidden"/>
-</div>
-<div class="lds-meta">
-<div class="card"><div class="lds-stat">Arquivo</div><div id="ldsMetaFile">Nenhum</div></div>
-<div class="card"><div class="lds-stat">Itens</div><div id="ldsMetaItems">0</div></div>
-<div class="card"><div class="lds-stat">Provisioning</div><div id="ldsMetaProv">0</div></div>
-<div class="card"><div class="lds-stat">Importado em</div><div id="ldsMetaDate">-</div></div>
-</div>
-<div class="field lds-search"><label>Busca</label><input id="ldsSearch" type="text" placeholder="Buscar Functional Mark ou Parent Functional Mark"></div>
-<div id="ldsResults" class="lds-results"></div>
-</div>
-</section>
 
-<section id="screen-novo" class="section hidden">
+    <section id="screen-lds" class="section hidden">
+      <div class="card lds-wrap">
+        <h2>LDS</h2>
+        <p>Busca técnica offline por <b>Functional Mark</b> ou <b>Parent Functional Mark</b>, usando base XLSX importada para IndexedDB.</p>
+        <div class="lds-toolbar">
+          <button class="btn btn-primary" type="button" onclick="openLdsFilePicker()">Importar LDS</button>
+          <button class="btn btn-secondary" type="button" onclick="openLdsFilePicker()">Atualizar LDS</button>
+          <input id="ldsFileInput" class="hidden" type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
+        </div>
+        <div class="lds-meta">
+          <div class="lds-meta-box"><div class="lds-meta-label">Arquivo</div><div id="ldsMetaFileName" class="lds-meta-value">Nenhum</div></div>
+          <div class="lds-meta-box"><div class="lds-meta-label">Itens indexados</div><div id="ldsMetaTotalItems" class="lds-meta-value">0</div></div>
+          <div class="lds-meta-box"><div class="lds-meta-label">Provisioning</div><div id="ldsMetaProvisioningCount" class="lds-meta-value">0</div></div>
+          <div class="lds-meta-box"><div class="lds-meta-label">Importação</div><div id="ldsMetaImportedAt" class="lds-meta-value">-</div></div>
+        </div>
+        <div class="lds-search-row">
+          <label for="ldsSearchInput">Busca</label>
+          <input id="ldsSearchInput" type="search" autocomplete="off" placeholder="Buscar Functional Mark ou Parent Functional Mark" />
+        </div>
+        <div id="ldsStatus" class="lds-status"></div>
+        <div id="ldsResults" class="lds-results"></div>
+      </div>
+    </section>
+
+    <section id="screen-novo" class="section hidden">
       <div class="card">
         <h2 id="formHeading">Novo Registro</h2>
         <p style="margin-bottom:14px;">O registro será salvo no bigrama selecionado.</p>
@@ -2129,7 +2144,7 @@ function openLivroHistorico(){
   $('livroHistoricoFolders').classList.remove('hidden');
   $('appLauncherGrid').classList.add('hidden');
   // show screen-home with livrohistorico state
-  ['home','dashboard','novo','historico','ficha','documento','horas','relatorio','ps','notas'].forEach(s => $('screen-'+s).classList.toggle('hidden', s!=='home'));
+  ['home','dashboard','novo','historico','ficha','documento','horas','relatorio','ps','notas','lds'].forEach(s => $('screen-'+s).classList.toggle('hidden', s!=='home'));
   UI.currentScreen = 'livrohistorico';
   AppState.data.lastScreen = 'livrohistorico';
   AppState.save();
@@ -3030,8 +3045,8 @@ function checkDueReminders(){
 function updateSidebar(){
   const screen = UI.currentScreen;
   const b = getSelectedBigrama();
-  const ids = ['sideHome','sideNovo','sideHistorico','sideFicha','sideDocumento','sideHoras','sidePs','sideNotas','sideRelatorio'];
-  const map = {home:'sideHome',novo:'sideNovo',historico:'sideHistorico',ficha:'sideFicha',documento:'sideDocumento',horas:'sideHoras',ps:'sidePs',notas:'sideNotas',relatorio:'sideRelatorio'};
+  const ids = ['sideHome','sideNovo','sideHistorico','sideFicha','sideDocumento','sideHoras','sidePs','sideLds','sideNotas','sideRelatorio'];
+  const map = {home:'sideHome',novo:'sideNovo',historico:'sideHistorico',ficha:'sideFicha',documento:'sideDocumento',horas:'sideHoras',ps:'sidePs',lds:'sideLds',notas:'sideNotas',relatorio:'sideRelatorio'};
   ids.forEach(id=>{ const el=$(id); if(el) el.classList.remove('active'); });
   const activeId = map[screen]; if(activeId){ const el=$(activeId); if(el) el.classList.add('active'); }
   const ctx = $('sidebarContext');
@@ -3076,10 +3091,10 @@ function updateTopbar(){
     topSubtitle.style.display = 'none';
     topMenuBtn.style.visibility = 'hidden';
   }else{
-    const map={novo:'Novo Registro',historico:'Histórico',ficha:'Dados da Ficha',documento:'Imprimir Livro Histórico',horas:'Horas de Funcionamento',relatorio:'Relatório Geral',ps:'Pedido de Serviço',notas:'Bloco de Notas'};
+    const map={novo:'Novo Registro',historico:'Histórico',ficha:'Dados da Ficha',documento:'Imprimir Livro Histórico',horas:'Horas de Funcionamento',relatorio:'Relatório Geral',ps:'Pedido de Serviço',notas:'Bloco de Notas',lds:'LDS'};
     topTitle.innerHTML = UI.currentScreen==='horas' ? 'HORAS<br>DE<br>FUNCIONAMENTO' : (map[UI.currentScreen] || 'Livro Histórico');
     topSubtitle.textContent = UI.currentScreen==='relatorio' ? '' : (b ? getBigramaLabel(b.id) : '');
-    if(UI.currentScreen==='notas'){
+    if(UI.currentScreen==='notas' || UI.currentScreen==='lds'){
       topSubtitle.textContent = '';
       topSubtitle.style.display = 'none';
     }
@@ -3113,7 +3128,7 @@ function updateContextUI(){
 }
 function selectBigrama(id){ AppState.data.selectedBigramaId=id; AppState.save(); updateContextUI(); showScreen('dashboard'); }
 function showScreen(screen){
-  if(screen!=='home' && screen!=='relatorio' && screen!=='notas' && screen!=='horas' && !AppState.data.selectedBigramaId){ showAppMessage('Bigrama','Selecione primeiro um bigrama.'); return; }
+  if(screen!=='home' && screen!=='relatorio' && screen!=='notas' && screen!=='horas' && screen!=='lds' && !AppState.data.selectedBigramaId){ showAppMessage('Bigrama','Selecione primeiro um bigrama.'); return; }
   document.body.classList.toggle('notes-screen', screen==='notas');
   document.documentElement.classList.toggle('notes-screen', screen==='notas');
   if($('addNoteFab')) $('addNoteFab').classList.toggle('hidden', screen!=='notas');
@@ -3128,7 +3143,7 @@ function showScreen(screen){
   UI.currentScreen=screen;
   AppState.data.lastScreen = screen;
   AppState.save();
-  ['home','dashboard','novo','historico','ficha','documento','horas','relatorio','ps','notas'].forEach(s => $('screen-'+s).classList.toggle('hidden', s!==screen));
+  ['home','dashboard','novo','historico','ficha','documento','horas','relatorio','ps','notas','lds'].forEach(s => $('screen-'+s).classList.toggle('hidden', s!==screen));
   if(screen!=='home') updateContextUI();
   if(screen==='historico'){ UI.historicoFiltrosExpanded = false; renderHistory(); syncHistoricoFiltrosUI(); }
   if(screen==='ficha') fillFichaForm();
@@ -3137,6 +3152,7 @@ function showScreen(screen){
   if(screen==='horas') renderHorasFuncionamento();
   if(screen==='ps') renderPsList();
   if(screen==='notas'){ renderNotes(); setTimeout(()=>{ const ns=$('screen-notas'); if(ns) ns.scrollTop=0; }, 0); }
+  if(screen==='lds') initLdsModule();
   updateTopbar(); updateSidebar();
   if(screen==='relatorio'){
     const sec = $('screen-relatorio');
@@ -3158,6 +3174,7 @@ function goBack(){
   if(UI.currentScreen==='home') return;
   if(UI.currentScreen==='livrohistorico'){ closeLivroHistorico(); showScreen('home'); return; }
   if(UI.currentScreen==='horas'){ voltarHorasParaInicioLivroHistorico(); return; }
+  if(UI.currentScreen==='lds'){ closeLivroHistorico(); showScreen('home'); return; }
   if(UI.currentScreen==='relatorio'){
     if(typeof closeRelatorio === 'function'){
       closeRelatorio();
@@ -4235,12 +4252,7 @@ function printRelatorio(){
   iframe.style.cssText='position:fixed;width:1px;height:1px;right:0;bottom:0;opacity:0;border:0;';
   document.body.appendChild(iframe);
   const doc = iframe.contentWindow.document;
-  doc.open(); doc.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Relatório Geral</title>${styles}
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<style>
-.lds-toolbar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px}.lds-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px}.lds-meta .card{padding:12px}.lds-results{display:flex;flex-direction:column;gap:12px;margin-top:16px}.lds-card{background:var(--card,#1e293b);border-radius:16px;padding:14px;border:1px solid rgba(255,255,255,.08);overflow-wrap:anywhere}.lds-card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}.lds-search{margin-top:12px}.lds-stat{font-size:.8rem;color:var(--muted)}
-</style>
-</head><body>${tableHtml}</body></html>`); doc.close();
+  doc.open(); doc.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Relatório Geral</title>${styles}</head><body>${tableHtml}</body></html>`); doc.close();
   iframe.onload = () => setTimeout(()=>{ iframe.contentWindow.focus(); iframe.contentWindow.print(); }, 250);
   setTimeout(()=>{ iframe.contentWindow.focus(); iframe.contentWindow.print(); }, 700);
 }
@@ -4658,11 +4670,6 @@ function openPdfInNewTab(doc, fallbackName){
   .btn-secondary{background:#fff;color:#111;text-decoration:none;display:inline-flex;align-items:center}
   iframe{width:100%;height:calc(100% - 60px);border:none;background:#fff}
 </style>
-
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<style>
-.lds-toolbar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px}.lds-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px}.lds-meta .card{padding:12px}.lds-results{display:flex;flex-direction:column;gap:12px;margin-top:16px}.lds-card{background:var(--card,#1e293b);border-radius:16px;padding:14px;border:1px solid rgba(255,255,255,.08);overflow-wrap:anywhere}.lds-card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}.lds-search{margin-top:12px}.lds-stat{font-size:.8rem;color:var(--muted)}
-</style>
 </head>
 <body>
   <div class="topbar">
@@ -4703,12 +4710,7 @@ function openPdfBlobUrl(doc, fallbackName, mode){
       const dataUri = doc.output('datauristring');
       $('pdfViewerTitle').textContent = String(fallbackName || 'Documento');
       const stage = $('pdfViewerStage');
-      const viewerHtml = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><style>html,body{margin:0;height:100%;background:#2b2b2b} iframe,embed,object{border:0;width:100%;height:100%;display:block;background:#fff}</style>
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<style>
-.lds-toolbar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px}.lds-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px}.lds-meta .card{padding:12px}.lds-results{display:flex;flex-direction:column;gap:12px;margin-top:16px}.lds-card{background:var(--card,#1e293b);border-radius:16px;padding:14px;border:1px solid rgba(255,255,255,.08);overflow-wrap:anywhere}.lds-card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}.lds-search{margin-top:12px}.lds-stat{font-size:.8rem;color:var(--muted)}
-</style>
-</head><body><embed src="${dataUri}" type="application/pdf"></body></html>`;
+      const viewerHtml = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><style>html,body{margin:0;height:100%;background:#2b2b2b} iframe,embed,object{border:0;width:100%;height:100%;display:block;background:#fff}</style></head><body><embed src="${dataUri}" type="application/pdf"></body></html>`;
       stage.innerHTML = '<iframe style="width:100vw;height:calc(100vh - 66px);border:0;background:#fff;"></iframe>';
       stage.querySelector('iframe').srcdoc = viewerHtml;
       $('pdfViewerModal').classList.add('show');
@@ -4723,12 +4725,7 @@ function openPdfBlobUrl(doc, fallbackName, mode){
       return;
     }
     const safeName = String(fallbackName || 'documento.pdf').replace(/"/g, '');
-    const viewerHtml = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${safeName}</title><style>html,body{margin:0;height:100%;font-family:Arial,Helvetica,sans-serif;background:#0b1f33}.topbar{display:flex;gap:10px;align-items:center;justify-content:center;padding:12px;background:#183c6b;position:sticky;top:0;z-index:10}.btn{border:none;border-radius:12px;padding:12px 14px;font-weight:700;font-size:14px}.btn-primary{background:#f0c419;color:#111}.btn-secondary{background:#fff;color:#111;text-decoration:none;display:inline-flex;align-items:center}iframe{width:100%;height:calc(100% - 60px);border:none;background:#fff}</style>
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<style>
-.lds-toolbar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px}.lds-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px}.lds-meta .card{padding:12px}.lds-results{display:flex;flex-direction:column;gap:12px;margin-top:16px}.lds-card{background:var(--card,#1e293b);border-radius:16px;padding:14px;border:1px solid rgba(255,255,255,.08);overflow-wrap:anywhere}.lds-card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}.lds-search{margin-top:12px}.lds-stat{font-size:.8rem;color:var(--muted)}
-</style>
-</head><body><div class="topbar"><a class="btn btn-secondary" href="${url}" download="${safeName}">Salvar PDF</a><button class="btn btn-primary" onclick="window.open('${url}','_blank')">Visualizar documento direto</button></div><iframe src="${url}"></iframe></body></html>`;
+    const viewerHtml = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${safeName}</title><style>html,body{margin:0;height:100%;font-family:Arial,Helvetica,sans-serif;background:#0b1f33}.topbar{display:flex;gap:10px;align-items:center;justify-content:center;padding:12px;background:#183c6b;position:sticky;top:0;z-index:10}.btn{border:none;border-radius:12px;padding:12px 14px;font-weight:700;font-size:14px}.btn-primary{background:#f0c419;color:#111}.btn-secondary{background:#fff;color:#111;text-decoration:none;display:inline-flex;align-items:center}iframe{width:100%;height:calc(100% - 60px);border:none;background:#fff}</style></head><body><div class="topbar"><a class="btn btn-secondary" href="${url}" download="${safeName}">Salvar PDF</a><button class="btn btn-primary" onclick="window.open('${url}','_blank')">Visualizar documento direto</button></div><iframe src="${url}"></iframe></body></html>`;
     win.document.open();
     win.document.write(viewerHtml);
     win.document.close();
@@ -4880,12 +4877,7 @@ function buildOfficialDocHtml(){
     .signature-bar{position:absolute;left:12mm;right:8mm;bottom:16mm;display:flex;justify-content:space-between;align-items:flex-end;gap:16mm;margin-top:0;color:#000}
     .signature-box{width:42%;text-align:center;font-size:10pt;color:#000}
     .signature-line{border-top:1px solid #222;margin:0 auto 4px auto;width:100%;height:0}
-  </style>
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<style>
-.lds-toolbar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px}.lds-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px}.lds-meta .card{padding:12px}.lds-results{display:flex;flex-direction:column;gap:12px;margin-top:16px}.lds-card{background:var(--card,#1e293b);border-radius:16px;padding:14px;border:1px solid rgba(255,255,255,.08);overflow-wrap:anywhere}.lds-card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}.lds-search{margin-top:12px}.lds-stat{font-size:.8rem;color:var(--muted)}
-</style>
-</head><body>${content}</body></html>`;
+  </style></head><body>${content}</body></html>`;
 }
 
 function buildOfficialDocxBlob(){
@@ -5237,12 +5229,7 @@ function buildPsPreviewHtml(ps, imgs=[]){
     .img-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;width:100%}
     .img-grid img{width:100%;height:180px;object-fit:contain;background:#fff}
     .sig{text-align:center;margin-top:14mm;font-family:"Times New Roman",Times,serif}
-  </style>
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<style>
-.lds-toolbar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px}.lds-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px}.lds-meta .card{padding:12px}.lds-results{display:flex;flex-direction:column;gap:12px;margin-top:16px}.lds-card{background:var(--card,#1e293b);border-radius:16px;padding:14px;border:1px solid rgba(255,255,255,.08);overflow-wrap:anywhere}.lds-card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}.lds-search{margin-top:12px}.lds-stat{font-size:.8rem;color:var(--muted)}
-</style>
-</head><body>
+  </style></head><body>
   <div class="viewport"><div id="stage" class="stage"><div id="wrap" class="wrap">
     <div class="ps-page">
       <div class="hdr"><div class="a">DOCUMENTO PREPARATÓRIO – ACESSO RESTRITO</div><div class="b">Art. 3º, Inciso XII, e Art. 20 do Dec nº 7.724, de 16 de maio de 2012</div></div>
@@ -5385,6 +5372,196 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
 if($('noteForm')) $('noteForm').addEventListener('submit', saveNoteFromForm);
 </script>
+
+<script>
+/* LDS v46 - XLSX offline + IndexedDB */
+const LDS_DB_NAME='LivroHistorico_LDS_DB';
+const LDS_DB_VERSION=1;
+const LDS_ITEM_STORE='items';
+const LDS_TOKEN_STORE='tokens';
+const LDS_META_STORE='meta';
+let ldsDbPromise=null;
+let ldsSearchTimer=null;
+let ldsReadyBound=false;
+function lds$(id){return document.getElementById(id)}
+function ldsSetStatus(msg){const el=lds$('ldsStatus'); if(el) el.textContent=msg||''}
+function ldsNorm(v){return (v==null?'':String(v)).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim()}
+function ldsEsc(v){return escapeHtml ? escapeHtml(v==null?'':String(v)) : String(v==null?'':v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function openLdsFilePicker(){const i=lds$('ldsFileInput'); if(i){ i.value=''; i.click(); }}
+function openLdsDb(){
+  if(ldsDbPromise) return ldsDbPromise;
+  ldsDbPromise=new Promise((resolve,reject)=>{
+    const req=indexedDB.open(LDS_DB_NAME,LDS_DB_VERSION);
+    req.onupgradeneeded=e=>{
+      const db=e.target.result;
+      if(!db.objectStoreNames.contains(LDS_ITEM_STORE)){
+        const s=db.createObjectStore(LDS_ITEM_STORE,{keyPath:'id'});
+        s.createIndex('functionalMark_idx','functionalMark_search',{unique:false});
+        s.createIndex('parentFunctionalMark_idx','parentFunctionalMark_search',{unique:false});
+        s.createIndex('nsn_idx','NSN',{unique:false});
+      }
+      if(!db.objectStoreNames.contains(LDS_TOKEN_STORE)){
+        const t=db.createObjectStore(LDS_TOKEN_STORE,{keyPath:'key'});
+        t.createIndex('token_idx','token',{unique:false});
+        t.createIndex('itemId_idx','itemId',{unique:false});
+      }
+      if(!db.objectStoreNames.contains(LDS_META_STORE)) db.createObjectStore(LDS_META_STORE,{keyPath:'key'});
+    };
+    req.onsuccess=()=>resolve(req.result);
+    req.onerror=()=>reject(req.error);
+  });
+  return ldsDbPromise;
+}
+function idbReq(req){return new Promise((resolve,reject)=>{req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)})}
+function idbTxDone(tx){return new Promise((resolve,reject)=>{tx.oncomplete=()=>resolve();tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error)})}
+async function ldsClearDatabase(db){
+  const tx=db.transaction([LDS_ITEM_STORE,LDS_TOKEN_STORE,LDS_META_STORE],'readwrite');
+  tx.objectStore(LDS_ITEM_STORE).clear(); tx.objectStore(LDS_TOKEN_STORE).clear(); tx.objectStore(LDS_META_STORE).clear();
+  await idbTxDone(tx);
+}
+async function ldsSaveMeta(db,meta){
+  const tx=db.transaction(LDS_META_STORE,'readwrite'); const s=tx.objectStore(LDS_META_STORE);
+  Object.entries(meta).forEach(([key,value])=>s.put({key,value}));
+  await idbTxDone(tx);
+}
+async function ldsGetMeta(){
+  const db=await openLdsDb(); const tx=db.transaction(LDS_META_STORE,'readonly'); const s=tx.objectStore(LDS_META_STORE);
+  const keys=['fileName','totalItems','provisioningCount','importedAt']; const meta={};
+  for(const k of keys){const r=await idbReq(s.get(k)); meta[k]=r?r.value:null}
+  return meta;
+}
+async function ldsRenderMeta(){
+  const m=await ldsGetMeta();
+  if(lds$('ldsMetaFileName')) lds$('ldsMetaFileName').textContent=m.fileName||'Nenhum';
+  if(lds$('ldsMetaTotalItems')) lds$('ldsMetaTotalItems').textContent=m.totalItems||0;
+  if(lds$('ldsMetaProvisioningCount')) lds$('ldsMetaProvisioningCount').textContent=m.provisioningCount||0;
+  if(lds$('ldsMetaImportedAt')) lds$('ldsMetaImportedAt').textContent=m.importedAt||'-';
+}
+function ldsTokensForText(text){
+  const n=ldsNorm(text).replace(/[^a-z0-9]+/g,''); const out=new Set();
+  if(!n) return [];
+  if(n.length<3){out.add(n)} else { for(let i=0;i<=n.length-3;i++) out.add(n.slice(i,i+3)); }
+  return Array.from(out);
+}
+async function ldsInflateRaw(bytes){
+  if(typeof DecompressionStream==='undefined') throw new Error('Este navegador não possui DecompressionStream para ler XLSX offline.');
+  const ds=new DecompressionStream('deflate-raw');
+  const stream=new Blob([bytes]).stream().pipeThrough(ds);
+  return new Uint8Array(await new Response(stream).arrayBuffer());
+}
+function ldsU16(b,o){return b[o]|(b[o+1]<<8)} function ldsU32(b,o){return (b[o]|(b[o+1]<<8)|(b[o+2]<<16)|(b[o+3]<<24))>>>0}
+async function ldsReadZipEntries(buffer){
+  const b=new Uint8Array(buffer); const entries={}; let i=Math.max(0,b.length-66000), eocd=-1;
+  for(;i<b.length-3;i++){ if(b[i]===0x50&&b[i+1]===0x4b&&b[i+2]===0x05&&b[i+3]===0x06) eocd=i; }
+  if(eocd<0) throw new Error('Arquivo XLSX inválido.');
+  const total=ldsU16(b,eocd+10), cdOffset=ldsU32(b,eocd+16); let p=cdOffset;
+  const decoder=new TextDecoder();
+  for(let n=0;n<total;n++){
+    if(ldsU32(b,p)!==0x02014b50) break;
+    const method=ldsU16(b,p+10), compSize=ldsU32(b,p+20), nameLen=ldsU16(b,p+28), extraLen=ldsU16(b,p+30), commentLen=ldsU16(b,p+32), localOff=ldsU32(b,p+42);
+    const name=decoder.decode(b.slice(p+46,p+46+nameLen));
+    const lfNameLen=ldsU16(b,localOff+26), lfExtraLen=ldsU16(b,localOff+28); const dataStart=localOff+30+lfNameLen+lfExtraLen;
+    const comp=b.slice(dataStart,dataStart+compSize); let data;
+    if(method===0) data=comp; else if(method===8) data=await ldsInflateRaw(comp); else throw new Error('Método ZIP não suportado: '+method);
+    entries[name]=data;
+    p+=46+nameLen+extraLen+commentLen;
+  }
+  return entries;
+}
+function ldsXmlText(u8){return new TextDecoder('utf-8').decode(u8)}
+function ldsParseXml(str){return new DOMParser().parseFromString(str,'application/xml')}
+function ldsCellCol(ref){const m=String(ref||'').match(/[A-Z]+/i); if(!m)return 0; let n=0; for(const ch of m[0].toUpperCase()){n=n*26+(ch.charCodeAt(0)-64)} return n-1}
+function ldsCellValue(c,shared){
+  const t=c.getAttribute('t');
+  if(t==='inlineStr') return c.getElementsByTagName('t')[0]?.textContent||'';
+  const v=c.getElementsByTagName('v')[0]?.textContent||'';
+  if(t==='s') return shared[Number(v)]||'';
+  return v;
+}
+function ldsSheetToRows(xml,shared){
+  const doc=ldsParseXml(xml); const rows=[];
+  Array.from(doc.getElementsByTagName('row')).forEach(r=>{
+    const arr=[]; Array.from(r.getElementsByTagName('c')).forEach(c=>{arr[ldsCellCol(c.getAttribute('r'))]=ldsCellValue(c,shared)}); rows.push(arr);
+  });
+  const header=(rows.shift()||[]).map(h=>String(h||'').trim());
+  return rows.filter(r=>r.some(v=>String(v||'').trim())).map(r=>{const o={}; header.forEach((h,i)=>{if(h)o[h]=r[i]??''}); return o});
+}
+function ldsGetWorkbookSheets(entries){
+  const wb=ldsParseXml(ldsXmlText(entries['xl/workbook.xml'])); const rels=ldsParseXml(ldsXmlText(entries['xl/_rels/workbook.xml.rels'])); const relMap={};
+  Array.from(rels.getElementsByTagName('Relationship')).forEach(r=>{relMap[r.getAttribute('Id')]=r.getAttribute('Target')});
+  const sheets={}; Array.from(wb.getElementsByTagName('sheet')).forEach(sh=>{const name=sh.getAttribute('name'); const rid=sh.getAttribute('r:id')||sh.getAttribute('id'); let target=relMap[rid]||''; if(target && !target.startsWith('xl/')) target='xl/'+target.replace(/^\//,''); sheets[name]=target;});
+  return sheets;
+}
+async function ldsReadXlsx(file){
+  const entries=await ldsReadZipEntries(await file.arrayBuffer());
+  const shared=[];
+  if(entries['xl/sharedStrings.xml']){
+    const doc=ldsParseXml(ldsXmlText(entries['xl/sharedStrings.xml']));
+    Array.from(doc.getElementsByTagName('si')).forEach(si=>{shared.push(Array.from(si.getElementsByTagName('t')).map(t=>t.textContent||'').join(''))});
+  }
+  const sheets=ldsGetWorkbookSheets(entries);
+  const treePath=sheets['Configured Items Tree']; const provPath=sheets['Provisioning Data'];
+  if(!treePath || !entries[treePath]) throw new Error('Aba "Configured Items Tree" não encontrada.');
+  if(!provPath || !entries[provPath]) throw new Error('Aba "Provisioning Data" não encontrada.');
+  return {tree:ldsSheetToRows(ldsXmlText(entries[treePath]),shared), provisioning:ldsSheetToRows(ldsXmlText(entries[provPath]),shared)};
+}
+function ldsPick(obj,names){for(const n of names){if(Object.prototype.hasOwnProperty.call(obj,n))return obj[n]} const lower={}; Object.keys(obj).forEach(k=>lower[ldsNorm(k)]=k); for(const n of names){const k=lower[ldsNorm(n)]; if(k)return obj[k]} return ''}
+async function importLdsFile(file){
+  try{
+    ldsSetStatus('Importando e indexando LDS...');
+    const parsed=await ldsReadXlsx(file);
+    const provByNsn=new Map();
+    parsed.provisioning.forEach(p=>{const nsn=String(ldsPick(p,['NSN'])||'').trim(); if(nsn) provByNsn.set(nsn,p)});
+    const db=await openLdsDb(); await ldsClearDatabase(db);
+    const tx=db.transaction([LDS_ITEM_STORE,LDS_TOKEN_STORE,LDS_META_STORE],'readwrite'); const itemStore=tx.objectStore(LDS_ITEM_STORE); const tokenStore=tx.objectStore(LDS_TOKEN_STORE);
+    let id=1;
+    for(const r of parsed.tree){
+      const nsn=String(ldsPick(r,['NSN'])||'').trim(); const p=provByNsn.get(nsn)||{};
+      const item={id:id++,FunctionalMark:ldsPick(r,['Functional Mark']),ParentFunctionalMark:ldsPick(r,['Parent Functional Mark']),LongLCNNomenclature:ldsPick(r,['Long LCN Nomenclature']),EquipmentDescription:ldsPick(r,['Equipment Description']),ICC:ldsPick(r,['ICC']),NSN:nsn,TMNumber:ldsPick(r,['TM Number']),AllowOnBoard:ldsPick(p,['Allow on board','Allow On Board']),AllowShoreBase:ldsPick(p,['Allow ShoreBase','Allow Shore Base']),functionalMark_search:ldsNorm(ldsPick(r,['Functional Mark'])),parentFunctionalMark_search:ldsNorm(ldsPick(r,['Parent Functional Mark']))};
+      itemStore.put(item);
+      const toks=new Set([...ldsTokensForText(item.FunctionalMark),...ldsTokensForText(item.ParentFunctionalMark)]);
+      toks.forEach(tok=>tokenStore.put({key:tok+'|'+item.id,token:tok,itemId:item.id}));
+      if(id%1000===0) ldsSetStatus('Indexando LDS: '+(id-1)+' itens...');
+    }
+    const meta={fileName:file.name,totalItems:id-1,provisioningCount:parsed.provisioning.length,importedAt:new Date().toLocaleString('pt-BR')};
+    const metaStore=tx.objectStore(LDS_META_STORE); Object.entries(meta).forEach(([key,value])=>metaStore.put({key,value}));
+    await idbTxDone(tx); await ldsRenderMeta(); ldsRenderResults([]); ldsSetStatus('Base LDS importada com sucesso. Digite para buscar.');
+  }catch(err){console.error(err); ldsSetStatus('Erro ao importar LDS: '+(err&&err.message?err.message:err)); showAppMessage('LDS','Erro ao importar LDS: '+(err&&err.message?err.message:err));}
+}
+async function ldsSearch(term){
+  term=ldsNorm(term); if(!term){ldsRenderResults([]); ldsSetStatus('Digite para buscar na base LDS.'); return;}
+  const db=await openLdsDb(); const compact=term.replace(/[^a-z0-9]+/g,''); const token=compact.length>=3?compact.slice(0,3):compact;
+  if(!token){ldsRenderResults([]); return;}
+  const tx=db.transaction([LDS_TOKEN_STORE,LDS_ITEM_STORE],'readonly'); const idx=tx.objectStore(LDS_TOKEN_STORE).index('token_idx');
+  const tokenRows=await idbReq(idx.getAll(IDBKeyRange.only(token))); const ids=[...new Set(tokenRows.map(x=>x.itemId))].slice(0,1200);
+  const items=[]; const itemStore=tx.objectStore(LDS_ITEM_STORE);
+  for(const id of ids){const it=await idbReq(itemStore.get(id)); if(it && (it.functionalMark_search.includes(term)||it.parentFunctionalMark_search.includes(term))) items.push(it); if(items.length>=200) break;}
+  ldsRenderResults(items); ldsSetStatus(items.length?items.length+' resultado(s) exibido(s).':'Nenhum resultado encontrado.');
+}
+function ldsRenderResults(items){
+  const el=lds$('ldsResults'); if(!el)return;
+  if(!items||!items.length){el.innerHTML='<div class="lds-empty">Nenhum resultado para exibir.</div>'; return;}
+  el.innerHTML=items.map(i=>`<div class="lds-card"><div class="lds-card-grid">
+    <div class="lds-field"><b>Functional Mark</b>${ldsEsc(i.FunctionalMark)||'-'}</div>
+    <div class="lds-field"><b>Parent Functional Mark</b>${ldsEsc(i.ParentFunctionalMark)||'-'}</div>
+    <div class="lds-field"><b>Long LCN Nomenclature</b>${ldsEsc(i.LongLCNNomenclature)||'-'}</div>
+    <div class="lds-field"><b>Equipment Description</b>${ldsEsc(i.EquipmentDescription)||'-'}</div>
+    <div class="lds-field"><b>ICC</b>${ldsEsc(i.ICC)||'-'}</div>
+    <div class="lds-field"><b>NSN</b>${ldsEsc(i.NSN)||'-'}</div>
+    <div class="lds-field"><b>TM Number</b>${ldsEsc(i.TMNumber)||'-'}</div>
+    <div class="lds-field"><b>Allow on board</b>${ldsEsc(i.AllowOnBoard)||'-'}</div>
+    <div class="lds-field"><b>Allow ShoreBase</b>${ldsEsc(i.AllowShoreBase)||'-'}</div>
+  </div></div>`).join('');
+}
+async function initLdsModule(){
+  try{ await openLdsDb(); await ldsRenderMeta(); const m=await ldsGetMeta(); ldsSetStatus(m.totalItems?'Base LDS carregada. Digite para buscar.':'Importe uma planilha LDS para iniciar.'); if(!lds$('ldsSearchInput')?.value) ldsRenderResults([]); }catch(e){console.error(e); ldsSetStatus('Erro ao abrir base LDS.');}
+  if(ldsReadyBound) return; ldsReadyBound=true;
+  const fi=lds$('ldsFileInput'); if(fi) fi.addEventListener('change',e=>{const f=e.target.files&&e.target.files[0]; if(f) importLdsFile(f);});
+  const inp=lds$('ldsSearchInput'); if(inp) inp.addEventListener('input',e=>{clearTimeout(ldsSearchTimer); ldsSearchTimer=setTimeout(()=>ldsSearch(e.target.value),120);});
+}
+document.addEventListener('DOMContentLoaded',()=>{ if(lds$('ldsFileInput')) initLdsModule(); });
+</script>
+
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
@@ -5393,19 +5570,6 @@ if ("serviceWorker" in navigator) {
 }
 
 if($('noteForm')) $('noteForm').addEventListener('submit', saveNoteFromForm);
-
-const LDS_DB='LDSDatabase';
-const LDS_STORE='lds_items';
-const LDS_META='lds_metadata';
-let ldsDb=null;
-async function initLDSDB(){return new Promise((resolve,reject)=>{const req=indexedDB.open(LDS_DB,1);req.onupgradeneeded=e=>{const db=e.target.result;if(db.objectStoreNames.contains(LDS_STORE))db.deleteObjectStore(LDS_STORE);const store=db.createObjectStore(LDS_STORE,{keyPath:'id',autoIncrement:true});store.createIndex('functionalMark_idx','functionalMark_search',{unique:false});store.createIndex('parentFunctionalMark_idx','parentFunctionalMark_search',{unique:false});store.createIndex('nsn_idx','NSN',{unique:false});if(db.objectStoreNames.contains(LDS_META))db.deleteObjectStore(LDS_META);db.createObjectStore(LDS_META,{keyPath:'key'});};req.onsuccess=e=>{ldsDb=e.target.result;resolve(ldsDb)};req.onerror=reject})}
-function ldsNormalize(v){return (v||'').toString().toLowerCase().trim()}
-async function saveLDSMeta(meta){const tx=ldsDb.transaction(LDS_META,'readwrite');const s=tx.objectStore(LDS_META);Object.entries(meta).forEach(([k,v])=>s.put({key:k,value:v}))}
-async function loadLDSMeta(){if(!ldsDb) await initLDSDB();const tx=ldsDb.transaction(LDS_META,'readonly');const s=tx.objectStore(LDS_META);const keys=['fileName','totalItems','provisioningCount','importedAt'];for(const k of keys){await new Promise(r=>{const q=s.get(k);q.onsuccess=()=>{document.getElementById('ldsMeta'+(k==='fileName'?'File':k==='totalItems'?'Items':k==='provisioningCount'?'Prov':'Date')).textContent=q.result?.value||'-';r()};q.onerror=r})}}
-async function importLDSFile(file){if(!window.XLSX){alert('Biblioteca XLSX não carregada');return}if(!ldsDb) await initLDSDB();const data=await file.arrayBuffer();const wb=XLSX.read(data,{type:'array'});const tree=XLSX.utils.sheet_to_json(wb.Sheets['Configured Items Tree']||{});const prov=XLSX.utils.sheet_to_json(wb.Sheets['Provisioning Data']||{});const provMap={};prov.forEach(p=>provMap[p.NSN]=p);const items=tree.map(r=>({FunctionalMark:r['Functional Mark']||'',ParentFunctionalMark:r['Parent Functional Mark']||'',LongLCNNomenclature:r['Long LCN Nomenclature']||'',EquipmentDescription:r['Equipment Description']||'',ICC:r['ICC']||'',NSN:r['NSN']||'',TMNumber:r['TM Number']||'',AllowOnBoard:provMap[r['NSN']]?.['Allow on board']||'',AllowShoreBase:provMap[r['NSN']]?.['Allow ShoreBase']||'',functionalMark_search:ldsNormalize(r['Functional Mark']),parentFunctionalMark_search:ldsNormalize(r['Parent Functional Mark'])}));const tx=ldsDb.transaction(LDS_STORE,'readwrite');const store=tx.objectStore(LDS_STORE);store.clear();items.forEach(i=>store.add(i));await new Promise(r=>tx.oncomplete=r);await saveLDSMeta({fileName:file.name,totalItems:items.length,provisioningCount:prov.length,importedAt:new Date().toLocaleString()});loadLDSMeta();renderLDSResults(items.slice(0,50))}
-async function searchLDS(term){if(!ldsDb)return;term=ldsNormalize(term);const tx=ldsDb.transaction(LDS_STORE,'readonly');const store=tx.objectStore(LDS_STORE);const req=store.getAll();req.onsuccess=()=>{const res=req.result.filter(i=>i.functionalMark_search.includes(term)||i.parentFunctionalMark_search.includes(term)).slice(0,200);renderLDSResults(res)}}
-function renderLDSResults(items){const el=document.getElementById('ldsResults');if(!el)return;el.innerHTML=items.map(i=>`<div class="lds-card"><div class="lds-card-grid"><div><b>Functional Mark</b><br>${i.FunctionalMark||'-'}</div><div><b>Parent Functional Mark</b><br>${i.ParentFunctionalMark||'-'}</div><div><b>Long LCN Nomenclature</b><br>${i.LongLCNNomenclature||'-'}</div><div><b>Equipment Description</b><br>${i.EquipmentDescription||'-'}</div><div><b>ICC</b><br>${i.ICC||'-'}</div><div><b>NSN</b><br>${i.NSN||'-'}</div><div><b>TM Number</b><br>${i.TMNumber||'-'}</div><div><b>Allow on board</b><br>${i.AllowOnBoard||'-'}</div><div><b>Allow ShoreBase</b><br>${i.AllowShoreBase||'-'}</div></div></div>`).join('')}
-document.addEventListener('DOMContentLoaded',async()=>{try{await initLDSDB();loadLDSMeta()}catch(e){console.error(e)}const fi=document.getElementById('ldsFileInput');if(fi)fi.addEventListener('change',e=>{const f=e.target.files[0];if(f)importLDSFile(f)});let t;const s=document.getElementById('ldsSearch');if(s)s.addEventListener('input',e=>{clearTimeout(t);t=setTimeout(()=>searchLDS(e.target.value),120)})})
 </script>
 
   <div id="psPdfChoiceModal" class="modal-overlay" onclick="if(event.target.id==='psPdfChoiceModal')closePsPdfChoiceModal()">
