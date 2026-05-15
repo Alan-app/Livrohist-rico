@@ -1291,6 +1291,11 @@ body:not(.app-ready) .app{visibility:hidden;}
   }
   .relatorio-bigrama-btn:active{transform:scale(.96);}
 </style>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+.lds-toolbar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px}.lds-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px}.lds-meta .card{padding:12px}.lds-results{display:flex;flex-direction:column;gap:12px;margin-top:16px}.lds-card{background:var(--card,#1e293b);border-radius:16px;padding:14px;border:1px solid rgba(255,255,255,.08);overflow-wrap:anywhere}.lds-card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}.lds-search{margin-top:12px}.lds-stat{font-size:.8rem;color:var(--muted)}
+</style>
 </head>
 <body>
 <div class="app">
@@ -1323,6 +1328,9 @@ body:not(.app-ready) .app{visibility:hidden;}
       </button>
       <button class="sidebar-nav-item" id="sidePs" type="button" onclick="closeMainMenu();showScreen('ps')">
         <span class="nav-icon">📋</span> Pedido de Serviço
+      </button>
+      <button class="sidebar-nav-item" type="button" onclick="closeMainMenu();showScreen('lds')">
+        <span class="nav-icon">🗃️</span> LDS
       </button>
       <button class="sidebar-nav-item" id="sideNotas" type="button" onclick="closeMainMenu();showScreen('notas')">
         <span class="nav-icon">🗒️</span> Bloco de Notas
@@ -1375,6 +1383,10 @@ body:not(.app-ready) .app{visibility:hidden;}
           <div class="app-launcher-icon">⏱️</div>
           <div class="app-launcher-label">Horas de Funcionamento</div>
         </button>
+        <button class="app-launcher-btn" type="button" onclick="showScreen('lds')">
+          <div class="app-launcher-icon">🗃️</div>
+          <div class="app-launcher-label">LDS</div>
+        </button>
       </div>
       <div id="livroHistoricoFolders" class="hidden">
         <div id="homeFolders" class="folder-grid"></div>
@@ -1392,7 +1404,27 @@ body:not(.app-ready) .app{visibility:hidden;}
       </div>
     </section>
 
-    <section id="screen-novo" class="section hidden">
+    
+<section id="screen-lds" class="section hidden">
+<div class="card">
+<h2>LDS Offline</h2>
+<div class="lds-toolbar">
+<button class="btn btn-primary" onclick="document.getElementById('ldsFileInput').click()">Importar LDS</button>
+<button class="btn btn-secondary" onclick="document.getElementById('ldsFileInput').click()">Atualizar LDS</button>
+<input id="ldsFileInput" type="file" accept=".xlsx" class="hidden"/>
+</div>
+<div class="lds-meta">
+<div class="card"><div class="lds-stat">Arquivo</div><div id="ldsMetaFile">Nenhum</div></div>
+<div class="card"><div class="lds-stat">Itens</div><div id="ldsMetaItems">0</div></div>
+<div class="card"><div class="lds-stat">Provisioning</div><div id="ldsMetaProv">0</div></div>
+<div class="card"><div class="lds-stat">Importado em</div><div id="ldsMetaDate">-</div></div>
+</div>
+<div class="field lds-search"><label>Busca</label><input id="ldsSearch" type="text" placeholder="Buscar Functional Mark ou Parent Functional Mark"></div>
+<div id="ldsResults" class="lds-results"></div>
+</div>
+</section>
+
+<section id="screen-novo" class="section hidden">
       <div class="card">
         <h2 id="formHeading">Novo Registro</h2>
         <p style="margin-bottom:14px;">O registro será salvo no bigrama selecionado.</p>
@@ -4203,7 +4235,12 @@ function printRelatorio(){
   iframe.style.cssText='position:fixed;width:1px;height:1px;right:0;bottom:0;opacity:0;border:0;';
   document.body.appendChild(iframe);
   const doc = iframe.contentWindow.document;
-  doc.open(); doc.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Relatório Geral</title>${styles}</head><body>${tableHtml}</body></html>`); doc.close();
+  doc.open(); doc.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Relatório Geral</title>${styles}
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+.lds-toolbar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px}.lds-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px}.lds-meta .card{padding:12px}.lds-results{display:flex;flex-direction:column;gap:12px;margin-top:16px}.lds-card{background:var(--card,#1e293b);border-radius:16px;padding:14px;border:1px solid rgba(255,255,255,.08);overflow-wrap:anywhere}.lds-card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}.lds-search{margin-top:12px}.lds-stat{font-size:.8rem;color:var(--muted)}
+</style>
+</head><body>${tableHtml}</body></html>`); doc.close();
   iframe.onload = () => setTimeout(()=>{ iframe.contentWindow.focus(); iframe.contentWindow.print(); }, 250);
   setTimeout(()=>{ iframe.contentWindow.focus(); iframe.contentWindow.print(); }, 700);
 }
@@ -4621,6 +4658,11 @@ function openPdfInNewTab(doc, fallbackName){
   .btn-secondary{background:#fff;color:#111;text-decoration:none;display:inline-flex;align-items:center}
   iframe{width:100%;height:calc(100% - 60px);border:none;background:#fff}
 </style>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+.lds-toolbar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px}.lds-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px}.lds-meta .card{padding:12px}.lds-results{display:flex;flex-direction:column;gap:12px;margin-top:16px}.lds-card{background:var(--card,#1e293b);border-radius:16px;padding:14px;border:1px solid rgba(255,255,255,.08);overflow-wrap:anywhere}.lds-card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}.lds-search{margin-top:12px}.lds-stat{font-size:.8rem;color:var(--muted)}
+</style>
 </head>
 <body>
   <div class="topbar">
@@ -4661,7 +4703,12 @@ function openPdfBlobUrl(doc, fallbackName, mode){
       const dataUri = doc.output('datauristring');
       $('pdfViewerTitle').textContent = String(fallbackName || 'Documento');
       const stage = $('pdfViewerStage');
-      const viewerHtml = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><style>html,body{margin:0;height:100%;background:#2b2b2b} iframe,embed,object{border:0;width:100%;height:100%;display:block;background:#fff}</style></head><body><embed src="${dataUri}" type="application/pdf"></body></html>`;
+      const viewerHtml = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><style>html,body{margin:0;height:100%;background:#2b2b2b} iframe,embed,object{border:0;width:100%;height:100%;display:block;background:#fff}</style>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+.lds-toolbar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px}.lds-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px}.lds-meta .card{padding:12px}.lds-results{display:flex;flex-direction:column;gap:12px;margin-top:16px}.lds-card{background:var(--card,#1e293b);border-radius:16px;padding:14px;border:1px solid rgba(255,255,255,.08);overflow-wrap:anywhere}.lds-card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}.lds-search{margin-top:12px}.lds-stat{font-size:.8rem;color:var(--muted)}
+</style>
+</head><body><embed src="${dataUri}" type="application/pdf"></body></html>`;
       stage.innerHTML = '<iframe style="width:100vw;height:calc(100vh - 66px);border:0;background:#fff;"></iframe>';
       stage.querySelector('iframe').srcdoc = viewerHtml;
       $('pdfViewerModal').classList.add('show');
@@ -4676,7 +4723,12 @@ function openPdfBlobUrl(doc, fallbackName, mode){
       return;
     }
     const safeName = String(fallbackName || 'documento.pdf').replace(/"/g, '');
-    const viewerHtml = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${safeName}</title><style>html,body{margin:0;height:100%;font-family:Arial,Helvetica,sans-serif;background:#0b1f33}.topbar{display:flex;gap:10px;align-items:center;justify-content:center;padding:12px;background:#183c6b;position:sticky;top:0;z-index:10}.btn{border:none;border-radius:12px;padding:12px 14px;font-weight:700;font-size:14px}.btn-primary{background:#f0c419;color:#111}.btn-secondary{background:#fff;color:#111;text-decoration:none;display:inline-flex;align-items:center}iframe{width:100%;height:calc(100% - 60px);border:none;background:#fff}</style></head><body><div class="topbar"><a class="btn btn-secondary" href="${url}" download="${safeName}">Salvar PDF</a><button class="btn btn-primary" onclick="window.open('${url}','_blank')">Visualizar documento direto</button></div><iframe src="${url}"></iframe></body></html>`;
+    const viewerHtml = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${safeName}</title><style>html,body{margin:0;height:100%;font-family:Arial,Helvetica,sans-serif;background:#0b1f33}.topbar{display:flex;gap:10px;align-items:center;justify-content:center;padding:12px;background:#183c6b;position:sticky;top:0;z-index:10}.btn{border:none;border-radius:12px;padding:12px 14px;font-weight:700;font-size:14px}.btn-primary{background:#f0c419;color:#111}.btn-secondary{background:#fff;color:#111;text-decoration:none;display:inline-flex;align-items:center}iframe{width:100%;height:calc(100% - 60px);border:none;background:#fff}</style>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+.lds-toolbar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px}.lds-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px}.lds-meta .card{padding:12px}.lds-results{display:flex;flex-direction:column;gap:12px;margin-top:16px}.lds-card{background:var(--card,#1e293b);border-radius:16px;padding:14px;border:1px solid rgba(255,255,255,.08);overflow-wrap:anywhere}.lds-card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}.lds-search{margin-top:12px}.lds-stat{font-size:.8rem;color:var(--muted)}
+</style>
+</head><body><div class="topbar"><a class="btn btn-secondary" href="${url}" download="${safeName}">Salvar PDF</a><button class="btn btn-primary" onclick="window.open('${url}','_blank')">Visualizar documento direto</button></div><iframe src="${url}"></iframe></body></html>`;
     win.document.open();
     win.document.write(viewerHtml);
     win.document.close();
@@ -4828,7 +4880,12 @@ function buildOfficialDocHtml(){
     .signature-bar{position:absolute;left:12mm;right:8mm;bottom:16mm;display:flex;justify-content:space-between;align-items:flex-end;gap:16mm;margin-top:0;color:#000}
     .signature-box{width:42%;text-align:center;font-size:10pt;color:#000}
     .signature-line{border-top:1px solid #222;margin:0 auto 4px auto;width:100%;height:0}
-  </style></head><body>${content}</body></html>`;
+  </style>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+.lds-toolbar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px}.lds-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px}.lds-meta .card{padding:12px}.lds-results{display:flex;flex-direction:column;gap:12px;margin-top:16px}.lds-card{background:var(--card,#1e293b);border-radius:16px;padding:14px;border:1px solid rgba(255,255,255,.08);overflow-wrap:anywhere}.lds-card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}.lds-search{margin-top:12px}.lds-stat{font-size:.8rem;color:var(--muted)}
+</style>
+</head><body>${content}</body></html>`;
 }
 
 function buildOfficialDocxBlob(){
@@ -5180,7 +5237,12 @@ function buildPsPreviewHtml(ps, imgs=[]){
     .img-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;width:100%}
     .img-grid img{width:100%;height:180px;object-fit:contain;background:#fff}
     .sig{text-align:center;margin-top:14mm;font-family:"Times New Roman",Times,serif}
-  </style></head><body>
+  </style>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+.lds-toolbar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px}.lds-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px}.lds-meta .card{padding:12px}.lds-results{display:flex;flex-direction:column;gap:12px;margin-top:16px}.lds-card{background:var(--card,#1e293b);border-radius:16px;padding:14px;border:1px solid rgba(255,255,255,.08);overflow-wrap:anywhere}.lds-card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}.lds-search{margin-top:12px}.lds-stat{font-size:.8rem;color:var(--muted)}
+</style>
+</head><body>
   <div class="viewport"><div id="stage" class="stage"><div id="wrap" class="wrap">
     <div class="ps-page">
       <div class="hdr"><div class="a">DOCUMENTO PREPARATÓRIO – ACESSO RESTRITO</div><div class="b">Art. 3º, Inciso XII, e Art. 20 do Dec nº 7.724, de 16 de maio de 2012</div></div>
@@ -5331,6 +5393,19 @@ if ("serviceWorker" in navigator) {
 }
 
 if($('noteForm')) $('noteForm').addEventListener('submit', saveNoteFromForm);
+
+const LDS_DB='LDSDatabase';
+const LDS_STORE='lds_items';
+const LDS_META='lds_metadata';
+let ldsDb=null;
+async function initLDSDB(){return new Promise((resolve,reject)=>{const req=indexedDB.open(LDS_DB,1);req.onupgradeneeded=e=>{const db=e.target.result;if(db.objectStoreNames.contains(LDS_STORE))db.deleteObjectStore(LDS_STORE);const store=db.createObjectStore(LDS_STORE,{keyPath:'id',autoIncrement:true});store.createIndex('functionalMark_idx','functionalMark_search',{unique:false});store.createIndex('parentFunctionalMark_idx','parentFunctionalMark_search',{unique:false});store.createIndex('nsn_idx','NSN',{unique:false});if(db.objectStoreNames.contains(LDS_META))db.deleteObjectStore(LDS_META);db.createObjectStore(LDS_META,{keyPath:'key'});};req.onsuccess=e=>{ldsDb=e.target.result;resolve(ldsDb)};req.onerror=reject})}
+function ldsNormalize(v){return (v||'').toString().toLowerCase().trim()}
+async function saveLDSMeta(meta){const tx=ldsDb.transaction(LDS_META,'readwrite');const s=tx.objectStore(LDS_META);Object.entries(meta).forEach(([k,v])=>s.put({key:k,value:v}))}
+async function loadLDSMeta(){if(!ldsDb) await initLDSDB();const tx=ldsDb.transaction(LDS_META,'readonly');const s=tx.objectStore(LDS_META);const keys=['fileName','totalItems','provisioningCount','importedAt'];for(const k of keys){await new Promise(r=>{const q=s.get(k);q.onsuccess=()=>{document.getElementById('ldsMeta'+(k==='fileName'?'File':k==='totalItems'?'Items':k==='provisioningCount'?'Prov':'Date')).textContent=q.result?.value||'-';r()};q.onerror=r})}}
+async function importLDSFile(file){if(!window.XLSX){alert('Biblioteca XLSX não carregada');return}if(!ldsDb) await initLDSDB();const data=await file.arrayBuffer();const wb=XLSX.read(data,{type:'array'});const tree=XLSX.utils.sheet_to_json(wb.Sheets['Configured Items Tree']||{});const prov=XLSX.utils.sheet_to_json(wb.Sheets['Provisioning Data']||{});const provMap={};prov.forEach(p=>provMap[p.NSN]=p);const items=tree.map(r=>({FunctionalMark:r['Functional Mark']||'',ParentFunctionalMark:r['Parent Functional Mark']||'',LongLCNNomenclature:r['Long LCN Nomenclature']||'',EquipmentDescription:r['Equipment Description']||'',ICC:r['ICC']||'',NSN:r['NSN']||'',TMNumber:r['TM Number']||'',AllowOnBoard:provMap[r['NSN']]?.['Allow on board']||'',AllowShoreBase:provMap[r['NSN']]?.['Allow ShoreBase']||'',functionalMark_search:ldsNormalize(r['Functional Mark']),parentFunctionalMark_search:ldsNormalize(r['Parent Functional Mark'])}));const tx=ldsDb.transaction(LDS_STORE,'readwrite');const store=tx.objectStore(LDS_STORE);store.clear();items.forEach(i=>store.add(i));await new Promise(r=>tx.oncomplete=r);await saveLDSMeta({fileName:file.name,totalItems:items.length,provisioningCount:prov.length,importedAt:new Date().toLocaleString()});loadLDSMeta();renderLDSResults(items.slice(0,50))}
+async function searchLDS(term){if(!ldsDb)return;term=ldsNormalize(term);const tx=ldsDb.transaction(LDS_STORE,'readonly');const store=tx.objectStore(LDS_STORE);const req=store.getAll();req.onsuccess=()=>{const res=req.result.filter(i=>i.functionalMark_search.includes(term)||i.parentFunctionalMark_search.includes(term)).slice(0,200);renderLDSResults(res)}}
+function renderLDSResults(items){const el=document.getElementById('ldsResults');if(!el)return;el.innerHTML=items.map(i=>`<div class="lds-card"><div class="lds-card-grid"><div><b>Functional Mark</b><br>${i.FunctionalMark||'-'}</div><div><b>Parent Functional Mark</b><br>${i.ParentFunctionalMark||'-'}</div><div><b>Long LCN Nomenclature</b><br>${i.LongLCNNomenclature||'-'}</div><div><b>Equipment Description</b><br>${i.EquipmentDescription||'-'}</div><div><b>ICC</b><br>${i.ICC||'-'}</div><div><b>NSN</b><br>${i.NSN||'-'}</div><div><b>TM Number</b><br>${i.TMNumber||'-'}</div><div><b>Allow on board</b><br>${i.AllowOnBoard||'-'}</div><div><b>Allow ShoreBase</b><br>${i.AllowShoreBase||'-'}</div></div></div>`).join('')}
+document.addEventListener('DOMContentLoaded',async()=>{try{await initLDSDB();loadLDSMeta()}catch(e){console.error(e)}const fi=document.getElementById('ldsFileInput');if(fi)fi.addEventListener('change',e=>{const f=e.target.files[0];if(f)importLDSFile(f)});let t;const s=document.getElementById('ldsSearch');if(s)s.addEventListener('input',e=>{clearTimeout(t);t=setTimeout(()=>searchLDS(e.target.value),120)})})
 </script>
 
   <div id="psPdfChoiceModal" class="modal-overlay" onclick="if(event.target.id==='psPdfChoiceModal')closePsPdfChoiceModal()">
