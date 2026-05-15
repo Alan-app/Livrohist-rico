@@ -3229,7 +3229,7 @@ async function handleRecordSubmit(e){
   const wasEditing = !!UI.editingRecordId;
   if(UI.editingRecordId){
     const idx=AppState.data.registros.findIndex(r=>r.id===UI.editingRecordId);
-    if(idx>=0){ AppState.data.registros[idx]={...AppState.data.registros[idx], ...payload, updatedAt:Date.now()}; setStatus('recordStatus','Registro atualizado.'); }\
+    if(idx>=0){ AppState.data.registros[idx]={...AppState.data.registros[idx], ...payload, updatedAt:Date.now()}; setStatus('recordStatus','Registro atualizado.'); }
   }else{
     AppState.data.registros.push({id:uid('rec'), ...payload, createdAt:Date.now(), updatedAt:Date.now()});
     setStatus('recordStatus','Registro salvo.');
