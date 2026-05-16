@@ -1351,7 +1351,7 @@ body:not(.app-ready) .app{visibility:hidden;}
 .lds-status{font-size:.9rem;opacity:.82;min-height:1.25rem;overflow-wrap:anywhere}
 .lds-results{display:flex;flex-direction:column;gap:12px;padding-bottom:22px;scroll-behavior:smooth}
 .lds-card{background:rgba(11,31,58,.72);border:1px solid rgba(255,255,255,.12);box-shadow:0 10px 24px rgba(0,0,0,.20);border-radius:18px;padding:14px;overflow:hidden;user-select:text}
-.lds-card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px 12px}.lds-field{min-width:0;overflow-wrap:anywhere;word-break:break-word;line-height:1.35}.lds-field b{display:block;font-size:.76rem;opacity:.72;text-transform:uppercase;letter-spacing:.02em;margin-bottom:2px}.lds-card-actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:12px}.lds-share-btn{white-space:normal;max-width:100%;overflow-wrap:anywhere}.lds-empty{padding:18px;border:1px dashed rgba(255,255,255,.22);border-radius:16px;text-align:center;opacity:.85}
+.lds-card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px 12px}.lds-field{min-width:0;overflow-wrap:anywhere;word-break:break-word;line-height:1.35}.lds-field b{display:block;font-size:.76rem;opacity:.72;text-transform:uppercase;letter-spacing:.02em;margin-bottom:2px}.lds-card-actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:12px}.lds-share-btn{appearance:none;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);color:inherit;width:34px;height:34px;min-width:34px;min-height:34px;padding:6px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;line-height:1;cursor:pointer;opacity:.86;transition:opacity .15s ease,background .15s ease,transform .15s ease}.lds-share-btn:hover,.lds-share-btn:focus{opacity:1;background:rgba(255,255,255,.12);outline:none}.lds-share-btn:active{transform:scale(.96)}.lds-share-btn svg{width:20px;height:20px;display:block;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.lds-empty{padding:18px;border:1px dashed rgba(255,255,255,.22);border-radius:16px;text-align:center;opacity:.85}
 @media(max-width:640px){.lds-toolbar .btn{flex:1 1 100%}.lds-card-grid{grid-template-columns:1fr}.lds-meta{grid-template-columns:1fr 1fr}}
 </style>
 
@@ -5472,7 +5472,7 @@ if($('noteForm')) $('noteForm').addEventListener('submit', saveNoteFromForm);
 </script>
 
 <script>
-/* LDS v50 - XLSX offline + IndexedDB - busca corrigida + compartilhamento */
+/* LDS v51 - XLSX offline + IndexedDB - busca corrigida + compartilhamento refinado */
 const LDS_DB_NAME='LivroHistorico_LDS_DB';
 const LDS_DB_VERSION=2;
 const LDS_ITEM_STORE='items';
@@ -5660,17 +5660,34 @@ async function ldsSearch(term){
 function ldsShareText(i){
   const val=v=>{const t=(v==null?'':String(v)).trim(); return t||'-'};
   return [
-    'LDS - Resultado da busca',
+    '*LDS — Item encontrado*',
     '',
-    'Functional Mark: '+val(i.FunctionalMark),
-    'Parent Functional Mark: '+val(i.ParentFunctionalMark),
-    'Long LCN Nomenclature: '+val(i.LongLCNNomenclature),
-    'Equipment Description: '+val(i.EquipmentDescription),
-    'ICC: '+val(i.ICC),
-    'NSN: '+val(i.NSN),
-    'TM Number: '+val(i.TMNumber),
-    'Allow on board: '+val(i.AllowOnBoard),
-    'Allow ShoreBase: '+val(i.AllowShoreBase)
+    '*Functional Mark:*',
+    val(i.FunctionalMark),
+    '',
+    '*Parent Functional Mark:*',
+    val(i.ParentFunctionalMark),
+    '',
+    '*Long LCN Nomenclature:*',
+    val(i.LongLCNNomenclature),
+    '',
+    '*Equipment Description:*',
+    val(i.EquipmentDescription),
+    '',
+    '*ICC:*',
+    val(i.ICC),
+    '',
+    '*NSN:*',
+    val(i.NSN),
+    '',
+    '*TM Number:*',
+    val(i.TMNumber),
+    '',
+    '*Allow on board:*',
+    val(i.AllowOnBoard),
+    '',
+    '*Allow ShoreBase:*',
+    val(i.AllowShoreBase)
   ].join('\n');
 }
 async function shareLdsResult(btn){
@@ -5709,7 +5726,7 @@ function ldsRenderResults(items){
     <div class="lds-field"><b>TM Number</b>${ldsEsc(i.TMNumber)||'-'}</div>
     <div class="lds-field"><b>Allow on board</b>${ldsEsc(i.AllowOnBoard)||'-'}</div>
     <div class="lds-field"><b>Allow ShoreBase</b>${ldsEsc(i.AllowShoreBase)||'-'}</div>
-  </div><div class="lds-card-actions"><button class="btn btn-secondary lds-share-btn" type="button" data-lds-item="${ldsSharePayload(i)}" onclick="shareLdsResult(this)">Compartilhar</button></div></div>`).join('');
+  </div><div class="lds-card-actions"><button class="lds-share-btn" type="button" title="Compartilhar" aria-label="Compartilhar" data-lds-item="${ldsSharePayload(i)}" onclick="shareLdsResult(this)"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"></path><path d="M16 6l-4-4-4 4"></path><path d="M12 2v14"></path></svg></button></div></div>`).join('');
 }
 async function initLdsModule(){
   try{ await openLdsDb(); await ldsRenderMeta(); const m=await ldsGetMeta(); ldsSetStatus(m.totalItems?'Base LDS carregada. Digite para buscar.':'Importe uma planilha LDS para iniciar.'); if(!lds$('ldsSearchInput')?.value) ldsRenderResults([]); }catch(e){console.error(e); ldsSetStatus('Erro ao abrir base LDS.');}

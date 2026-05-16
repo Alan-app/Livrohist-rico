@@ -31,3 +31,13 @@ Versão v50: LDS com botão Compartilhar em cada card de resultado.
 - Dados compartilhados: Functional Mark, Parent Functional Mark, Long LCN Nomenclature, Equipment Description, ICC, NSN, TM Number, Allow on board e Allow ShoreBase.
 - Importação XLSX, IndexedDB, índices e lógica de busca LDS preservados.
 - Demais módulos preservados: Launcher, Livro Histórico, Livro Histórico DA, Horas, Relatórios, Dashboard, Notas, Backup, PDFs, topbar e navegação geral.
+
+
+Versão v51: LDS com compartilhamento refinado nos cards.
+- Módulo alterado: LDS, exclusivamente no botão de compartilhar e no texto compartilhado.
+- Botão grande com texto removido dos cards LDS.
+- Novo botão usa ícone SVG inline local, pequeno, discreto, sem dependência online, com title e aria-label “Compartilhar”.
+- Texto compartilhado formatado para WhatsApp com título em negrito, campos separados por linhas em branco e valores vazios como “-”.
+- Web Share API preservada quando disponível e fallback WhatsApp via https://wa.me/?text= preservado.
+- Importação XLSX, IndexedDB, índices e lógica de busca LDS preservados.
+- Demais módulos preservados: Launcher, Livro Histórico, Livro Histórico DA, Horas, Relatórios, Dashboard, Notas, Backup, PDFs, topbar e navegação geral.
