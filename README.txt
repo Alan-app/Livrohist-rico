@@ -20,3 +20,5 @@ BUG 3 — Voltar após editar lançamento indo para tela errada
 
 
 Versão v48: módulo LDS offline com IndexedDB.
+
+Versão v49: Bloco de Notas com altura automática, sem rolagem interna na nota, botão expandir/recolher e persistência individual do estado.

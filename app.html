@@ -125,6 +125,66 @@
     @media(min-width:960px){.notes-fab{right:32px !important;bottom:32px !important;}}
 
 
+/* v49: Bloco de Notas - notas com altura automática e recolher/expandir persistente */
+#screen-notas .keep-note{
+  height:auto !important;
+  max-height:none !important;
+  overflow:visible !important;
+  min-width:0 !important;
+}
+#screen-notas .keep-note-text{
+  height:auto !important;
+  max-height:none !important;
+  overflow:visible !important;
+  flex:0 0 auto !important;
+  white-space:pre-wrap !important;
+  word-break:break-word !important;
+  overflow-wrap:anywhere !important;
+}
+#screen-notas .keep-note-header{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:8px;
+  min-width:0;
+}
+#screen-notas .keep-note-header .keep-note-title{
+  flex:1 1 auto;
+  min-width:0;
+}
+#screen-notas .keep-collapse-btn{
+  width:34px;
+  height:34px;
+  min-width:34px;
+  border-radius:11px;
+  border:1px solid rgba(0,0,0,.10);
+  background:rgba(255,255,255,.55);
+  color:#111;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1rem;
+  font-weight:900;
+  padding:0;
+  flex:0 0 auto;
+}
+#screen-notas .keep-note.collapsed{
+  min-height:0 !important;
+}
+#screen-notas .keep-note.collapsed .keep-note-text,
+#screen-notas .keep-note.collapsed .keep-note-meta,
+#screen-notas .keep-note.collapsed .keep-actions{
+  display:none !important;
+}
+#screen-notas .keep-inline-text{
+  height:auto !important;
+  max-height:none !important;
+  overflow:hidden !important;
+  resize:none !important;
+}
+
+
+
     .record-card{background:linear-gradient(180deg, rgba(31,67,116,.98), rgba(28,63,109,.98));border-radius:22px;padding:16px;box-shadow:var(--shadow);position:relative;overflow:hidden;padding-bottom:20px;border:1px solid rgba(255,255,255,.08)}
     .record-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--gold)}
     .record-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
@@ -4440,7 +4500,7 @@ function importBackup(file){
 
 // ═══════════════════════ BLOCO DE NOTAS ESTILO KEEP ═══════════════════════
 const KEEP_COLORS=['default','yellow','green','blue','red','purple'];let currentNoteColor='default';let currentNotesView='active';
-function ensureNotas(){if(!Array.isArray(AppState.data.notas))AppState.data.notas=[];AppState.data.notas.forEach(n=>{if(!n.status)n.status='active';if(!n.color||!KEEP_COLORS.includes(n.color))n.color='default';n.pinned=!!n.pinned;});}
+function ensureNotas(){if(!Array.isArray(AppState.data.notas))AppState.data.notas=[];AppState.data.notas.forEach(n=>{if(!n.status)n.status='active';if(!n.color||!KEEP_COLORS.includes(n.color))n.color='default';n.pinned=!!n.pinned;n.collapsed=!!n.collapsed;});}
 function nowIso(){return new Date().toISOString();}
 function openNoteModal(){resetNoteForm();const m=$('noteModal');if(m)m.classList.add('show');setTimeout(()=>{const t=$('noteText');if(t)t.focus();},80);}
 function closeNoteModal(){const m=$('noteModal');if(m)m.classList.remove('show');resetNoteForm();}
@@ -4448,10 +4508,48 @@ function setNoteColor(color){currentNoteColor=KEEP_COLORS.includes(color)?color:
 function setNotesView(view){currentNotesView=['active','archive','trash'].includes(view)?view:'active';UI.editingNoteId=null;if($('notesTabActive'))$('notesTabActive').classList.toggle('active',currentNotesView==='active');if($('notesTabArchive'))$('notesTabArchive').classList.toggle('active',currentNotesView==='archive');if($('notesTabTrash'))$('notesTabTrash').classList.toggle('active',currentNotesView==='trash');if($('emptyNotesTrashBtn'))$('emptyNotesTrashBtn').classList.toggle('hidden',currentNotesView!=='trash');renderNotes();}
 function resetNoteForm(){ensureNotas();['noteId','noteTitle','noteText'].forEach(id=>{if($(id))$(id).value='';});if($('saveNoteBtn'))$('saveNoteBtn').textContent='Adicionar';if($('noteStatus'))$('noteStatus').textContent='';setNoteColor('default');}
 function noteActionButtons(n){if(currentNotesView==='trash')return `<button class="keep-icon" type="button" onclick="restoreNote('${n.id}')" title="Restaurar">↩</button><button class="keep-icon" type="button" onclick="deleteNoteForever('${n.id}')" title="Excluir definitivo">🗑</button>`;return `<button class="keep-icon ${n.pinned?'active':''}" type="button" onclick="togglePinNote('${n.id}')" title="Fixar">📌</button><button class="keep-icon" type="button" onclick="cycleNoteColor('${n.id}')" title="Mudar cor">🎨</button><button class="keep-icon" type="button" onclick="archiveNote('${n.id}')" title="Arquivar">${currentNotesView==='archive'?'↩':'📥'}</button><button class="keep-icon" type="button" onclick="moveNoteToTrash('${n.id}')" title="Lixeira">🗑</button>`;}
-function renderNotes(){ensureNotas();const list=$('notesList');if(!list)return;const q=String(($('noteSearch')&&$('noteSearch').value)||'').trim().toLowerCase();const notas=[...AppState.data.notas].filter(n=>(n.status||'active')===currentNotesView).filter(n=>!q||String(n.titulo||'').toLowerCase().includes(q)||String(n.texto||'').toLowerCase().includes(q)).sort((a,b)=>(Number(!!b.pinned)-Number(!!a.pinned))||String(b.updatedAt||b.createdAt||'').localeCompare(String(a.updatedAt||a.createdAt||'')));if(!notas.length){list.innerHTML='<div class="keep-empty">'+(currentNotesView==='archive'?'Nenhuma nota arquivada.':currentNotesView==='trash'?'Nenhuma nota na lixeira.':'Nenhuma nota encontrada.')+'</div>';return;}let lastPinned=null;list.innerHTML=notas.map(n=>{let section='';if(currentNotesView==='active'){const p=!!n.pinned;if(lastPinned!==p){section='<div class="keep-section-title" style="grid-column:1/-1;">'+(p?'Fixadas':'Outras')+'</div>';lastPinned=p;}}const title=String(n.titulo||'').trim(),body=String(n.texto||'').trim(),date=n.updatedAt?formatDateTimeBr(n.updatedAt):'',color=KEEP_COLORS.includes(n.color)?n.color:'default',isEditing=UI.editingNoteId===n.id&&currentNotesView!=='trash';const actions=noteActionButtons(n);if(isEditing){return section+`<article class="keep-note editing" data-color="${escapeHtml(color)}"><input class="keep-inline-title" value="${escapeHtml(title)}" placeholder="Título" oninput="updateNoteInline('${n.id}','titulo',this.value)" /><textarea id="noteInlineText_${n.id}" class="keep-inline-text" placeholder="Criar uma nota..." oninput="updateNoteInline('${n.id}','texto',this.value)">${escapeHtml(body)}</textarea><div class="keep-note-meta">${escapeHtml(date)}</div><div class="keep-actions" onclick="event.stopPropagation()"><div class="keep-action-group">${actions}</div></div></article>`;}return section+`<article class="keep-note" data-color="${escapeHtml(color)}" onclick="editNote('${n.id}')">${title?`<div class="keep-note-title">${escapeHtml(title)}</div>`:''}<div class="keep-note-text">${escapeHtml(body||'Nota vazia')}</div><div class="keep-note-meta">${escapeHtml(date)}</div><div class="keep-actions" onclick="event.stopPropagation()"><div class="keep-action-group">${actions}</div></div></article>`;}).join('');}
+function renderNotes(){
+  ensureNotas();
+  const list=$('notesList');
+  if(!list)return;
+  const q=String(($('noteSearch')&&$('noteSearch').value)||'').trim().toLowerCase();
+  const notas=[...AppState.data.notas]
+    .filter(n=>(n.status||'active')===currentNotesView)
+    .filter(n=>!q||String(n.titulo||'').toLowerCase().includes(q)||String(n.texto||'').toLowerCase().includes(q))
+    .sort((a,b)=>(Number(!!b.pinned)-Number(!!a.pinned))||String(b.updatedAt||b.createdAt||'').localeCompare(String(a.updatedAt||a.createdAt||'')));
+  if(!notas.length){
+    list.innerHTML='<div class="keep-empty">'+(currentNotesView==='archive'?'Nenhuma nota arquivada.':currentNotesView==='trash'?'Nenhuma nota na lixeira.':'Nenhuma nota encontrada.')+'</div>';
+    return;
+  }
+  let lastPinned=null;
+  list.innerHTML=notas.map(n=>{
+    let section='';
+    if(currentNotesView==='active'){
+      const p=!!n.pinned;
+      if(lastPinned!==p){section='<div class="keep-section-title" style="grid-column:1/-1;">'+(p?'Fixadas':'Outras')+'</div>';lastPinned=p;}
+    }
+    const title=String(n.titulo||'').trim();
+    const body=String(n.texto||'').trim();
+    const date=n.updatedAt?formatDateTimeBr(n.updatedAt):'';
+    const color=KEEP_COLORS.includes(n.color)?n.color:'default';
+    const isEditing=UI.editingNoteId===n.id&&currentNotesView!=='trash';
+    const actions=noteActionButtons(n);
+    const safeId=String(n.id).replace(/'/g,"\\'");
+    if(isEditing){
+      return section+`<article class="keep-note editing" data-color="${escapeHtml(color)}"><input class="keep-inline-title" value="${escapeHtml(title)}" placeholder="Título" oninput="updateNoteInline('${safeId}','titulo',this.value)" /><textarea id="noteInlineText_${escapeHtml(n.id)}" class="keep-inline-text" placeholder="Criar uma nota..." oninput="updateNoteInline('${safeId}','texto',this.value);autoResizeKeepTextarea(this)">${escapeHtml(body)}</textarea><div class="keep-note-meta">${escapeHtml(date)}</div><div class="keep-actions" onclick="event.stopPropagation()"><div class="keep-action-group">${actions}</div></div></article>`;
+    }
+    const collapsed=!!n.collapsed;
+    const collapseLabel=collapsed?'Expandir nota':'Recolher nota';
+    const collapseIcon=collapsed?'▾':'▴';
+    const shownTitle=title||'Sem título';
+    return section+`<article class="keep-note ${collapsed?'collapsed':''}" data-color="${escapeHtml(color)}" onclick="editNote('${safeId}')"><div class="keep-note-header"><div class="keep-note-title">${escapeHtml(shownTitle)}</div><button class="keep-collapse-btn" type="button" onclick="toggleNoteCollapsed('${safeId}',event)" title="${collapseLabel}" aria-label="${collapseLabel}" aria-expanded="${collapsed?'false':'true'}">${collapseIcon}</button></div><div class="keep-note-text">${escapeHtml(body||'Nota vazia')}</div><div class="keep-note-meta">${escapeHtml(date)}</div><div class="keep-actions" onclick="event.stopPropagation()"><div class="keep-action-group">${actions}</div></div></article>`;
+  }).join('');
+}
+function autoResizeKeepTextarea(el){if(!el)return;el.style.height='auto';el.style.height=(el.scrollHeight||96)+'px';}
+function toggleNoteCollapsed(id,ev){if(ev){ev.preventDefault();ev.stopPropagation();}ensureNotas();const n=AppState.data.notas.find(x=>x.id===id);if(!n)return;n.collapsed=!n.collapsed;AppState.save();if(UI.editingNoteId===id)UI.editingNoteId=null;renderNotes();}
 function formatDateTimeBr(value){const d=new Date(value);if(Number.isNaN(d.getTime()))return'';return d.toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});}
-function saveNoteFromForm(e){if(e)e.preventDefault();ensureNotas();const titulo=String(($('noteTitle')&&$('noteTitle').value)||'').trim(),texto=String(($('noteText')&&$('noteText').value)||'').trim();if(!titulo&&!texto){showAppMessage('Bloco de Notas','Digite título ou texto da nota.');return;}AppState.data.notas.push({id:uid(),titulo,texto,color:currentNoteColor,pinned:false,status:'active',createdAt:nowIso(),updatedAt:nowIso()});AppState.save();closeNoteModal();setNotesView('active');}
-function editNote(id){ensureNotas();const n=AppState.data.notas.find(x=>x.id===id);if(!n||(n.status||'active')==='trash')return;UI.editingNoteId=id;renderNotes();setTimeout(()=>{const el=$('noteInlineText_'+id);if(el){el.focus();const len=el.value.length;try{el.setSelectionRange(len,len);}catch(e){}el.scrollTop=el.scrollHeight;}},60);}
+function saveNoteFromForm(e){if(e)e.preventDefault();ensureNotas();const titulo=String(($('noteTitle')&&$('noteTitle').value)||'').trim(),texto=String(($('noteText')&&$('noteText').value)||'').trim();if(!titulo&&!texto){showAppMessage('Bloco de Notas','Digite título ou texto da nota.');return;}AppState.data.notas.push({id:uid(),titulo,texto,color:currentNoteColor,pinned:false,collapsed:false,status:'active',createdAt:nowIso(),updatedAt:nowIso()});AppState.save();closeNoteModal();setNotesView('active');}
+function editNote(id){ensureNotas();const n=AppState.data.notas.find(x=>x.id===id);if(!n||(n.status||'active')==='trash')return;if(n.collapsed)return;UI.editingNoteId=id;renderNotes();setTimeout(()=>{const el=$('noteInlineText_'+id);if(el){autoResizeKeepTextarea(el);el.focus();const len=el.value.length;try{el.setSelectionRange(len,len);}catch(e){}el.scrollTop=0;}},60);}
 function updateNoteInline(id,field,value){const n=AppState.data.notas.find(x=>x.id===id);if(!n)return;if(field==='titulo')n.titulo=value;else if(field==='texto')n.texto=value;n.updatedAt=nowIso();AppState.save();}
 function togglePinNote(id){const n=AppState.data.notas.find(x=>x.id===id);if(!n)return;n.pinned=!n.pinned;n.updatedAt=nowIso();AppState.save();renderNotes();}
 function cycleNoteColor(id){const n=AppState.data.notas.find(x=>x.id===id);if(!n)return;const i=KEEP_COLORS.indexOf(n.color||'default');n.color=KEEP_COLORS[(i+1)%KEEP_COLORS.length];n.updatedAt=nowIso();AppState.save();renderNotes();}
