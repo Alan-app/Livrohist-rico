@@ -1,4 +1,4 @@
-Livro Histórico v44 / App V04
+Livro Histórico v50 / App V04
 
 Correções desta versão:
 
@@ -22,3 +22,12 @@ BUG 3 — Voltar após editar lançamento indo para tela errada
 Versão v48: módulo LDS offline com IndexedDB.
 
 Versão v49: Bloco de Notas com altura automática, sem rolagem interna na nota, botão expandir/recolher e persistência individual do estado.
+
+
+Versão v50: LDS com botão Compartilhar em cada card de resultado.
+- Módulo alterado: LDS, exclusivamente nos cards de resultado da busca.
+- Funcionalidade adicionada: compartilhamento dos dados completos do card via Web Share API quando disponível.
+- Fallback implementado para WhatsApp Web/App usando https://wa.me/?text= com encodeURIComponent.
+- Dados compartilhados: Functional Mark, Parent Functional Mark, Long LCN Nomenclature, Equipment Description, ICC, NSN, TM Number, Allow on board e Allow ShoreBase.
+- Importação XLSX, IndexedDB, índices e lógica de busca LDS preservados.
+- Demais módulos preservados: Launcher, Livro Histórico, Livro Histórico DA, Horas, Relatórios, Dashboard, Notas, Backup, PDFs, topbar e navegação geral.
