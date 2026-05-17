@@ -62,3 +62,5 @@ Registro v55:
 
 
 v57 - Horas de funcionamento: unificação adicionar/editar equipamentos e nova tela adicionar/editar bigramas.
+
+v60 - Correções: restaurado nome Livro Histórico em módulos internos; ajuste menu Bigramas.

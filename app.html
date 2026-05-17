@@ -1399,7 +1399,7 @@ body:not(.app-ready) .app{visibility:hidden;}
         <span class="nav-icon">🗂️</span> Cadastrar/Editar Equipamentos
       </button>
       <button class="sidebar-nav-item" id="sideDocumento" type="button" onclick="closeMainMenu();showScreen('documento')">
-        <span class="nav-icon">🖨️</span> Imprimir Nautilus
+        <span class="nav-icon">🖨️</span> Imprimir Livro Histórico
       </button>
       <button class="sidebar-nav-item" id="sideHoras" type="button" onclick="closeMainMenu();showScreen('horas')">
         <span class="nav-icon">⏱️</span> Horas de Funcionamento
@@ -1477,7 +1477,7 @@ body:not(.app-ready) .app{visibility:hidden;}
         <button class="menu-card" type="button" onclick="showScreen('novo')"><div class="menu-icon">📝</div><div class="menu-text"><h2>Novo Registro</h2><p>Lançar nova avaria, manutenção ou ocorrência.</p></div></button>
         <button class="menu-card secondary" type="button" onclick="showScreen('historico')"><div class="menu-icon">📚</div><div class="menu-text"><h2>Ver Histórico</h2><p>Visualizar, filtrar, editar, concluir e exportar registros.</p></div></button>
         <button class="menu-card tertiary" type="button" onclick="showScreen('ficha')"><div class="menu-icon">🗂️</div><div class="menu-text"><h2>Cadastrar/Editar Equipamentos</h2><p>Cadastrar, listar e editar equipamentos do modelo oficial.</p></div></button>
-        <button class="menu-card secondary" type="button" onclick="showScreen('documento')"><div class="menu-icon">🖨️</div><div class="menu-text"><h2>Imprimir Nautilus</h2><p>Gerar visualização pronta e baixar em DOCX.</p></div></button>
+        <button class="menu-card secondary" type="button" onclick="showScreen('documento')"><div class="menu-icon">🖨️</div><div class="menu-text"><h2>Imprimir Livro Histórico</h2><p>Gerar visualização pronta e baixar em DOCX.</p></div></button>
         <button class="menu-card secondary" type="button" onclick="showScreen('ps')"><div class="menu-icon">📋</div><div class="menu-text"><h2>Pedido de Serviço</h2><p>Criar, visualizar e imprimir pedidos de serviço.</p></div></button>
       </div>
     </section>
@@ -1610,7 +1610,7 @@ body:not(.app-ready) .app{visibility:hidden;}
 
     <section id="screen-documento" class="section hidden">
       <div class="card">
-        <h2>Imprimir Nautilus</h2>
+        <h2>Imprimir Livro Histórico</h2>
         <p style="margin-bottom:14px;">Somente registros em aberto do bigrama selecionado entram no documento.</p>
         <div class="toolbar" style="display:grid;grid-template-columns:1fr;gap:10px;">
           <button class="btn btn-primary" type="button" onclick="previewPdfOnly()">Visualizar / Baixar DOCX</button>
@@ -3356,7 +3356,7 @@ function updateTopbar(){
     topSubtitle.style.display = 'none';
     topMenuBtn.style.visibility = 'hidden';
   }else{
-    const map={novo:'Novo Registro',historico:'Histórico',ficha:'Cadastrar/Editar Equipamentos',documento:'Imprimir Nautilus',horas:'Horas de Funcionamento',relatorio:'Relatório Geral',ps:'Pedido de Serviço',notas:'Bloco de Notas',lds:'LDS'};
+    const map={novo:'Novo Registro',historico:'Histórico',ficha:'Cadastrar/Editar Equipamentos',documento:'Imprimir Livro Histórico',horas:'Horas de Funcionamento',relatorio:'Relatório Geral',ps:'Pedido de Serviço',notas:'Bloco de Notas',lds:'LDS'};
     topTitle.innerHTML = UI.currentScreen==='horas' ? 'HORAS<br>DE<br>FUNCIONAMENTO' : (map[UI.currentScreen] || 'Nautilus');
     topSubtitle.textContent = UI.currentScreen==='relatorio' ? '' : (b ? getBigramaLabel(b.id) : '');
     if(UI.currentScreen==='notas' || UI.currentScreen==='lds'){
