@@ -1803,11 +1803,10 @@ body:not(.app-ready) .app{visibility:hidden;}
           <div class="field"><label for="siglaInput">Sigla *</label><input id="siglaInput" type="text" maxlength="4" placeholder="Ex.: DA" required /></div>
           <div class="field"><label for="nomeSistemaInput">Nome do sistema *</label><input id="nomeSistemaInput" type="text" placeholder="Ex.: Esgoto" required /></div>
         </div>
-        <div class="btn-row"><button id="saveBigramaBtn" class="btn btn-primary" type="submit">Salvar Bigrama</button><button class="btn btn-secondary" type="button" onclick="resetBigramaForm()">Limpar</button></div>
+        <div class="btn-row"><button id="saveBigramaBtn" class="btn btn-primary" type="submit">Salvar Bigrama</button><button class="btn btn-ghost" type="button" onclick="closeManageBigramas()">Fechar</button></div>
         <div id="bigramaStatus" class="status-msg"></div>
       </form>
       <div id="bigramaList" class="record-list"></div>
-      <div class="toolbar" style="margin-top:12px;"><button class="btn btn-ghost" type="button" onclick="closeManageBigramas()">Fechar</button></div>
     </div>
   </div>
 
@@ -2758,8 +2757,8 @@ function renderManageBigramaList(){
         <div style="font-size:.80rem;color:var(--muted);margin-top:2px;">${escapeHtml(item.nome || '')}</div>
       </div>
       <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
-        <button class="btn btn-secondary" type="button" data-bigrama-edit="${safeId}" onclick="editManagedBigrama('${safeId}')">Editar</button>
-        <button class="btn btn-ghost" type="button" data-bigrama-delete="${safeId}" onclick="deleteManagedBigrama('${safeId}')">Excluir</button>
+        <button class="btn btn-secondary" style="padding:6px 10px;font-size:.82rem;min-height:auto;" type="button" data-bigrama-edit="${safeId}" onclick="editManagedBigrama('${safeId}')">Editar</button>
+        <button class="btn btn-ghost" style="padding:6px 10px;font-size:.82rem;min-height:auto;" type="button" data-bigrama-delete="${safeId}" onclick="deleteManagedBigrama('${safeId}')">Excluir</button>
       </div>
     </div>`;
   });
