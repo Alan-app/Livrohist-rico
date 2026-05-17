@@ -1,4 +1,4 @@
-Livro Histórico v55 / App v55
+Livro Histórico v56 / App v56
 
 Alterações desta versão:
 - Renomeada a opção “Dados da Ficha” para “Cadastrar/Editar Equipamentos”.
@@ -35,8 +35,8 @@ Observações técnicas:
 - Não houve alteração na base IndexedDB da LDS.
 - Persistência continua via dados locais do app, com leitura retrocompatível de fichas antigas.
 - O dropdown de equipamentos funciona mesmo quando não há equipamentos cadastrados.
-- A versão visual do app/menu foi atualizada para v55.
-- Cache offline atualizado para v55.
+- A versão visual do app/menu foi atualizada para v56.
+- Cache offline atualizado para v56.
 
 Histórico recente:
 - v48: módulo LDS offline com IndexedDB e busca corrigida.
@@ -45,6 +45,13 @@ Histórico recente:
 - v51: LDS com compartilhamento refinado nos cards.
 - v53: LDS com importação única e modal de progresso bloqueante.
 - v54: ícone de compartilhar LDS ajustado para estilo ChatGPT.
+
+
+Registro v56:
+- Horas de Funcionamento: atualização de horas agora possui campos Anos, Dias e Horas, com resultado convertido automaticamente para total em horas.
+- Quando apenas Horas é preenchido, o resultado replica o mesmo valor em horas.
+- Backup/importação corrigidos para preservar e restaurar dados de Horas de Funcionamento.
+- README/changelog, cache e versão visual atualizados para v56.
 
 Registro v55:
 - “Dados da Ficha” renomeado para “Cadastrar/Editar Equipamentos”.
