@@ -1,4 +1,4 @@
-Nautilus v61 / App v61
+Nautilus v64 / App v64
 
 Alterações desta versão:
 - Renomeada a opção “Dados da Ficha” para “Cadastrar/Editar Equipamentos”.
@@ -75,3 +75,11 @@ v61 - Correção efetiva da v60:
 
 
 v62 - Correção do menu Livro Histórico e exclusão de Bigramas.
+
+Nautilus v64 / App v64
+Alterações desta versão:
+- Adicionado botão “Fechar” no modal “Adicionar/Editar Bigramas” em Horas de funcionamento.
+- Ajustado espaçamento no Bloco de Notas para listas de notas arquivadas.
+- Ajustado espaçamento no Bloco de Notas para listas de notas excluídas/lixeira.
+- Preservados os botões Salvar, Editar e Excluir dos bigramas e demais módulos do app.
+- Versão visual, cache e pacote ZIP incrementados para v64.
