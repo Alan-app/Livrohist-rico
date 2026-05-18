@@ -6154,6 +6154,33 @@ function ldsSharePayload(i){
   const payload={FunctionalMark:i.FunctionalMark,ParentFunctionalMark:i.ParentFunctionalMark,LongLCNNomenclature:i.LongLCNNomenclature,EquipmentDescription:i.EquipmentDescription,ICC:i.ICC,NSN:i.NSN,TMNumber:i.TMNumber,AllowOnBoard:i.AllowOnBoard,AllowShoreBase:i.AllowShoreBase};
   return encodeURIComponent(JSON.stringify(payload));
 }
+
+function ldsFindOtherApplications(currentItem){
+  try{
+    const nsn=(currentItem?.NSN||'').toString().trim().toLowerCase();
+    if(!nsn || !Array.isArray(ldsDataCache)) return [];
+    const currentFM=(currentItem?.FunctionalMark||'').toString().trim().toLowerCase();
+    const currentPFM=(currentItem?.ParentFunctionalMark||'').toString().trim().toLowerCase();
+    const seen=new Set();
+    return ldsDataCache.filter(row=>{
+      const rowNsn=(row?.NSN||'').toString().trim().toLowerCase();
+      if(!rowNsn || rowNsn!==nsn) return false;
+      const fm=(row?.FunctionalMark||'').toString().trim();
+      const pfm=(row?.ParentFunctionalMark||'').toString().trim();
+      const key=(fm+'|'+pfm).toLowerCase();
+      if((fm.toLowerCase()===currentFM && pfm.toLowerCase()===currentPFM) || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    }).map(row=>({
+      FunctionalMark: row.FunctionalMark || '-',
+      ParentFunctionalMark: row.ParentFunctionalMark || '-'
+    }));
+  }catch(e){
+    console.error('Erro ao localizar aplicações relacionadas LDS',e);
+    return [];
+  }
+}
+
 function ldsRenderResults(items){
   const el=lds$('ldsResults'); if(!el)return;
   if(!items||!items.length){el.innerHTML='<div class="lds-empty">Nenhum resultado para exibir.</div>'; return;}
@@ -6167,6 +6194,13 @@ function ldsRenderResults(items){
     <div class="lds-field"><b>TM Number</b>${ldsEsc(i.TMNumber)||'-'}</div>
     <div class="lds-field"><b>Allow on board</b>${ldsEsc(i.AllowOnBoard)||'-'}</div>
     <div class="lds-field"><b>Allow ShoreBase</b>${ldsEsc(i.AllowShoreBase)||'-'}</div>
+    <div class="lds-field lds-related-field"><b>Aplicação em outros Equipamentos:</b>${
+      (() => {
+        const related = ldsFindOtherApplications(i);
+        if(!related.length) return '<div class="lds-related-empty">Nenhuma outra aplicação encontrada.</div>';
+        return '<ul class="lds-related-list">'+related.map(r=>`<li><b>FM:</b> ${ldsEsc(r.FunctionalMark)||'-'}<br><b>Parent FM:</b> ${ldsEsc(r.ParentFunctionalMark)||'-'}</li>`).join('')+'</ul>';
+      })()
+    }</div>
   </div><div class="lds-card-actions"><button class="lds-share-btn" type="button" title="Compartilhar" aria-label="Compartilhar" data-lds-item="${ldsSharePayload(i)}" onclick="shareLdsResult(this)"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="18" cy="5" r="2.4"></circle><circle cx="6" cy="12" r="2.4"></circle><circle cx="18" cy="19" r="2.4"></circle><path d="M8.4 10.8 15.6 6.2"></path><path d="M8.4 13.2 15.6 17.8"></path></svg></button></div></div>`).join('');
 }
 async function initLdsModule(){

@@ -85,3 +85,6 @@ Alterações desta versão:
 - Versão visual, cache e pacote ZIP incrementados para v64.
 
 - v66: removido botão fechar superior duplicado em Adicionar/Editar Bigramas.
+
+
+v68 - LDS agora exibe 'Aplicação em outros Equipamentos' com associação automática por NSN.
