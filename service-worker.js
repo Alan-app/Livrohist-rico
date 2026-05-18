@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nautilus-v64-modal-notas-ajustes-20260517';
+const CACHE_NAME = 'nautilus-v70-lds-configured-items-fix-20260518';
 const APP_ASSETS = ['./','./index.html','./app.html','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_ASSETS)));
