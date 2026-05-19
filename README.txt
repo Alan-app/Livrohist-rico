@@ -90,3 +90,6 @@ Alterações desta versão:
 v68 - LDS agora exibe 'Aplicação em outros Equipamentos' com associação automática por NSN.
 
 v70 - LDS: corrigida a seção 'Aplicação em outros Equipamentos' para consultar a base real IndexedDB da aba Configured Items Tree, removendo dependência de cache inexistente, normalizando NSN e evitando falso 'Nenhuma outra aplicação encontrada'. Versão visual/cache/ZIP atualizados para v70.
+
+
+v71 - LDS: otimizada a seção 'Aplicação em outros Equipamentos' com índice/cache por NSN da aba Configured Items Tree, busca limitada à coluna NSN, remoção dos rótulos Functional Mark/Parent Functional Mark nos resultados e versionamento/ZIP atualizados para v71.
