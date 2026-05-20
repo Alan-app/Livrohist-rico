@@ -111,3 +111,6 @@ v78 - Bloco de Notas: correção real do modo edição validada, mantendo textar
 
 v79 - Bloco de Notas: corrigida de fato a passagem do estado de edição para a renderização dos botões, fazendo o botão Salvar aparecer somente em edição ao lado da lixeira; reforçada autoaltura real do textarea e manutenção do card expandido após salvar. Versão visual/cache/ZIP atualizados para v79.
 v81 - Bloco de Notas: corrigido o autoajuste em tempo real durante a edição inline; a nota cresce conforme novas linhas/quebras aparecem e não encolhe durante a digitação. Mantidos botão Salvar, IndexedDB, navegação, LDS, PDFs e demais módulos sem alteração fora do escopo. Versão visual/cache/ZIP atualizados para v81.
+
+
+v82 - Bloco de Notas: corrigido o ponto de entrada no modo edição. Ao clicar em uma nota, a altura atual do card é capturada antes da renderização, aplicada como altura mínima da edição, e a textarea recebe altura via setProperty com !important para não ser sobrescrita por CSS anterior. A nota não deve reduzir nem esconder texto ao clicar em editar; continua podendo crescer em tempo real. ZIP limpo, sem ZIP interno indevido.
