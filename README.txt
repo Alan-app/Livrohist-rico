@@ -103,3 +103,6 @@ v75 - LDS: restaurado o título correto da seção 'Aplicação em outros Equipa
 
 
 v76 - Imprimir Livro Histórico: geração DOCX ajustada para seguir o modelo PDF enviado, com paginação/código de folha no topo, maior aproveitamento vertical por página, espaçamentos mais compactos e área de assinaturas preservada. Versão visual/cache/ZIP atualizados para v76.
+
+
+v77 - Bloco de Notas: corrigida altura automática durante edição inline, evitando corte/rolagem interna e card reduzido após salvar; incluído botão Salvar ao lado da lixeira, visível somente em modo edição. Versão visual/cache/ZIP atualizados para v77.

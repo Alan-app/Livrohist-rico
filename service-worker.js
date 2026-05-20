@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nautilus-v76-docx-modelo-ajustado-20260519';
+const CACHE_NAME = 'nautilus-v77-notas-autoaltura-salvar-20260520';
 const APP_ASSETS = ['./','./index.html','./app.html','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_ASSETS)));
