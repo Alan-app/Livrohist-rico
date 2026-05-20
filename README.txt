@@ -110,3 +110,4 @@ v77 - Bloco de Notas: corrigida altura automática durante edição inline, evit
 v78 - Bloco de Notas: correção real do modo edição validada, mantendo textarea com autoaltura durante digitação, botão Salvar visível somente em edição, saída da edição apenas ao salvar e card sem corte após renderização. Versão visual/cache/ZIP atualizados para v78.
 
 v79 - Bloco de Notas: corrigida de fato a passagem do estado de edição para a renderização dos botões, fazendo o botão Salvar aparecer somente em edição ao lado da lixeira; reforçada autoaltura real do textarea e manutenção do card expandido após salvar. Versão visual/cache/ZIP atualizados para v79.
+v80 - Bloco de Notas: corrigido o autoajuste em tempo real durante a edição inline; a nota cresce conforme novas linhas/quebras aparecem e não encolhe durante a digitação. Mantidos botão Salvar, IndexedDB, navegação, LDS, PDFs e demais módulos sem alteração fora do escopo. Versão visual/cache/ZIP atualizados para v80.
