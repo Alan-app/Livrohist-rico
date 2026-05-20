@@ -108,3 +108,5 @@ v76 - Imprimir Livro Histórico: geração DOCX ajustada para seguir o modelo PD
 v77 - Bloco de Notas: corrigida altura automática durante edição inline, evitando corte/rolagem interna e card reduzido após salvar; incluído botão Salvar ao lado da lixeira, visível somente em modo edição. Versão visual/cache/ZIP atualizados para v77.
 
 v78 - Bloco de Notas: correção real do modo edição validada, mantendo textarea com autoaltura durante digitação, botão Salvar visível somente em edição, saída da edição apenas ao salvar e card sem corte após renderização. Versão visual/cache/ZIP atualizados para v78.
+
+v79 - Bloco de Notas: corrigida de fato a passagem do estado de edição para a renderização dos botões, fazendo o botão Salvar aparecer somente em edição ao lado da lixeira; reforçada autoaltura real do textarea e manutenção do card expandido após salvar. Versão visual/cache/ZIP atualizados para v79.
