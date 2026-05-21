@@ -1,4 +1,4 @@
-Nautilus v92 / App v92
+Nautilus v94 / App v94
 
 Alterações desta versão:
 - Renomeada a opção “Dados da Ficha” para “Cadastrar/Editar Equipamentos”.
@@ -140,3 +140,6 @@ v92 - Notas: refinado o visual do checklist; checkbox sem borda/fundo extra, ali
 
 
 Versão v92: restauração isolada da opção Adicionar Bigrama no menu Livro Histórico.
+
+
+v94 - Horas de Funcionamento: opção Adicionar/Editar Equipamentos agora abre o gerenciamento real com adicionar, editar e excluir; exclusão atualiza em tempo real. Menu inicial não exibe mais Adicionar Bigrama fora do Livro Histórico.
