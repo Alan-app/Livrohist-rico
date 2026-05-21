@@ -1,4 +1,4 @@
-Nautilus v91 / App v91
+Nautilus v92 / App v92
 
 Alterações desta versão:
 - Renomeada a opção “Dados da Ficha” para “Cadastrar/Editar Equipamentos”.
@@ -136,4 +136,7 @@ v89 - Bloco de Notas: removido o título “Buscar notas”, adicionada lupa no 
 v90 - Notas: remoção real do visual novo de arrastar e remoção da data/hora de última alteração da interface. Mantida busca com lupa e ordem estável.
 
 
-v91 - Notas: refinado o visual do checklist; checkbox sem borda/fundo extra, alinhado à primeira linha, e X de exclusão menor, sem borda e sem fundo.
+v92 - Notas: refinado o visual do checklist; checkbox sem borda/fundo extra, alinhado à primeira linha, e X de exclusão menor, sem borda e sem fundo.
+
+
+Versão v92: restauração isolada da opção Adicionar Bigrama no menu Livro Histórico.
