@@ -1,4 +1,4 @@
-Nautilus v96 / App v96
+Nautilus v97 / App v97
 
 Alterações desta versão:
 - Renomeada a opção “Dados da Ficha” para “Cadastrar/Editar Equipamentos”.
@@ -145,4 +145,4 @@ Versão v92: restauração isolada da opção Adicionar Bigrama no menu Livro Hi
 v94 - Horas de Funcionamento: opção Adicionar/Editar Equipamentos agora abre o gerenciamento real com adicionar, editar e excluir; exclusão atualiza em tempo real. Menu inicial não exibe mais Adicionar Bigrama fora do Livro Histórico.
 
 
-v96 - Bloco de Notas: corrigido aumento artificial do card ao entrar em edição. LDS: busca passa a indexar e pesquisar a coluna Reference Number. Versionamento visual/cache/ZIP atualizados para v96.
+v97 - Notas: removido crescimento artificial do card ao entrar em edição; versionamento visual/cache atualizado; LDS passa a importar, indexar e buscar a coluna Reference Number.
