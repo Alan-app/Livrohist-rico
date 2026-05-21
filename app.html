@@ -1384,6 +1384,19 @@ body:not(.app-ready) .app{visibility:hidden;}
 #screen-notas .keep-note:not(.editing) .keep-save-inline{display:none !important;}
 #screen-notas .keep-note.editing .keep-save-inline{display:inline-flex !important;}
 
+/* v84: Notas - botões de marcadores e checklist */
+.keep-format-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:2px 0 0;}
+.keep-format-btn{width:auto;min-width:42px;min-height:38px;border-radius:12px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.12);color:#fff;font-weight:900;padding:8px 10px;}
+.keep-note[data-color="default"] .keep-format-btn,.keep-note[data-color="yellow"] .keep-format-btn,.keep-note[data-color="green"] .keep-format-btn,.keep-note[data-color="blue"] .keep-format-btn,.keep-note[data-color="red"] .keep-format-btn,.keep-note[data-color="purple"] .keep-format-btn{background:rgba(0,0,0,.06);color:#111;border-color:rgba(0,0,0,.12);}
+.keep-rendered-body{display:grid;gap:4px;white-space:normal;}
+.keep-line{white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;}
+.keep-bullet-line{display:grid;grid-template-columns:auto 1fr;gap:7px;align-items:start;}
+.keep-check-line{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;min-height:30px;}
+.keep-check-toggle{width:24px;height:24px;border-radius:7px;border:1px solid rgba(0,0,0,.28);background:rgba(255,255,255,.58);display:inline-flex;align-items:center;justify-content:center;font-weight:900;color:#111;padding:0;}
+.keep-check-line.done .keep-check-text{text-decoration:line-through;opacity:.62;}
+.keep-check-delete{width:28px;height:28px;border-radius:9px;border:1px solid rgba(0,0,0,.12);background:rgba(0,0,0,.08);color:#111;font-weight:900;display:inline-flex;align-items:center;justify-content:center;padding:0;}
+.keep-check-line:not(.done) .keep-check-delete{visibility:hidden;pointer-events:none;}
+
 </style>
 
 <style id="pdf-viewer-overlay-fix">
@@ -1725,7 +1738,7 @@ body:not(.app-ready) .app{visibility:hidden;}
       <form id="noteForm" class="keep-composer">
         <input id="noteId" type="hidden" />
         <input id="noteTitle" type="text" placeholder="Título" />
-        <textarea id="noteText" placeholder="Criar uma nota..." required></textarea>
+        <div class="keep-format-toolbar"><button class="keep-format-btn" type="button" onclick="insertNoteMarker('noteText','bullet')" title="Inserir marcador">• Lista</button><button class="keep-format-btn" type="button" onclick="insertNoteMarker('noteText','check')" title="Inserir caixa de seleção">☐ Checklist</button></div><textarea id="noteText" placeholder="Criar uma nota..." required onkeydown="handleNoteListEnter(event,this)"></textarea>
         <div class="keep-colors" id="noteColorPicker">
           <button class="color-dot color-default active" type="button" data-color="default" onclick="setNoteColor('default')"></button><button class="color-dot color-yellow" type="button" data-color="yellow" onclick="setNoteColor('yellow')"></button><button class="color-dot color-green" type="button" data-color="green" onclick="setNoteColor('green')"></button><button class="color-dot color-blue" type="button" data-color="blue" onclick="setNoteColor('blue')"></button><button class="color-dot color-red" type="button" data-color="red" onclick="setNoteColor('red')"></button><button class="color-dot color-purple" type="button" data-color="purple" onclick="setNoteColor('purple')"></button>
         </div>
@@ -1836,7 +1849,7 @@ body:not(.app-ready) .app{visibility:hidden;}
           <span class="menu-item-arrow">›</span>
         </button>
       </div>
-      <div class="app-version">VERSÃO v82</div>
+      <div class="app-version">VERSÃO v84</div>
     </div>
   </div>
 
@@ -4927,6 +4940,79 @@ function closeNoteModal(){const m=$('noteModal');if(m)m.classList.remove('show')
 function setNoteColor(color){currentNoteColor=KEEP_COLORS.includes(color)?color:'default';document.querySelectorAll('#noteColorPicker .color-dot').forEach(btn=>btn.classList.toggle('active',btn.dataset.color===currentNoteColor));}
 function setNotesView(view){currentNotesView=['active','archive','trash'].includes(view)?view:'active';UI.editingNoteId=null;UI.noteEditMinHeight=0;if($('notesTabActive'))$('notesTabActive').classList.toggle('active',currentNotesView==='active');if($('notesTabArchive'))$('notesTabArchive').classList.toggle('active',currentNotesView==='archive');if($('notesTabTrash'))$('notesTabTrash').classList.toggle('active',currentNotesView==='trash');if($('emptyNotesTrashBtn'))$('emptyNotesTrashBtn').classList.toggle('hidden',currentNotesView!=='trash');renderNotes();}
 function resetNoteForm(){ensureNotas();['noteId','noteTitle','noteText'].forEach(id=>{if($(id))$(id).value='';});if($('saveNoteBtn'))$('saveNoteBtn').textContent='Adicionar';if($('noteStatus'))$('noteStatus').textContent='';setNoteColor('default');}
+
+function getNoteLineInfo(text,pos){
+  const before=String(text||'').slice(0,Math.max(0,pos||0));
+  const start=before.lastIndexOf('\n')+1;
+  const endAll=String(text||'').indexOf('\n',pos||0);
+  const end=endAll<0?String(text||'').length:endAll;
+  return {start,end,line:String(text||'').slice(start,end)};
+}
+function insertAtTextareaCursor(el,insert){
+  if(!el)return;
+  const start=el.selectionStart||0,end=el.selectionEnd||0,val=String(el.value||'');
+  el.value=val.slice(0,start)+insert+val.slice(end);
+  const pos=start+insert.length;
+  try{el.setSelectionRange(pos,pos);el.focus();}catch(e){}
+  el.dispatchEvent(new Event('input',{bubbles:true}));
+  autoResizeKeepTextarea(el,{allowShrink:false});
+}
+function insertNoteMarker(targetId,type){
+  const el=$(targetId); if(!el)return;
+  const val=String(el.value||''); const pos=el.selectionStart||0; const info=getNoteLineInfo(val,pos);
+  const prefix=(type==='check')?'- [ ] ':'• ';
+  const needsBreak=info.line.trim().length>0 && pos>info.start;
+  insertAtTextareaCursor(el,(needsBreak?'\n':'')+prefix);
+}
+function handleNoteListEnter(ev,el){
+  if(!ev||ev.key!=='Enter'||ev.shiftKey||!el)return;
+  const val=String(el.value||''); const pos=el.selectionStart||0; const info=getNoteLineInfo(val,pos);
+  const line=info.line;
+  let prefix='';
+  if(/^\s*[-*•]\s+/.test(line)) prefix=(line.match(/^(\s*[-*•]\s+)/)||['',''])[1];
+  if(/^\s*-\s*\[[ xX]\]\s+/.test(line)) prefix=(line.match(/^(\s*-\s*\[[ xX]\]\s+)/)||['',''])[1].replace(/\[[xX]\]/,'[ ]');
+  if(!prefix)return;
+  ev.preventDefault();
+  if(line.replace(prefix,'').trim()===''){
+    el.value=val.slice(0,info.start)+val.slice(info.end+(val[info.end]=='\n'?1:0));
+    try{el.setSelectionRange(info.start,info.start);}catch(e){}
+  }else{
+    insertAtTextareaCursor(el,'\n'+prefix);
+  }
+  el.dispatchEvent(new Event('input',{bubbles:true}));
+}
+function renderNoteBodyHtml(text,noteId){
+  const safeId=String(noteId).replace(/'/g,"\\'");
+  const lines=String(text||'').split(/\n/);
+  return '<div class="keep-rendered-body">'+lines.map((line,idx)=>{
+    const raw=String(line||'');
+    let m=raw.match(/^\s*-\s*\[([ xX])\]\s*(.*)$/);
+    if(m){
+      const done=String(m[1]).toLowerCase()==='x';
+      const checked=done?'☑':'☐';
+      const textHtml=escapeHtml(m[2]||'');
+      return `<div class="keep-check-line ${done?'done':''}"><button class="keep-check-toggle" type="button" onclick="toggleNoteChecklistLine('${safeId}',${idx},event)" title="Marcar/desmarcar">${checked}</button><span class="keep-check-text">${textHtml||'&nbsp;'}</span><button class="keep-check-delete" type="button" onclick="deleteNoteLine('${safeId}',${idx},event)" title="Apagar linha marcada">✕</button></div>`;
+    }
+    m=raw.match(/^\s*[-*•]\s+(.*)$/);
+    if(m){return `<div class="keep-bullet-line"><span>•</span><span>${escapeHtml(m[1]||'')||'&nbsp;'}</span></div>`;}
+    return `<div class="keep-line">${escapeHtml(raw)||'&nbsp;'}</div>`;
+  }).join('')+'</div>';
+}
+function toggleNoteChecklistLine(id,lineIndex,ev){
+  if(ev){ev.preventDefault();ev.stopPropagation();}
+  ensureNotas(); const n=AppState.data.notas.find(x=>x.id===id); if(!n)return;
+  const lines=String(n.texto||'').split(/\n/); const raw=String(lines[lineIndex]||'');
+  const m=raw.match(/^(\s*-\s*\[)([ xX])(\]\s*.*)$/); if(!m)return;
+  lines[lineIndex]=m[1]+(String(m[2]).toLowerCase()==='x'?' ':'x')+m[3];
+  n.texto=lines.join('\n'); n.updatedAt=nowIso(); AppState.save(); renderNotes();
+}
+function deleteNoteLine(id,lineIndex,ev){
+  if(ev){ev.preventDefault();ev.stopPropagation();}
+  ensureNotas(); const n=AppState.data.notas.find(x=>x.id===id); if(!n)return;
+  const lines=String(n.texto||'').split(/\n/); lines.splice(lineIndex,1);
+  n.texto=lines.join('\n'); n.updatedAt=nowIso(); AppState.save(); renderNotes();
+}
+
 function noteActionButtons(n, editing=false){
   const safeId=String(n.id).replace(/'/g,"\'");
   if(currentNotesView==='trash')return `<button class="keep-icon" type="button" onclick="restoreNote('${safeId}')" title="Restaurar">↩</button><button class="keep-icon" type="button" onclick="deleteNoteForever('${safeId}')" title="Excluir definitivo">🗑</button>`;
@@ -4964,13 +5050,13 @@ function renderNotes(){
     if(isEditing){
       const minEditHeight=Number(UI.noteEditMinHeight||0);
       const minStyle=minEditHeight>0?` style="min-height:${Math.ceil(minEditHeight)}px"`:'';
-      return section+`<article class="keep-note editing" data-color="${escapeHtml(color)}"${minStyle} onclick="event.stopPropagation()"><input class="keep-inline-title" value="${escapeHtml(title)}" placeholder="Título" oninput="updateNoteInline('${safeId}','titulo',this.value)" /><textarea id="noteInlineText_${escapeHtml(n.id)}" class="keep-inline-text" placeholder="Criar uma nota..." oninput="updateNoteInline('${safeId}','texto',this.value);autoResizeKeepTextarea(this,{allowShrink:false})">${escapeHtml(body)}</textarea><div class="keep-note-meta">${escapeHtml(date)}</div><div class="keep-actions" onclick="event.stopPropagation()"><div class="keep-action-group">${actions}</div></div></article>`;
+      return section+`<article class="keep-note editing" data-color="${escapeHtml(color)}"${minStyle} onclick="event.stopPropagation()"><input class="keep-inline-title" value="${escapeHtml(title)}" placeholder="Título" oninput="updateNoteInline('${safeId}','titulo',this.value)" /><div class="keep-format-toolbar"><button class="keep-format-btn" type="button" onclick="insertNoteMarker('noteInlineText_${escapeHtml(n.id)}','bullet')" title="Inserir marcador">• Lista</button><button class="keep-format-btn" type="button" onclick="insertNoteMarker('noteInlineText_${escapeHtml(n.id)}','check')" title="Inserir caixa de seleção">☐ Checklist</button></div><textarea id="noteInlineText_${escapeHtml(n.id)}" class="keep-inline-text" placeholder="Criar uma nota..." onkeydown="handleNoteListEnter(event,this)" oninput="updateNoteInline('${safeId}','texto',this.value);autoResizeKeepTextarea(this,{allowShrink:false})">${escapeHtml(body)}</textarea><div class="keep-note-meta">${escapeHtml(date)}</div><div class="keep-actions" onclick="event.stopPropagation()"><div class="keep-action-group">${actions}</div></div></article>`;
     }
     const collapsed=!!n.collapsed;
     const collapseLabel=collapsed?'Expandir nota':'Recolher nota';
     const collapseIcon=collapsed?'▾':'▴';
     const shownTitle=title||'Sem título';
-    return section+`<article class="keep-note ${collapsed?'collapsed':''}" data-color="${escapeHtml(color)}" onclick="editNote('${safeId}',event)"><div class="keep-note-header"><div class="keep-note-title">${escapeHtml(shownTitle)}</div><button class="keep-collapse-btn" type="button" onclick="toggleNoteCollapsed('${safeId}',event)" title="${collapseLabel}" aria-label="${collapseLabel}" aria-expanded="${collapsed?'false':'true'}">${collapseIcon}</button></div><div class="keep-note-text">${escapeHtml(body||'Nota vazia')}</div><div class="keep-note-meta">${escapeHtml(date)}</div><div class="keep-actions" onclick="event.stopPropagation()"><div class="keep-action-group">${actions}</div></div></article>`;
+    return section+`<article class="keep-note ${collapsed?'collapsed':''}" data-color="${escapeHtml(color)}" onclick="editNote('${safeId}',event)"><div class="keep-note-header"><div class="keep-note-title">${escapeHtml(shownTitle)}</div><button class="keep-collapse-btn" type="button" onclick="toggleNoteCollapsed('${safeId}',event)" title="${collapseLabel}" aria-label="${collapseLabel}" aria-expanded="${collapsed?'false':'true'}">${collapseIcon}</button></div><div class="keep-note-text">${body?renderNoteBodyHtml(body,n.id):'Nota vazia'}</div><div class="keep-note-meta">${escapeHtml(date)}</div><div class="keep-actions" onclick="event.stopPropagation()"><div class="keep-action-group">${actions}</div></div></article>`;
   }).join('');
 }
 function autoResizeKeepTextarea(el, opts){

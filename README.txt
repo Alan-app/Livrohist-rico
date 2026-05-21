@@ -114,3 +114,5 @@ v81 - Bloco de Notas: corrigido o autoajuste em tempo real durante a edição in
 
 
 v82 - Bloco de Notas: corrigido o ponto de entrada no modo edição. Ao clicar em uma nota, a altura atual do card é capturada antes da renderização, aplicada como altura mínima da edição, e a textarea recebe altura via setProperty com !important para não ser sobrescrita por CSS anterior. A nota não deve reduzir nem esconder texto ao clicar em editar; continua podendo crescer em tempo real. ZIP limpo, sem ZIP interno indevido.
+
+v84 - Bloco de Notas: adicionados botões para marcadores e caixas de seleção/checklist. Checkboxes marcados agora riscam o texto da linha e exibem um botão ✕ para apagar somente a linha concluída. Mantido editor leve, compatível com mobile/offline, sem alterar LDS, Horas de Funcionamento, topbar, launcher ou IndexedDB fora do escopo. Versão visual/cache/ZIP atualizados para v84.
