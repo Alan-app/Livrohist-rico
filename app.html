@@ -1425,10 +1425,10 @@ body:not(.app-ready) .app{visibility:hidden;}
 #screen-notas .keep-note{position:relative;transition:transform .18s ease, box-shadow .18s ease, opacity .18s ease;}
 #screen-notas .keep-note.dragging{opacity:.86;transform:scale(.985);box-shadow:0 16px 40px rgba(0,0,0,.32) !important;z-index:20;}
 #screen-notas .keep-note.drag-over{transform:translateY(4px);}
-#screen-notas .keep-drag-handle{position:absolute;right:10px;top:8px;width:30px;height:30px;border-radius:10px;border:1px solid rgba(0,0,0,.10);background:rgba(255,255,255,.45);color:rgba(0,0,0,.56);display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;line-height:1;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;z-index:3;}
-#screen-notas .keep-drag-handle:active{cursor:grabbing;background:rgba(11,76,149,.14);color:var(--navy);}
-#screen-notas .keep-note.editing .keep-drag-handle{display:none !important;}
-@media(max-width:720px){#screen-notas .keep-drag-handle{width:34px;height:34px;right:8px;top:8px;font-size:20px;}#screen-notas .keep-note-header{padding-right:42px;}}
+#screen-notas .keep-drag-handle-disabled{position:absolute;right:10px;top:8px;width:30px;height:30px;border-radius:10px;border:1px solid rgba(0,0,0,.10);background:rgba(255,255,255,.45);color:rgba(0,0,0,.56);display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;line-height:1;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;z-index:3;}
+#screen-notas .keep-drag-handle-disabled:active{cursor:grabbing;background:rgba(11,76,149,.14);color:var(--navy);}
+#screen-notas .keep-note.editing .keep-drag-handle-disabled{display:none !important;}
+@media(max-width:720px){#screen-notas .keep-drag-handle-disabled{width:34px;height:34px;right:8px;top:8px;font-size:20px;}#screen-notas .keep-note-header{padding-right:42px;}}
 
 
 </style>
@@ -1488,6 +1488,18 @@ body:not(.app-ready) .app{visibility:hidden;}
   }
   .relatorio-bigrama-btn:active{transform:scale(.96);}
 </style>
+
+<style id="v90-clean-ui">
+.drag-handle,
+.reorder-handle,
+.note-last-update,
+.note-updated-at,
+.last-modified,
+.note-modified{
+display:none !important;
+}
+</style>
+
 </head>
 <body>
 <div class="app">
@@ -4777,7 +4789,19 @@ function printRelatorio(){
   iframe.style.cssText='position:fixed;width:1px;height:1px;right:0;bottom:0;opacity:0;border:0;';
   document.body.appendChild(iframe);
   const doc = iframe.contentWindow.document;
-  doc.open(); doc.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Relatório Geral</title>${styles}</head><body>${tableHtml}</body></html>`); doc.close();
+  doc.open(); doc.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Relatório Geral</title>${styles}
+<style id="v90-clean-ui">
+.drag-handle,
+.reorder-handle,
+.note-last-update,
+.note-updated-at,
+.last-modified,
+.note-modified{
+display:none !important;
+}
+</style>
+
+</head><body>${tableHtml}</body></html>`); doc.close();
   iframe.onload = () => setTimeout(()=>{ iframe.contentWindow.focus(); iframe.contentWindow.print(); }, 250);
   setTimeout(()=>{ iframe.contentWindow.focus(); iframe.contentWindow.print(); }, 700);
 }
@@ -5179,7 +5203,7 @@ function renderNotes(){
     const collapseLabel=collapsed?'Expandir nota':'Recolher nota';
     const collapseIcon=collapsed?'▾':'▴';
     const shownTitle=title||'Sem título';
-    return section+`<article class="keep-note ${collapsed?'collapsed':''}" data-note-id="${safeId}" data-pinned="${n.pinned?'1':'0'}" data-color="${escapeHtml(color)}" onclick="editNote('${safeId}',event)"><button class="keep-drag-handle" type="button" title="Arrastar nota" aria-label="Arrastar nota" onpointerdown="startNoteDrag(event,'${safeId}')" onclick="event.preventDefault();event.stopPropagation();">⋮⋮</button><div class="keep-note-header"><div class="keep-note-title">${escapeHtml(shownTitle)}</div><button class="keep-collapse-btn" type="button" onclick="toggleNoteCollapsed('${safeId}',event)" title="${collapseLabel}" aria-label="${collapseLabel}" aria-expanded="${collapsed?'false':'true'}">${collapseIcon}</button></div><div class="keep-note-text">${body?renderNoteBodyHtml(body,n.id):'Nota vazia'}</div><div class="keep-note-meta">${escapeHtml(date)}</div><div class="keep-actions" onclick="event.stopPropagation()"><div class="keep-action-group">${actions}</div></div></article>`;
+    return section+`<article class="keep-note ${collapsed?'collapsed':''}" data-note-id="${safeId}" data-pinned="${n.pinned?'1':'0'}" data-color="${escapeHtml(color)}" onclick="editNote('${safeId}',event)"><button class="keep-drag-handle-disabled" type="button" title="Arrastar nota" aria-label="Arrastar nota" onpointerdown="startNoteDrag(event,'${safeId}')" onclick="event.preventDefault();event.stopPropagation();">⋮⋮</button><div class="keep-note-header"><div class="keep-note-title">${escapeHtml(shownTitle)}</div><button class="keep-collapse-btn" type="button" onclick="toggleNoteCollapsed('${safeId}',event)" title="${collapseLabel}" aria-label="${collapseLabel}" aria-expanded="${collapsed?'false':'true'}">${collapseIcon}</button></div><div class="keep-note-text">${body?renderNoteBodyHtml(body,n.id):'Nota vazia'}</div><div class="keep-note-meta">${escapeHtml(date)}</div><div class="keep-actions" onclick="event.stopPropagation()"><div class="keep-action-group">${actions}</div></div></article>`;
   }).join('');
   requestAnimationFrame(initNotesDrag);
 }
@@ -5531,6 +5555,18 @@ function openPdfInNewTab(doc, fallbackName){
   .btn-secondary{background:#fff;color:#111;text-decoration:none;display:inline-flex;align-items:center}
   iframe{width:100%;height:calc(100% - 60px);border:none;background:#fff}
 </style>
+
+<style id="v90-clean-ui">
+.drag-handle,
+.reorder-handle,
+.note-last-update,
+.note-updated-at,
+.last-modified,
+.note-modified{
+display:none !important;
+}
+</style>
+
 </head>
 <body>
   <div class="topbar">
@@ -5571,7 +5607,19 @@ function openPdfBlobUrl(doc, fallbackName, mode){
       const dataUri = doc.output('datauristring');
       $('pdfViewerTitle').textContent = String(fallbackName || 'Documento');
       const stage = $('pdfViewerStage');
-      const viewerHtml = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><style>html,body{margin:0;height:100%;background:#2b2b2b} iframe,embed,object{border:0;width:100%;height:100%;display:block;background:#fff}</style></head><body><embed src="${dataUri}" type="application/pdf"></body></html>`;
+      const viewerHtml = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><style>html,body{margin:0;height:100%;background:#2b2b2b} iframe,embed,object{border:0;width:100%;height:100%;display:block;background:#fff}</style>
+<style id="v90-clean-ui">
+.drag-handle,
+.reorder-handle,
+.note-last-update,
+.note-updated-at,
+.last-modified,
+.note-modified{
+display:none !important;
+}
+</style>
+
+</head><body><embed src="${dataUri}" type="application/pdf"></body></html>`;
       stage.innerHTML = '<iframe style="width:100vw;height:calc(100vh - 66px);border:0;background:#fff;"></iframe>';
       stage.querySelector('iframe').srcdoc = viewerHtml;
       $('pdfViewerModal').classList.add('show');
@@ -5586,7 +5634,19 @@ function openPdfBlobUrl(doc, fallbackName, mode){
       return;
     }
     const safeName = String(fallbackName || 'documento.pdf').replace(/"/g, '');
-    const viewerHtml = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${safeName}</title><style>html,body{margin:0;height:100%;font-family:Arial,Helvetica,sans-serif;background:#0b1f33}.topbar{display:flex;gap:10px;align-items:center;justify-content:center;padding:12px;background:#183c6b;position:sticky;top:0;z-index:10}.btn{border:none;border-radius:12px;padding:12px 14px;font-weight:700;font-size:14px}.btn-primary{background:#f0c419;color:#111}.btn-secondary{background:#fff;color:#111;text-decoration:none;display:inline-flex;align-items:center}iframe{width:100%;height:calc(100% - 60px);border:none;background:#fff}</style></head><body><div class="topbar"><a class="btn btn-secondary" href="${url}" download="${safeName}">Salvar PDF</a><button class="btn btn-primary" onclick="window.open('${url}','_blank')">Visualizar documento direto</button></div><iframe src="${url}"></iframe></body></html>`;
+    const viewerHtml = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${safeName}</title><style>html,body{margin:0;height:100%;font-family:Arial,Helvetica,sans-serif;background:#0b1f33}.topbar{display:flex;gap:10px;align-items:center;justify-content:center;padding:12px;background:#183c6b;position:sticky;top:0;z-index:10}.btn{border:none;border-radius:12px;padding:12px 14px;font-weight:700;font-size:14px}.btn-primary{background:#f0c419;color:#111}.btn-secondary{background:#fff;color:#111;text-decoration:none;display:inline-flex;align-items:center}iframe{width:100%;height:calc(100% - 60px);border:none;background:#fff}</style>
+<style id="v90-clean-ui">
+.drag-handle,
+.reorder-handle,
+.note-last-update,
+.note-updated-at,
+.last-modified,
+.note-modified{
+display:none !important;
+}
+</style>
+
+</head><body><div class="topbar"><a class="btn btn-secondary" href="${url}" download="${safeName}">Salvar PDF</a><button class="btn btn-primary" onclick="window.open('${url}','_blank')">Visualizar documento direto</button></div><iframe src="${url}"></iframe></body></html>`;
     win.document.open();
     win.document.write(viewerHtml);
     win.document.close();
@@ -5739,7 +5799,19 @@ function buildOfficialDocHtml(){
     .signature-bar{position:absolute;left:12mm;right:8mm;bottom:9mm;display:flex;justify-content:space-between;align-items:flex-end;gap:16mm;margin-top:0;color:#000}
     .signature-box{width:42%;text-align:center;font-size:9.5pt;color:#000}
     .signature-line{border-top:1px solid #222;margin:0 auto 4px auto;width:100%;height:0}
-  </style></head><body>${content}</body></html>`;
+  </style>
+<style id="v90-clean-ui">
+.drag-handle,
+.reorder-handle,
+.note-last-update,
+.note-updated-at,
+.last-modified,
+.note-modified{
+display:none !important;
+}
+</style>
+
+</head><body>${content}</body></html>`;
 }
 
 function buildOfficialDocxBlob(){
@@ -6092,7 +6164,19 @@ function buildPsPreviewHtml(ps, imgs=[]){
     .img-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;width:100%}
     .img-grid img{width:100%;height:180px;object-fit:contain;background:#fff}
     .sig{text-align:center;margin-top:14mm;font-family:"Times New Roman",Times,serif}
-  </style></head><body>
+  </style>
+<style id="v90-clean-ui">
+.drag-handle,
+.reorder-handle,
+.note-last-update,
+.note-updated-at,
+.last-modified,
+.note-modified{
+display:none !important;
+}
+</style>
+
+</head><body>
   <div class="viewport"><div id="stage" class="stage"><div id="wrap" class="wrap">
     <div class="ps-page">
       <div class="hdr"><div class="a">DOCUMENTO PREPARATÓRIO – ACESSO RESTRITO</div><div class="b">Art. 3º, Inciso XII, e Art. 20 do Dec nº 7.724, de 16 de maio de 2012</div></div>
