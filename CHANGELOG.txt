@@ -1,0 +1,1 @@
+v85 - Marcadores/Checklist permanentes nas notas; reordenação real de Bigramas; Equipamentos com Editar/Excluir e exclusão em tempo real; campos de horas com seleção automática.
