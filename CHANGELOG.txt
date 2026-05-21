@@ -21,3 +21,6 @@ v97 - Notas sem crescimento artificial ao editar; versão visual/cache corrigido
 
 
 v98 - LDS: busca por Reference Number corrigida no importador e na busca real, com normalização de NSN, aliases de cabeçalho e fallback de varredura direta para referências numéricas.
+
+
+v99 - LDS: texto explicativo atualizado para incluir Reference Number; card de busca limpo removendo rótulo interno desnecessário.

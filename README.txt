@@ -1,4 +1,4 @@
-Nautilus v97 / App v97
+Nautilus v99 / App v99
 
 Alterações desta versão:
 - Renomeada a opção “Dados da Ficha” para “Cadastrar/Editar Equipamentos”.
@@ -149,3 +149,6 @@ v97 - Notas: removido crescimento artificial do card ao entrar em edição; vers
 
 
 v98 - LDS: busca por Reference Number corrigida no importador e na busca real, com normalização de NSN, aliases de cabeçalho e fallback de varredura direta para referências numéricas.
+
+
+v99 - LDS: texto explicativo atualizado para incluir Reference Number; card de busca limpo removendo rótulo interno desnecessário.
