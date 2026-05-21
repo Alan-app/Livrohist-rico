@@ -2,3 +2,5 @@ v86 - Botões de Marcadores/Checklist sem texto; checklist das notas alinhado ti
 v85 - Marcadores/Checklist permanentes nas notas; reordenação real de Bigramas; Equipamentos com Editar/Excluir e exclusão em tempo real; campos de horas com seleção automática.
 
 v87 - Ajuste real das cores dos botões ativos das notas para azul padrão Nautilus.
+
+v88 - Bloco de Notas: edição, marcadores e checklist não movem mais notas da categoria Outras para o topo; ordenação estável preservada.
