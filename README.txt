@@ -146,3 +146,6 @@ v94 - Horas de Funcionamento: opção Adicionar/Editar Equipamentos agora abre o
 
 
 v97 - Notas: removido crescimento artificial do card ao entrar em edição; versionamento visual/cache atualizado; LDS passa a importar, indexar e buscar a coluna Reference Number.
+
+
+v98 - LDS: busca por Reference Number corrigida no importador e na busca real, com normalização de NSN, aliases de cabeçalho e fallback de varredura direta para referências numéricas.

@@ -18,3 +18,6 @@ v92 - Restaurada somente a opção Adicionar Bigrama no menu do Livro Histórico
 v94 - Corrigido menu Horas de Funcionamento: Adicionar/Editar Equipamentos com listagem real, editar e excluir; removido Adicionar Bigrama do menu da página inicial, mantendo somente no Livro Histórico.
 
 v97 - Notas sem crescimento artificial ao editar; versão visual/cache corrigidos; LDS busca Reference Number.
+
+
+v98 - LDS: busca por Reference Number corrigida no importador e na busca real, com normalização de NSN, aliases de cabeçalho e fallback de varredura direta para referências numéricas.
