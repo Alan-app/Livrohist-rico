@@ -867,6 +867,19 @@
     body.ps-print-mode #psPrintHost .ps-page{margin:0;box-shadow:none;width:210mm;min-height:297mm}
 
 </style>
+
+<style id="v93-fix-equipamentos">
+.equipamento-label,
+.card-label-equipamento,
+.label-equipamento{
+display:none !important;
+}
+.equipamento-actions{
+display:flex !important;
+gap:8px !important;
+}
+</style>
+
 </head>
 <body>
 <div class="app">
@@ -968,7 +981,7 @@
               </select>
             </div>
           </div>
-          <div class="field"><label for="equipamento">Equipamento</label><input id="equipamento" type="text" placeholder="Nome do equipamento (ex.: Bomba DA00002)" /></div>
+          <div class="field"><label for="equipamento"></label><input id="equipamento" type="text" placeholder="Nome do equipamento (ex.: Bomba DA00002)" /></div>
           <div class="field"><label for="avaria">Avaria / Registro *</label><textarea id="avaria" placeholder="Descreva a avaria ocorrida ou o fato histórico." required></textarea></div>
           <div class="field"><label for="solucao">Solução</label><textarea id="solucao" placeholder="Descreva a solução aplicada"></textarea></div>
           <div class="field"><label for="observacao">Observação</label><textarea id="observacao" placeholder="Observações adicionais"></textarea></div>
@@ -1023,7 +1036,7 @@
           </div>
           <div class="grid-2">
             <div class="field"><label for="sistemaFicha">Sistema</label><input id="sistemaFicha" type="text" /></div>
-            <div class="field"><label for="equipamentoFicha">Equipamento</label><input id="equipamentoFicha" type="text" /></div>
+            <div class="field"><label for="equipamentoFicha"></label><input id="equipamentoFicha" type="text" /></div>
           </div>
           <div class="field"><label for="manualPlano">Manual e/ou Plano</label><input id="manualPlano" type="text" /></div>
           <div class="grid-2">
@@ -2239,7 +2252,7 @@ function renderHorasFuncionamento(){
   }
   $('horasList').innerHTML =
     `<div class="hours-table-header">
-      <span>Equipamento</span>
+      <span></span>
       <span>Horas</span>
       <span>Data</span>
     </div>` +
@@ -3529,7 +3542,20 @@ function printRelatorio(){
   iframe.style.cssText='position:fixed;width:1px;height:1px;right:0;bottom:0;opacity:0;border:0;';
   document.body.appendChild(iframe);
   const doc = iframe.contentWindow.document;
-  doc.open(); doc.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Relatório Geral</title>${styles}</head><body>${tableHtml}</body></html>`); doc.close();
+  doc.open(); doc.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Relatório Geral</title>${styles}
+<style id="v93-fix-equipamentos">
+.equipamento-label,
+.card-label-equipamento,
+.label-equipamento{
+display:none !important;
+}
+.equipamento-actions{
+display:flex !important;
+gap:8px !important;
+}
+</style>
+
+</head><body>${tableHtml}</body></html>`); doc.close();
   iframe.onload = () => setTimeout(()=>{ iframe.contentWindow.focus(); iframe.contentWindow.print(); }, 250);
   setTimeout(()=>{ iframe.contentWindow.focus(); iframe.contentWindow.print(); }, 700);
 }

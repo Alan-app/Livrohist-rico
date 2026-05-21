@@ -1483,6 +1483,19 @@ body:not(.app-ready) .app{visibility:hidden;}
   }
   .relatorio-bigrama-btn:active{transform:scale(.96);}
 </style>
+
+<style id="v93-fix-equipamentos">
+.equipamento-label,
+.card-label-equipamento,
+.label-equipamento{
+display:none !important;
+}
+.equipamento-actions{
+display:flex !important;
+gap:8px !important;
+}
+</style>
+
 </head>
 <body>
 <div class="app">
@@ -1642,7 +1655,7 @@ body:not(.app-ready) .app{visibility:hidden;}
               </select>
             </div>
           </div>
-          <div class="field"><label for="equipamento">Equipamento</label><div class="equipment-picker"><input id="equipamento" type="text" autocomplete="off" readonly inputmode="none" placeholder="Selecione na seta ao lado" onfocus="openEquipmentDropdown()" /><button id="equipamentoDropdownBtn" class="equipment-picker-toggle" type="button" aria-label="Mostrar equipamentos registrados" onclick="toggleEquipmentDropdown(event)">▾</button><div id="equipamentoDropdownList" class="equipment-picker-list hidden"></div></div></div>
+          <div class="field"><label for="equipamento"></label><div class="equipment-picker"><input id="equipamento" type="text" autocomplete="off" readonly inputmode="none" placeholder="Selecione na seta ao lado" onfocus="openEquipmentDropdown()" /><button id="equipamentoDropdownBtn" class="equipment-picker-toggle" type="button" aria-label="Mostrar equipamentos registrados" onclick="toggleEquipmentDropdown(event)">▾</button><div id="equipamentoDropdownList" class="equipment-picker-list hidden"></div></div></div>
           <div class="field"><label for="sistemaEncarregado">Sistema do Encarregado</label><input id="sistemaEncarregado" type="text" placeholder="Ex.: MO-1, MO-2, L-1, L-2" /><div style="font-size:.86rem;color:var(--muted);line-height:1.3;">Usado na assinatura da folha inicial do equipamento.</div></div>
           <div class="field"><label for="avaria">Avaria / Registro *</label><textarea id="avaria" placeholder="Descreva a avaria ocorrida ou o fato histórico." required></textarea></div>
           <div class="field"><label for="solucao">Solução</label><textarea id="solucao" placeholder="Descreva a solução aplicada"></textarea></div>
@@ -1699,7 +1712,7 @@ body:not(.app-ready) .app{visibility:hidden;}
           </div>
           <div class="grid-2">
             <div class="field"><label for="sistemaFicha">Sistema</label><input id="sistemaFicha" type="text" /></div>
-            <div class="field"><label for="equipamentoFicha">Equipamento</label><input id="equipamentoFicha" type="text" /></div>
+            <div class="field"><label for="equipamentoFicha"></label><input id="equipamentoFicha" type="text" /></div>
           </div>
           <div class="field"><label for="manualPlano">Manual e/ou Plano</label><input id="manualPlano" type="text" /></div>
           <div class="grid-2">
@@ -3253,7 +3266,7 @@ function renderHorasFuncionamento(){
     if(!list.length){
       html += `<div class="empty" style="margin-bottom:4px;">Nenhum equipamento cadastrado.</div>`;
     } else {
-      html += `<div class="hours-table-header"><span>Equipamento</span><span>Horas</span><span>Data</span></div>` +
+      html += `<div class="hours-table-header"><span></span><span>Horas</span><span>Data</span></div>` +
         list.map(item => `
           <div class="hours-table-row">
             <div class="hours-col-nome">${escapeHtml(item.nome || '')}</div>
@@ -4778,7 +4791,20 @@ function printRelatorio(){
   iframe.style.cssText='position:fixed;width:1px;height:1px;right:0;bottom:0;opacity:0;border:0;';
   document.body.appendChild(iframe);
   const doc = iframe.contentWindow.document;
-  doc.open(); doc.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Relatório Geral</title>${styles}</head><body>${tableHtml}<!-- v92-checklist-visual-limpo -->
+  doc.open(); doc.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Relatório Geral</title>${styles}
+<style id="v93-fix-equipamentos">
+.equipamento-label,
+.card-label-equipamento,
+.label-equipamento{
+display:none !important;
+}
+.equipamento-actions{
+display:flex !important;
+gap:8px !important;
+}
+</style>
+
+</head><body>${tableHtml}<!-- v92-checklist-visual-limpo -->
 <!-- v92: restaura menu Adicionar Bigrama do Livro Histórico a partir da versão antiga, sem alterar demais módulos -->
 </body></html>`); doc.close();
   iframe.onload = () => setTimeout(()=>{ iframe.contentWindow.focus(); iframe.contentWindow.print(); }, 250);
@@ -5465,6 +5491,19 @@ function openPdfInNewTab(doc, fallbackName){
   .btn-secondary{background:#fff;color:#111;text-decoration:none;display:inline-flex;align-items:center}
   iframe{width:100%;height:calc(100% - 60px);border:none;background:#fff}
 </style>
+
+<style id="v93-fix-equipamentos">
+.equipamento-label,
+.card-label-equipamento,
+.label-equipamento{
+display:none !important;
+}
+.equipamento-actions{
+display:flex !important;
+gap:8px !important;
+}
+</style>
+
 </head>
 <body>
   <div class="topbar">
@@ -5507,7 +5546,20 @@ function openPdfBlobUrl(doc, fallbackName, mode){
       const dataUri = doc.output('datauristring');
       $('pdfViewerTitle').textContent = String(fallbackName || 'Documento');
       const stage = $('pdfViewerStage');
-      const viewerHtml = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><style>html,body{margin:0;height:100%;background:#2b2b2b} iframe,embed,object{border:0;width:100%;height:100%;display:block;background:#fff}</style></head><body><embed src="${dataUri}" type="application/pdf"><!-- v92-checklist-visual-limpo -->
+      const viewerHtml = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><style>html,body{margin:0;height:100%;background:#2b2b2b} iframe,embed,object{border:0;width:100%;height:100%;display:block;background:#fff}</style>
+<style id="v93-fix-equipamentos">
+.equipamento-label,
+.card-label-equipamento,
+.label-equipamento{
+display:none !important;
+}
+.equipamento-actions{
+display:flex !important;
+gap:8px !important;
+}
+</style>
+
+</head><body><embed src="${dataUri}" type="application/pdf"><!-- v92-checklist-visual-limpo -->
 <!-- v92: restaura menu Adicionar Bigrama do Livro Histórico a partir da versão antiga, sem alterar demais módulos -->
 </body></html>`;
       stage.innerHTML = '<iframe style="width:100vw;height:calc(100vh - 66px);border:0;background:#fff;"></iframe>';
@@ -5524,7 +5576,20 @@ function openPdfBlobUrl(doc, fallbackName, mode){
       return;
     }
     const safeName = String(fallbackName || 'documento.pdf').replace(/"/g, '');
-    const viewerHtml = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${safeName}</title><style>html,body{margin:0;height:100%;font-family:Arial,Helvetica,sans-serif;background:#0b1f33}.topbar{display:flex;gap:10px;align-items:center;justify-content:center;padding:12px;background:#183c6b;position:sticky;top:0;z-index:10}.btn{border:none;border-radius:12px;padding:12px 14px;font-weight:700;font-size:14px}.btn-primary{background:#f0c419;color:#111}.btn-secondary{background:#fff;color:#111;text-decoration:none;display:inline-flex;align-items:center}iframe{width:100%;height:calc(100% - 60px);border:none;background:#fff}</style></head><body><div class="topbar"><a class="btn btn-secondary" href="${url}" download="${safeName}">Salvar PDF</a><button class="btn btn-primary" onclick="window.open('${url}','_blank')">Visualizar documento direto</button></div><iframe src="${url}"></iframe><!-- v92-checklist-visual-limpo -->
+    const viewerHtml = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${safeName}</title><style>html,body{margin:0;height:100%;font-family:Arial,Helvetica,sans-serif;background:#0b1f33}.topbar{display:flex;gap:10px;align-items:center;justify-content:center;padding:12px;background:#183c6b;position:sticky;top:0;z-index:10}.btn{border:none;border-radius:12px;padding:12px 14px;font-weight:700;font-size:14px}.btn-primary{background:#f0c419;color:#111}.btn-secondary{background:#fff;color:#111;text-decoration:none;display:inline-flex;align-items:center}iframe{width:100%;height:calc(100% - 60px);border:none;background:#fff}</style>
+<style id="v93-fix-equipamentos">
+.equipamento-label,
+.card-label-equipamento,
+.label-equipamento{
+display:none !important;
+}
+.equipamento-actions{
+display:flex !important;
+gap:8px !important;
+}
+</style>
+
+</head><body><div class="topbar"><a class="btn btn-secondary" href="${url}" download="${safeName}">Salvar PDF</a><button class="btn btn-primary" onclick="window.open('${url}','_blank')">Visualizar documento direto</button></div><iframe src="${url}"></iframe><!-- v92-checklist-visual-limpo -->
 <!-- v92: restaura menu Adicionar Bigrama do Livro Histórico a partir da versão antiga, sem alterar demais módulos -->
 </body></html>`;
     win.document.open();
@@ -5679,7 +5744,20 @@ function buildOfficialDocHtml(){
     .signature-bar{position:absolute;left:12mm;right:8mm;bottom:9mm;display:flex;justify-content:space-between;align-items:flex-end;gap:16mm;margin-top:0;color:#000}
     .signature-box{width:42%;text-align:center;font-size:9.5pt;color:#000}
     .signature-line{border-top:1px solid #222;margin:0 auto 4px auto;width:100%;height:0}
-  </style></head><body>${content}<!-- v92-checklist-visual-limpo -->
+  </style>
+<style id="v93-fix-equipamentos">
+.equipamento-label,
+.card-label-equipamento,
+.label-equipamento{
+display:none !important;
+}
+.equipamento-actions{
+display:flex !important;
+gap:8px !important;
+}
+</style>
+
+</head><body>${content}<!-- v92-checklist-visual-limpo -->
 <!-- v92: restaura menu Adicionar Bigrama do Livro Histórico a partir da versão antiga, sem alterar demais módulos -->
 </body></html>`;
 }
@@ -6034,7 +6112,20 @@ function buildPsPreviewHtml(ps, imgs=[]){
     .img-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;width:100%}
     .img-grid img{width:100%;height:180px;object-fit:contain;background:#fff}
     .sig{text-align:center;margin-top:14mm;font-family:"Times New Roman",Times,serif}
-  </style></head><body>
+  </style>
+<style id="v93-fix-equipamentos">
+.equipamento-label,
+.card-label-equipamento,
+.label-equipamento{
+display:none !important;
+}
+.equipamento-actions{
+display:flex !important;
+gap:8px !important;
+}
+</style>
+
+</head><body>
   <div class="viewport"><div id="stage" class="stage"><div id="wrap" class="wrap">
     <div class="ps-page">
       <div class="hdr"><div class="a">DOCUMENTO PREPARATÓRIO – ACESSO RESTRITO</div><div class="b">Art. 3º, Inciso XII, e Art. 20 do Dec nº 7.724, de 16 de maio de 2012</div></div>
