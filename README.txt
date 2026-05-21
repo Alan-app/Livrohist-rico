@@ -1,4 +1,4 @@
-Nautilus v86 / App v86
+Nautilus v87 / App v87
 
 Alterações desta versão:
 - Renomeada a opção “Dados da Ficha” para “Cadastrar/Editar Equipamentos”.
@@ -122,3 +122,6 @@ v85 - Correção complementar: botões de Marcadores e Checklist agora aparecem 
 
 
 v86 - Ajuste visual das notas: botões de Marcadores e Checklist ficam somente com ícones, harmônicos com os demais botões; checklist renderizado com checkbox em coluna fixa e todo o texto do parágrafo alinhado fora da área da caixa, inclusive em quebras de linha. Versão/cache/ZIP atualizados para v86.
+
+
+v87 - Ajuste real das cores dos botões ativos das notas: Fixar, Marcadores e Checklist agora usam azul padrão Nautilus, removendo preto e amarelo do estado selecionado.
