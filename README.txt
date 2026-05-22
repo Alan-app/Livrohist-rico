@@ -1,4 +1,4 @@
-Nautilus v100 / App v100
+Nautilus v101 / App v101
 
 Alterações desta versão:
 - Renomeada a opção “Dados da Ficha” para “Cadastrar/Editar Equipamentos”.
@@ -154,4 +154,7 @@ v98 - LDS: busca por Reference Number corrigida no importador e na busca real, c
 v99 - LDS: texto explicativo atualizado para incluir Reference Number; card de busca limpo removendo rótulo interno desnecessário.
 
 
-v100 - Horas de Funcionamento: campos de anos, dias e horas agora selecionam todo o valor ao tocar/clicar e substituem imediatamente o valor antigo ao digitar.
+v101 - Horas de Funcionamento: campos de anos, dias e horas agora selecionam todo o valor ao tocar/clicar e substituem imediatamente o valor antigo ao digitar.
+
+
+v101 - Horas de Funcionamento: campos anos/dias/horas com substituição direta no primeiro dígito, sem cursor no meio do valor antigo.
