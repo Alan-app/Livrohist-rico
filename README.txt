@@ -1,4 +1,4 @@
-Nautilus v111 / App v111
+Nautilus v112 / App v112
 
 Alterações desta versão:
 - Renomeada a opção “Dados da Ficha” para “Cadastrar/Editar Equipamentos”.
@@ -139,7 +139,7 @@ v90 - Notas: remoção real do visual novo de arrastar e remoção da data/hora 
 v92 - Notas: refinado o visual do checklist; checkbox sem borda/fundo extra, alinhado à primeira linha, e X de exclusão menor, sem borda e sem fundo.
 
 
-Versão v92: restauração isolada da opção Adicionar Bigrama no menu Livro Histórico.
+Versão v112: restauração isolada da opção Adicionar Bigrama no menu Livro Histórico.
 
 
 v94 - Horas de Funcionamento: opção Adicionar/Editar Equipamentos agora abre o gerenciamento real com adicionar, editar e excluir; exclusão atualiza em tempo real. Menu inicial não exibe mais Adicionar Bigrama fora do Livro Histórico.
@@ -154,10 +154,10 @@ v98 - LDS: busca por Reference Number corrigida no importador e na busca real, c
 v99 - LDS: texto explicativo atualizado para incluir Reference Number; card de busca limpo removendo rótulo interno desnecessário.
 
 
-v111 - Horas de Funcionamento: campos de anos, dias e horas agora selecionam todo o valor ao tocar/clicar e substituem imediatamente o valor antigo ao digitar.
+v112 - Horas de Funcionamento: campos de anos, dias e horas agora selecionam todo o valor ao tocar/clicar e substituem imediatamente o valor antigo ao digitar.
 
 
-v111 - Corrigido comportamento seguro dos campos anos/dias/horas: primeiro dígito substitui o valor antigo sem cursor no meio e sem tela branca.
+v112 - Corrigido comportamento seguro dos campos anos/dias/horas: primeiro dígito substitui o valor antigo sem cursor no meio e sem tela branca.
 
 
-v111 - Notas: ajuste único acima do teclado sem mover cursor nem scroll contínuo.
+v112 - Bloco de Notas: correção local em editNote para manter cursor no ponto tocado e evitar scroll contínuo.
