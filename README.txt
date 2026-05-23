@@ -158,3 +158,6 @@ v102 - Horas de Funcionamento: campos de anos, dias e horas agora selecionam tod
 
 
 v102 - Corrigido comportamento seguro dos campos anos/dias/horas: primeiro dígito substitui o valor antigo sem cursor no meio e sem tela branca.
+
+
+v110 - Bloco de notas: edição com cursor no ponto clicado, sem forçar final do texto, e ajuste único de visibilidade acima do teclado.
