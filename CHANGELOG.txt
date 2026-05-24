@@ -1,3 +1,4 @@
+v120 (rev2) - CORREÇÃO: ao editar nota com checklist, as textareas de cada item agora são auto-redimensionadas imediatamente após o render, fazendo o card crescer naturalmente para exibir todo o conteúdo sem texto cortado nem espaço vazio.
 v120 - CORREÇÃO CRÍTICA: card de notas não encolhe mais ao entrar em modo edição. A altura real do card visualizado é capturada antes do re-render e aplicada como min-height no card editável. Layout, checklist, texto e disposição visual permanecem idênticos à v119.
 
 v86 - Botões de Marcadores/Checklist sem texto; checklist das notas alinhado tipo Keep, com texto sempre fora da área do checkbox.

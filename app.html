@@ -5525,15 +5525,13 @@ function editNote(id,ev){
   if(!n||(n.status||'active')==='trash')return;
   const clickInfo=getNoteClickCursorIndex(ev,n);
   if(n.collapsed){n.collapsed=false;}
-  // Capturar altura real do card antes de entrar em edição (v120 fix)
-  const existingCard=document.querySelector(`#screen-notas .keep-note[data-note-id="${CSS.escape(String(id))}"]`);
-  UI.noteEditMinHeight=existingCard?existingCard.offsetHeight:0;
+  UI.noteEditMinHeight=0;
   UI.editingNoteId=id;
   renderNotes();
   requestAnimationFrame(()=>{
-    // Aplicar min-height capturada para que o card editável não encolha (v120 fix)
-    const editingCard=document.querySelector(`#screen-notas .keep-note.editing`);
-    if(editingCard&&UI.noteEditMinHeight>0){editingCard.style.minHeight=UI.noteEditMinHeight+'px';}
+    // v120 fix: auto-resize checklist textareas para que o card cresça naturalmente
+    const checkWrapEl=document.getElementById('checkEdit_'+String(id));
+    if(checkWrapEl){checkWrapEl.querySelectorAll('.keep-check-edit-input').forEach(ta=>{ta.style.height='auto';ta.style.height=ta.scrollHeight+'px';});}
     const textEl=$('noteInlineText_'+id);
     const titleEl=document.querySelector(`#screen-notas .keep-note.editing .keep-inline-title`);
     const checkWrap=document.getElementById('checkEdit_'+String(id));
