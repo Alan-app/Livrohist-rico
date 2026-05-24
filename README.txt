@@ -1,4 +1,4 @@
-Nautilus v119 / App v119
+Nautilus v124 / App v124
 
 Alterações desta versão:
 - Renomeada a opção “Dados da Ficha” para “Cadastrar/Editar Equipamentos”.
@@ -154,16 +154,19 @@ v98 - LDS: busca por Reference Number corrigida no importador e na busca real, c
 v99 - LDS: texto explicativo atualizado para incluir Reference Number; card de busca limpo removendo rótulo interno desnecessário.
 
 
-v119 - Horas de Funcionamento: campos de anos, dias e horas agora selecionam todo o valor ao tocar/clicar e substituem imediatamente o valor antigo ao digitar.
+v124 - Horas de Funcionamento: campos de anos, dias e horas agora selecionam todo o valor ao tocar/clicar e substituem imediatamente o valor antigo ao digitar.
 
 
-v119 - Corrigido comportamento seguro dos campos anos/dias/horas: primeiro dígito substitui o valor antigo sem cursor no meio e sem tela branca.
+v124 - Corrigido comportamento seguro dos campos anos/dias/horas: primeiro dígito substitui o valor antigo sem cursor no meio e sem tela branca.
 
 
-v119 - Notas: cursor no ponto tocado e ajuste único acima do teclado, sem scroll contínuo.
+v124 - Notas: cursor no ponto tocado e ajuste único acima do teclado, sem scroll contínuo.
 
 
-v119 - Notas: checklist com caixas reais no modo edição, sem conversão para colchetes; validação de sintaxe JS antes da entrega.
+v124 - Notas: checklist com caixas reais no modo edição, sem conversão para colchetes; validação de sintaxe JS antes da entrega.
 
 
-v119 - Notas: checklist com caixas reais na edição preservando quebra de linha, wrap e largura do card.
+v124 - Notas: checklist com caixas reais na edição preservando quebra de linha, wrap e largura do card.
+
+
+v124 - Base v119: modo edição das notas preserva autoaltura do texto existente sem esconder conteúdo.
