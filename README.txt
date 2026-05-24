@@ -1,4 +1,4 @@
-Nautilus v120 / App v120
+Nautilus v126 / App v126
 
 Alterações desta versão:
 - Renomeada a opção “Dados da Ficha” para “Cadastrar/Editar Equipamentos”.
@@ -139,7 +139,7 @@ v90 - Notas: remoção real do visual novo de arrastar e remoção da data/hora 
 v92 - Notas: refinado o visual do checklist; checkbox sem borda/fundo extra, alinhado à primeira linha, e X de exclusão menor, sem borda e sem fundo.
 
 
-Versão v120: restauração isolada da opção Adicionar Bigrama no menu Livro Histórico.
+Versão v126: restauração isolada da opção Adicionar Bigrama no menu Livro Histórico.
 
 
 v94 - Horas de Funcionamento: opção Adicionar/Editar Equipamentos agora abre o gerenciamento real com adicionar, editar e excluir; exclusão atualiza em tempo real. Menu inicial não exibe mais Adicionar Bigrama fora do Livro Histórico.
@@ -154,16 +154,16 @@ v98 - LDS: busca por Reference Number corrigida no importador e na busca real, c
 v99 - LDS: texto explicativo atualizado para incluir Reference Number; card de busca limpo removendo rótulo interno desnecessário.
 
 
-v120 - Horas de Funcionamento: campos de anos, dias e horas agora selecionam todo o valor ao tocar/clicar e substituem imediatamente o valor antigo ao digitar.
+v126 - Horas de Funcionamento: campos de anos, dias e horas agora selecionam todo o valor ao tocar/clicar e substituem imediatamente o valor antigo ao digitar.
 
 
-v120 - Corrigido comportamento seguro dos campos anos/dias/horas: primeiro dígito substitui o valor antigo sem cursor no meio e sem tela branca.
+v126 - Corrigido comportamento seguro dos campos anos/dias/horas: primeiro dígito substitui o valor antigo sem cursor no meio e sem tela branca.
 
 
-v120 - Notas: cursor no ponto tocado e ajuste único acima do teclado, sem scroll contínuo.
+v126 - Notas: cursor no ponto tocado e ajuste único acima do teclado, sem scroll contínuo.
 
 
-v120 - Notas: checklist com caixas reais no modo edição, sem conversão para colchetes; validação de sintaxe JS antes da entrega.
+v126 - Notas: checklist com caixas reais no modo edição, sem conversão para colchetes; validação de sintaxe JS antes da entrega.
 
 
-v120 - Notas: checklist com caixas reais na edição preservando quebra de linha, wrap e largura do card.
+v126 - Notas: checklist com caixas reais na edição preservando quebra de linha, wrap e largura do card.
