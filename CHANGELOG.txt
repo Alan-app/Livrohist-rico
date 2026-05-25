@@ -1,7 +1,4 @@
-## v260 - Visualização PS e compartilhar DOCX
-- Corrigida logo cortada no modo HTML de visualização do Pedido de Serviço.
-- Adicionado botão Compartilhar para enviar o DOCX do Pedido de Serviço via compartilhamento nativo do Android/Chrome, com fallback para download.
-- Geração DOCX aprovada na v250 preservada sem alteração.
+v260 - Corrige logo na visualização HTML do Pedido de Serviço, adiciona botão Compartilhar DOCX e permite abrir PS pelo menu próprio sem exigir bigrama. DOCX do PS v250 preservado.
 
 ## v250 - Correção PS: negrito e logo na visualização
 - Itens 9 a 17 do DOCX do Pedido de Serviço: rótulos em negrito e valores sem negrito.

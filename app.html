@@ -3746,7 +3746,7 @@ function updateContextUI(){
 function selectBigrama(id){ AppState.data.selectedBigramaId=id; AppState.save(); updateContextUI(); showScreen('dashboard'); }
 function showScreen(screen){
   if(window.ldsImporting){ return; }
-  if(screen!=='home' && screen!=='relatorio' && screen!=='notas' && screen!=='horas' && screen!=='lds' && !AppState.data.selectedBigramaId){ showAppMessage('Bigrama','Selecione primeiro um bigrama.'); return; }
+  if(screen!=='home' && screen!=='relatorio' && screen!=='notas' && screen!=='horas' && screen!=='lds' && screen!=='ps' && !AppState.data.selectedBigramaId){ showAppMessage('Bigrama','Selecione primeiro um bigrama.'); return; }
   document.body.classList.toggle('notes-screen', screen==='notas');
   document.documentElement.classList.toggle('notes-screen', screen==='notas');
   if($('addNoteFab')) $('addNoteFab').classList.toggle('hidden', screen!=='notas');
@@ -4279,6 +4279,7 @@ function previewPdfOnly(){
   currentPdfViewerMode = 'historico';
   currentPdfViewerPsId = null;
   if($('pdfViewerDownloadBtn')) $('pdfViewerDownloadBtn').style.display = '';
+  if($('pdfViewerShareBtn')) $('pdfViewerShareBtn').style.display = 'none';
   stage.innerHTML = content;
   modal.classList.add('show');
   requestAnimationFrame(fitOfficialViewerToScreen);
@@ -5741,6 +5742,10 @@ async function deleteNote(id){moveNoteToTrash(id);}
 // ═══════════════════════ PEDIDO DE SERVIÇO ═══════════════════════
 let pendingPsAttachments = [];
 let editingPsId = null;
+const PS_GLOBAL_SCOPE_ID = '__PEDIDO_SERVICO_GERAL__';
+function getPsActiveScopeId(){
+  return AppState.data.selectedBigramaId || PS_GLOBAL_SCOPE_ID;
+}
 
 function getPsListForBigrama(bigramaId){
   if(!AppState.data.psData) AppState.data.psData = {};
@@ -5750,7 +5755,7 @@ function getPsListForBigrama(bigramaId){
 function openPsModal(id){
   resetPsForm();
   if(id){
-    const list = getPsListForBigrama(AppState.data.selectedBigramaId);
+    const list = getPsListForBigrama(getPsActiveScopeId());
     const ps = list.find(x=>x.id===id);
     if(!ps) return;
     editingPsId = id;
@@ -5782,8 +5787,7 @@ function resetPsForm(){
 }
 async function handlePsSubmit(e){
   e.preventDefault();
-  const bigramaId=AppState.data.selectedBigramaId;
-  if(!bigramaId){ setStatus('psStatus','Selecione um bigrama antes.',true); return; }
+  const bigramaId=getPsActiveScopeId();
   const descricao=($('psDescricao').value||'').trim();
   if(!descricao){ setStatus('psStatus','Informe a descrição do serviço.',true); return; }
   const normalizedAnexos=pendingPsAttachments.map(img=>({id:img.id,name:img.name||'Imagem',type:img.type||'image/jpeg'}));
@@ -5814,7 +5818,7 @@ async function handlePsSubmit(e){
 }
 function renderPsList(){
   const wrap=$('psList'); if(!wrap) return;
-  const list=getPsListForBigrama(AppState.data.selectedBigramaId);
+  const list=getPsListForBigrama(getPsActiveScopeId());
   if(!list.length){ wrap.innerHTML='<div class="empty">Nenhum pedido cadastrado.</div>'; return; }
   wrap.innerHTML=[...list].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).map(ps=>{
     const dataFmt=ps.data?formatDateBR(ps.data):'—';
@@ -5845,7 +5849,7 @@ function renderPsList(){
 async function deletePs(id){
   const ok=await showAppConfirm('Excluir pedido','Deseja realmente excluir este pedido?');
   if(!ok) return;
-  const bigramaId=AppState.data.selectedBigramaId;
+  const bigramaId=getPsActiveScopeId();
   const list=getPsListForBigrama(bigramaId);
   const ps=list.find(x=>x.id===id);
   if(ps&&Array.isArray(ps.anexos)) for(const a of ps.anexos) await imageDbDelete(a.id);
@@ -6112,31 +6116,12 @@ function downloadCurrentPdfViewer(){
   downloadOfficialDocx(false);
 }
 
-async function shareCurrentPdfViewer(){
-  if(currentPdfViewerMode !== 'ps' || !currentPdfViewerPsId){
-    downloadCurrentPdfViewer();
+function shareCurrentPdfViewer(){
+  if(currentPdfViewerMode === 'ps' && currentPdfViewerPsId){
+    sharePsDocxById(currentPdfViewerPsId);
     return;
   }
-  try{
-    const bigramaId = AppState.data.selectedBigramaId;
-    const list = getPsListForBigrama(bigramaId);
-    const ps = list.find(x=>x.id===currentPdfViewerPsId);
-    if(!ps){ showAppMessage('Compartilhar','Pedido não encontrado.'); return; }
-    const numero = String(ps.numero || 'pedido').replace(/[^A-Za-z0-9_-]+/g,'_');
-    const filename = `Pedido_Servico_${numero}.docx`;
-    const blob = await buildPsDocxBlob(ps);
-    const file = new File([blob], filename, { type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
-    if(navigator.canShare && navigator.canShare({files:[file]}) && navigator.share){
-      await navigator.share({ title:'Pedido de Serviço', text:'Pedido de Serviço em DOCX', files:[file] });
-    }else{
-      downloadBlob(blob, filename);
-      showAppMessage('Compartilhar','Compartilhamento de arquivo não suportado neste navegador. O DOCX foi baixado.');
-    }
-  }catch(err){
-    console.error(err);
-    showAppMessage('Compartilhar','Não foi possível compartilhar. O DOCX será baixado.');
-    try{ await downloadCurrentPdfViewer(); }catch(e){}
-  }
+  showAppMessage('Compartilhar','Compartilhamento disponível apenas para Pedido de Serviço.');
 }
 
 function closePdfViewerModal(){
@@ -6614,7 +6599,7 @@ async function exportPsPdf(id, mode='inline'){
     showAppMessage('PDF','Biblioteca de PDF não carregou. Abra com internet para carregar a geração de PDF.');
     return;
   }
-  const bigramaId = AppState.data.selectedBigramaId;
+  const bigramaId = getPsActiveScopeId();
   const list = getPsListForBigrama(bigramaId);
   const ps = list.find(x=>x.id===id);
   if(!ps){ showAppMessage('PDF','Pedido não encontrado.'); return; }
@@ -6822,12 +6807,37 @@ async function buildPsDocxBlob(ps){
 }
 
 async function downloadPsDocxById(id){
-  const bigramaId = AppState.data.selectedBigramaId;
+  const bigramaId = getPsActiveScopeId();
   const list = getPsListForBigrama(bigramaId);
   const ps = list.find(x=>x.id===id);
   if(!ps){ showAppMessage('Documento','Pedido não encontrado.'); return; }
   const numero = String(ps.numero || 'pedido').replace(/[^A-Za-z0-9_-]+/g,'_');
   downloadBlob(await buildPsDocxBlob(ps), `Pedido_Servico_${numero}.docx`);
+}
+
+async function getPsDocxBlobAndNameById(id){
+  const bigramaId = getPsActiveScopeId();
+  const list = getPsListForBigrama(bigramaId);
+  const ps = list.find(x=>x.id===id);
+  if(!ps) return null;
+  const numero = String(ps.numero || 'pedido').replace(/[^A-Za-z0-9_-]+/g,'_');
+  return {blob: await buildPsDocxBlob(ps), name: `Pedido_Servico_${numero}.docx`};
+}
+async function sharePsDocxById(id){
+  const item = await getPsDocxBlobAndNameById(id);
+  if(!item){ showAppMessage('Compartilhar','Pedido não encontrado.'); return; }
+  const file = new File([item.blob], item.name, {type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
+  if(navigator.share && (!navigator.canShare || navigator.canShare({files:[file]}))){
+    try{
+      await navigator.share({title:'Pedido de Serviço', text:'Pedido de Serviço em DOCX', files:[file]});
+      return;
+    }catch(err){
+      if(err && err.name === 'AbortError') return;
+      console.warn('Falha ao compartilhar DOCX:', err);
+    }
+  }
+  downloadBlob(item.blob, item.name);
+  showAppMessage('Compartilhar','Compartilhamento de arquivo não suportado neste navegador. O DOCX foi baixado.');
 }
 async function downloadCurrentPsPdf(){
   if(!currentPsPdfId){ closePsPdfChoiceModal(); return; }
@@ -6865,10 +6875,10 @@ function buildPsPreviewHtml(ps, imgs=[]){
     .hdr .b,.ftr .b{font-size:7pt}
     .ftr{margin-top:auto;padding-top:3mm;border-top:1px solid #8B0000;border-bottom:2px solid #8B0000}
     .sheet{margin-top:4mm;border:1px solid #222;background:#fff}
-    .head-row{display:grid;grid-template-columns:54mm 1fr;min-height:28mm;border-bottom:1px solid #222}
-    .head-left{display:flex;align-items:center;justify-content:center;padding:1.5mm 2mm;overflow:visible;min-width:0}
-    .head-left img{max-width:50mm;max-height:25mm;width:100%;height:100%;display:block;object-fit:contain;object-position:center center}
-    .head-right{display:block;text-align:left;padding:5mm 5mm 0 5mm;font-size:8.1pt;line-height:1.15}
+    .head-row{display:grid;grid-template-columns:48mm 1fr;min-height:22mm;border-bottom:1px solid #222}
+    .head-left{display:flex;align-items:center;justify-content:center;padding:1mm 2mm;overflow:hidden}
+    .head-left img{width:44mm;max-width:44mm;height:18mm;max-height:18mm;display:block;object-fit:contain;object-position:center center}
+    .head-right{display:block;text-align:left;padding:4mm 5mm 0 5mm;font-size:8.1pt;line-height:1.15}
     .head-right .line{display:block;border-bottom:1px solid #222;width:68mm;height:6px;margin-top:1mm}
     .title-row{border-bottom:1px solid #222;text-align:center;font-size:11.2pt;font-weight:700;padding:4.5mm 4mm 4mm;background:#fff}
     table{width:100%;border-collapse:collapse;table-layout:fixed}
@@ -6917,7 +6927,7 @@ input[data-replace-on-next-type="1"]{caret-color:transparent!important;}
       <div class="hdr"><div class="a">DOCUMENTO PREPARATÓRIO – ACESSO RESTRITO</div><div class="b">Art. 3º, Inciso XII, e Art. 20 do Dec nº 7.724, de 16 de maio de 2012</div></div>
       <div class="sheet">
         <div class="head-row">
-          <div class="head-left"><img src="${PS_EMIM_HEADER_IMG}" alt="EMIM"></div>
+          <div class="head-left"><img src="data:image/jpeg;base64,${PS_EMIM_LOGO_B64}" alt="EMIM"></div>
           <div class="head-right">CÓDIGO DE CONTROLE DO<br>EMIM:<span class="line"></span></div>
         </div>
         <div class="title-row">PEDIDO DE SERVIÇO DA OM SOLICITANTE</div>
@@ -6992,7 +7002,7 @@ input[data-replace-on-next-type="1"]{caret-color:transparent!important;}
 </body></html>`;
 }
 async function previewPsPdf(id){
-  const bigramaId = AppState.data.selectedBigramaId;
+  const bigramaId = getPsActiveScopeId();
   const list = getPsListForBigrama(bigramaId);
   const ps = list.find(x=>x.id===id);
   if(!ps){
@@ -7014,10 +7024,7 @@ async function previewPsPdf(id){
     $('pdfViewerDownloadBtn').style.display = '';
     $('pdfViewerDownloadBtn').textContent = '⬇ Baixar DOCX';
   }
-  if($('pdfViewerShareBtn')) {
-    $('pdfViewerShareBtn').style.display = '';
-    $('pdfViewerShareBtn').textContent = '↗ Compartilhar';
-  }
+  if($('pdfViewerShareBtn')) $('pdfViewerShareBtn').style.display = '';
   stage.innerHTML = '<iframe style="width:100vw;height:calc(100vh - 66px);border:0;background:#d9d9d9;"></iframe>';
   const frame = stage.querySelector('iframe');
   frame.srcdoc = buildPsPreviewHtml(ps, imgs);

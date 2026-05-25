@@ -1,3 +1,1 @@
-Nautilus v260
-
-Correção da visualização HTML do Pedido de Serviço e compartilhamento do DOCX. DOCX v250 preservado.
+Nautilus v260 - PS visualização HTML: logo inteira e compartilhamento de DOCX. DOCX PS v250 preservado.
