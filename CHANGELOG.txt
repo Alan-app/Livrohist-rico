@@ -1,3 +1,5 @@
+v160 - Pedido de Serviço DOCX: criado template fixo nativo OOXML, sem altChunk/HTML, com tblLayout fixed, larguras absolutas, grid travado, cabeçalho oficial, campos numerados, checkboxes, fotos, assinatura e paginação. Mantida intacta a correção v150 do DOCX do Livro Histórico.
+
 v150 - DOCX Livro Histórico: geometria da tabela corrigida com largura fixa absoluta, tblLayout fixed, gridCol consistente e colunas travadas para evitar encolhimento no Word/Android.
 v140 - DOCX Livro Histórico reconstruído em OOXML estruturado com margens, rodapé e paginação oficial.
 v124 - Notas: botão recolher/expandir deslocado para a lateral direita superior do card; cabeçalho sem reserva artificial à direita; texto das notas com maior área útil horizontal; versão visual/cache atualizados.
