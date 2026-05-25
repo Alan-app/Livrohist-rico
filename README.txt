@@ -1,2 +1,2 @@
-Nautilus v250
-Correção do Pedido de Serviço: valores dos itens 9 a 17 sem negrito e logo completa na visualização.
+Nautilus v300
+Correção isolada do Pedido de Serviço: logo HTML inteira, voltar/salvar sem exigir bigrama e cache offline atualizado.

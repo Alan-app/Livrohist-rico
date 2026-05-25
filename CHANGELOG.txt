@@ -1,3 +1,9 @@
+## v300 - Correção PS HTML/voltar/salvar/offline
+- Corrigida logo da visualização HTML do Pedido de Serviço.
+- Pedido de Serviço não exige bigrama para abrir, salvar ou voltar.
+- Cache/service worker atualizado para uso offline.
+- DOCX do Pedido de Serviço v250 preservado.
+
 ## v250 - Correção PS: negrito e logo na visualização
 - Itens 9 a 17 do DOCX do Pedido de Serviço: rótulos em negrito e valores sem negrito.
 - Logo da visualização do Pedido de Serviço ajustada para aparecer inteira, sem corte.
