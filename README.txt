@@ -1,3 +1,10 @@
+Nautilus v150
+
+Alterações desta versão:
+- DOCX do Livro Histórico com geometria de tabela corrigida.
+- Largura da tabela travada em área útil A4, gridCol consistente e autoajuste desativado.
+- Versão visual, APP_VERSION e cache atualizados para v150.
+
 Nautilus v124 - Ajuste visual das notas
 
 Alterações desta versão:
