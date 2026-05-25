@@ -1,3 +1,11 @@
+v180 - Pedido de Serviço menu próprio e DOCX ajustado
+- Adicionado Pedido de Serviço como opção própria da tela inicial.
+- Removido Pedido de Serviço das opções internas do Livro Histórico.
+- Removido botão baixar incorreto do modal de visualização do PS.
+- Corrigida logo EMIM no DOCX do PS usando imagem real do modelo enviado.
+- Corrigido campo CÓDIGO DE CONTROLE DO EMIM com alinhamento à esquerda e linha de preenchimento.
+- Preservado DOCX do Livro Histórico v150.
+
 v170 - Pedido de Serviço DOCX: criado template fixo nativo OOXML, sem altChunk/HTML, com tblLayout fixed, larguras absolutas, grid travado, cabeçalho oficial, campos numerados, checkboxes, fotos, assinatura e paginação. Mantida intacta a correção v150 do DOCX do Livro Histórico.
 
 v150 - DOCX Livro Histórico: geometria da tabela corrigida com largura fixa absoluta, tblLayout fixed, gridCol consistente e colunas travadas para evitar encolhimento no Word/Android.
