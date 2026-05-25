@@ -1,2 +1,2 @@
-Nautilus v293
-Correção isolada: botão Voltar no módulo Pedido de Serviço não exige bigrama; logo da visualização HTML do PS ajustada sem mexer no DOCX v250.
+Nautilus v250
+Correção do Pedido de Serviço: valores dos itens 9 a 17 sem negrito e logo completa na visualização.

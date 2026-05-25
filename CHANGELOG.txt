@@ -1,9 +1,3 @@
-## v293 - Correção PS: voltar sem bigrama e logo HTML
-- Pedido de Serviço permanece acessível sem exigir bigrama na navegação.
-- Botão Voltar dentro do Pedido de Serviço retorna para a tela inicial, sem mensagem “Selecione primeiro um bigrama”.
-- Logo da visualização HTML do Pedido de Serviço ajustada para aparecer inteira.
-- DOCX do Pedido de Serviço v250 preservado, sem alterações.
-
 ## v250 - Correção PS: negrito e logo na visualização
 - Itens 9 a 17 do DOCX do Pedido de Serviço: rótulos em negrito e valores sem negrito.
 - Logo da visualização do Pedido de Serviço ajustada para aparecer inteira, sem corte.
