@@ -1,7 +1,7 @@
-## v291 - Correção isolada PS visualização
-- Corrigida a trava indevida que exigia bigrama ao acessar/voltar no módulo Pedido de Serviço.
-- Ajustada somente a logo da visualização HTML do Pedido de Serviço para não ficar cortada.
-- Geração DOCX do Pedido de Serviço v250 preservada sem alterações.
+v292
+- Corrigida logo cortada na visualização HTML do Pedido de Serviço.
+- Corrigido bloqueio indevido que exibia "Selecione primeiro um bigrama" ao acessar/voltar do Pedido de Serviço.
+- Geração DOCX v250 preservada sem alterações.
 
 ## v250 - Correção PS: negrito e logo na visualização
 - Itens 9 a 17 do DOCX do Pedido de Serviço: rótulos em negrito e valores sem negrito.
