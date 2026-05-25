@@ -1,3 +1,4 @@
+v140 - DOCX Livro Histórico reconstruído em OOXML estruturado com margens, rodapé e paginação oficial.
 v124 - Notas: botão recolher/expandir deslocado para a lateral direita superior do card; cabeçalho sem reserva artificial à direita; texto das notas com maior área útil horizontal; versão visual/cache atualizados.
 v123 - CORREÇÃO pisca: card transformado in-place sem renderNotes(). CORREÇÃO cursor checklist: mirror element pixel-perfect. CORREÇÃO teclado: scroll ajustado após abertura do teclado.
 v122 - CORREÇÃO cursor checklist: posição exata do clique calculada a partir do offset absoluto já calculado pelo caretRangeFromPoint, descontando o prefixo raw da linha. Cursor vai exatamente onde clicou.
