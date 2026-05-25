@@ -1,2 +1,3 @@
-Nautilus v290
-Correção do Pedido de Serviço: valores dos itens 9 a 17 sem negrito e logo completa na visualização.
+Nautilus v291
+
+Correção isolada baseada na v250: visualização HTML do Pedido de Serviço com logo inteira e acesso/voltar do módulo Pedido de Serviço sem exigir bigrama. DOCX v250 preservado.
