@@ -57,7 +57,9 @@ document.getElementById('installBtn').addEventListener('click', async function()
   if (deferredPrompt) { deferredPrompt.prompt(); try { await deferredPrompt.userChoice; } catch(e) {} return; }
   if (isIOS() && isSafari()) { document.getElementById('subText').textContent='No iPhone, use o menu Compartilhar do Safari e depois “Adicionar à Tela de Início”.'; document.getElementById('noteText').textContent='Depois de instalar, abra somente pelo ícone do app.'; return; }
 }, true);
-if ('serviceWorker' in navigator) window.addEventListener('load', function(){ navigator.serviceWorker.register('./service-worker.js').catch(console.error); });
+async function requestPersistentStorage(){try{if(navigator.storage&&navigator.storage.persist){const ok=navigator.storage.persisted?await navigator.storage.persisted():false;if(!ok)await navigator.storage.persist();}}catch(e){}}
+requestPersistentStorage();
+if ('serviceWorker' in navigator) window.addEventListener('load', function(){ navigator.serviceWorker.register('./service-worker.js',{scope:'./'}).then(function(reg){ if(reg&&reg.update) reg.update().catch(function(){}); }).catch(console.error); });
 </script>
 </body>
 </html>

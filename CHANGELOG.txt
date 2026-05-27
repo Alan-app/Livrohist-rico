@@ -1,3 +1,9 @@
+v310 - Persistência offline reforçada
+- Service Worker refeito com cache-first para assets principais.
+- Fallback offline para navegação.
+- Solicitação de armazenamento persistente via navigator.storage.persist().
+- Preserva DOCX Livro Histórico v150 e DOCX Pedido de Serviço v250/v301 sem alteração funcional.
+
 v301 - Correção isolada da logo na visualização HTML do Pedido de Serviço; sem alteração no DOCX, navegação, salvar, voltar ou offline.
 ## v300 - Correção PS HTML/voltar/salvar/offline
 - Corrigida logo da visualização HTML do Pedido de Serviço.

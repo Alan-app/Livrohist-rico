@@ -1,28 +1,69 @@
-const CACHE_NAME = 'nautilus-v301';
-const APP_ASSETS = ['./','./index.html','./app.html','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
+const CACHE_NAME = 'nautilus-v310-core';
+const RUNTIME_CACHE = 'nautilus-v310-runtime';
+const APP_ASSETS = [
+  './',
+  './index.html',
+  './app.html',
+  './manifest.webmanifest',
+  './icon-192.png',
+  './icon-512.png',
+  './app_documento_oficial_impressao_direta_forcada.html'
+];
+
+async function precacheCore(){
+  const cache = await caches.open(CACHE_NAME);
+  await Promise.all(APP_ASSETS.map(async url => {
+    try{
+      const req = new Request(url, {cache:'reload'});
+      const res = await fetch(req);
+      if(res && (res.ok || res.type === 'opaque')) await cache.put(url, res.clone());
+    }catch(e){
+      try{ await cache.add(url); }catch(_e){}
+    }
+  }));
+}
+
 self.addEventListener('install', event => {
-  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_ASSETS)));
+  event.waitUntil(precacheCore());
   self.skipWaiting();
 });
+
 self.addEventListener('activate', event => {
-  event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key)))));
-  self.clients.claim();
+  event.waitUntil((async()=>{
+    const keys = await caches.keys();
+    await Promise.all(keys.filter(k => ![CACHE_NAME, RUNTIME_CACHE].includes(k)).map(k => caches.delete(k)));
+    await precacheCore();
+    await self.clients.claim();
+  })());
 });
+
+self.addEventListener('message', event => {
+  if(event.data && event.data.type === 'PRECACHE_CORE') event.waitUntil(precacheCore());
+});
+
+async function cacheFirst(request){
+  const cached = await caches.match(request);
+  if(cached) return cached;
+  try{
+    const response = await fetch(request);
+    if(response && response.ok && new URL(request.url).origin === self.location.origin){
+      const cache = await caches.open(RUNTIME_CACHE);
+      cache.put(request, response.clone()).catch(()=>{});
+    }
+    return response;
+  }catch(e){
+    if(request.mode === 'navigate' || (request.headers.get('accept')||'').includes('text/html')){
+      return (await caches.match('./app.html')) || (await caches.match('./index.html')) || new Response('<!doctype html><meta charset="utf-8"><title>Nautilus offline</title><body><h1>Nautilus</h1><p>App offline indisponível. Abra uma vez com internet para restaurar o cache.</p></body>', {headers:{'Content-Type':'text/html; charset=utf-8'}});
+    }
+    return new Response('', {status:504, statusText:'Offline'});
+  }
+}
+
 self.addEventListener('fetch', event => {
-  if (event.request.method !== 'GET') return;
-  event.respondWith(
-    caches.match(event.request).then(cached => cached || fetch(event.request).then(response => {
-      const cloned = response.clone();
-      if (event.request.url.startsWith(self.location.origin)) caches.open(CACHE_NAME).then(cache => cache.put(event.request, cloned));
-      return response;
-    }).catch(() => caches.match('./index.html')))
-  );
+  if(event.request.method !== 'GET') return;
+  const url = new URL(event.request.url);
+  if(url.origin !== self.location.origin) return;
+  event.respondWith(cacheFirst(event.request));
 });
 
-// v90-notas-ui-limpa-real
-
-// v92-checklist-visual-limpo
-
-// v119-horas-campos-selecao-rapida
-
-// v301-ps-logo-html-voltar-salvar-offline
+// v310-offline-pwa-persistente
