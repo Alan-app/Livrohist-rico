@@ -1,3 +1,4 @@
+v360 - LDS: removido popup direto do WhatsApp; compartilhar agora usa somente navigator.share e fallback para copiar texto.
 v350 - LDS Equipment Code corrigido
 - Equipment Code agora é capturado de forma tolerante da coluna Equipment Code da aba Configured Items Tree.
 - Busca e cards LDS preservados. Reimporte a planilha LDS se a base antiga estiver sem o campo gravado.
