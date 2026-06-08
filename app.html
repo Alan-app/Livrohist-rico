@@ -7188,16 +7188,19 @@ function handleChecklistEditInputKey(ev,noteId,lineIndex){
 
 function noteResizeChecklistInput(el){
   if(!el) return;
-  el.style.setProperty('height','28px','important');
+  el.style.setProperty('height','auto','important');
   el.style.setProperty('min-height','28px','important');
-  el.style.setProperty('max-height','28px','important');
-  el.style.setProperty('line-height','28px','important');
+  el.style.removeProperty('max-height');
+  el.style.setProperty('line-height','1.45','important');
   el.style.setProperty('overflow','hidden','important');
+  const scrollH = el.scrollHeight;
+  const h = Math.max(28, scrollH);
+  el.style.setProperty('height', h+'px', 'important');
   const row = el.closest ? el.closest('.keep-check-edit-row') : null;
   if(row){
-    row.style.setProperty('height','28px','important');
+    row.style.setProperty('height', h+'px', 'important');
     row.style.setProperty('min-height','28px','important');
-    row.style.setProperty('max-height','28px','important');
+    row.style.removeProperty('max-height');
     row.style.setProperty('overflow','visible','important');
   }
 }
