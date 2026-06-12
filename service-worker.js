@@ -1,5 +1,5 @@
-const CACHE_NAME = 'nautilus-v360-core';
-const RUNTIME_CACHE = 'nautilus-v360-runtime';
+const CACHE_NAME = 'nautilus-v478-core';
+const RUNTIME_CACHE = 'nautilus-v478-runtime';
 const APP_ASSETS = [
   './',
   './index.html',
@@ -66,4 +66,4 @@ self.addEventListener('fetch', event => {
   event.respondWith(cacheFirst(event.request));
 });
 
-// v360-lds-share-nativo
+// v478-sem-piscao-tela-instalacao
