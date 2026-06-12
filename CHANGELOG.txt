@@ -1,4 +1,1 @@
-v480
-- Remove a renderização da tela de instalação no index.html.
-- Mantém apenas splash azul com logo enquanto redireciona para app.html.
-- Atualiza service worker para evitar cache antigo do index.html.
+v481 - Removido redirecionamento visível index->app para evitar tela branca. Adicionado splash azul fixo no primeiro paint e ocultação da UI até app-ready. Versão visual atualizada.

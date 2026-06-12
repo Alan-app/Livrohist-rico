@@ -1,5 +1,5 @@
-const CACHE_NAME = 'nautilus-v480-core';
-const RUNTIME_CACHE = 'nautilus-v480-runtime';
+const CACHE_NAME = 'nautilus-v481-core';
+const RUNTIME_CACHE = 'nautilus-v481-runtime';
 const APP_ASSETS = [
   './',
   './index.html',
@@ -84,4 +84,4 @@ self.addEventListener('fetch', event => {
   event.respondWith(cacheFirst(event.request));
 });
 
-// v480-index-redireciona-sem-tela-instalacao
+// v481-index-e-app-sem-redirecionamento-sem-branco
