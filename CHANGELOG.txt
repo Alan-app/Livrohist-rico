@@ -1,5 +1,5 @@
-## v478 - Correção do piscão inicial
-
-- Evita renderizar a tela de instalação antes do redirecionamento para app.html quando aberto como app instalado.
-- Adiciona redirecionamento antecipado no head do index.html.
-- Mantidas as alterações da v477 nas notas.
+v479
+- Define fundo azul imediatamente no primeiro paint de index.html e app.html.
+- Ajusta start_url do PWA para app.html, evitando transição index -> app no app instalado.
+- Atualiza cache do service worker para v479.
+- Mantém alterações da v477/v478.

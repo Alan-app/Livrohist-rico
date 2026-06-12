@@ -1,2 +1,1 @@
-Nautilus v478 - Remove piscão da tela de instalação antes de abrir a tela inicial/app.
-Base: v477 estável.
+Nautilus v479 - remove piscão branco inicial usando fundo/splash azul e inicialização direta no app instalado.
