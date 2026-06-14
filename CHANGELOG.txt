@@ -1,1 +1,1 @@
-v481 - Removido redirecionamento visível index->app para evitar tela branca. Adicionado splash azul fixo no primeiro paint e ocultação da UI até app-ready. Versão visual atualizada.
+v482 - Ajustada abertura para manter a logo fixa: mesmo centro absoluto, sem display none imediato, com fade por opacidade. Mantida base v481 sem tela branca/tela de instalação.
