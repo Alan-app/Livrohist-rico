@@ -1,0 +1,1 @@
+v482 - Ajustada abertura para manter a logo fixa: mesmo centro absoluto, sem display none imediato, com fade por opacidade. Mantida base v481 sem tela branca/tela de instalação.
