@@ -1,1 +1,2 @@
-Nautilus v360 - LDS: compartilhamento exclusivamente pelo modal nativo, sem popup direto do WhatsApp.
+Nautilus v482
+Correção visual de abertura: splash azul mantém a logo fixa no mesmo ponto, com transição por opacidade, evitando micro deslocamento/tremida entre o splash e a tela inicial.
