@@ -6737,6 +6737,39 @@ input[data-replace-on-next-type="1"]{caret-color:transparent!important;}
 <!-- v92: restaura menu Adicionar Bigrama do Livro Histórico a partir da versão antiga, sem alterar demais módulos -->
 <!-- v119-horas-campos-selecao-rapida -->
 
+
+<style>
+#pwaInstallBtn{position:fixed;bottom:20px;right:20px;z-index:99999;padding:12px 16px;border-radius:24px}
+#pwaInstallModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100000;align-items:center;justify-content:center}
+#pwaInstallModal .box{background:#fff;padding:20px;border-radius:12px;max-width:320px;margin:20px}
+</style>
+<div id="pwaInstallModal"><div class="box"><h3>Instalar Nautilus</h3><p id="pwaText">Instale o aplicativo para acesso rápido.</p><button id="pwaInstallNow">Instalar Agora</button> <button id="pwaLater">Depois</button></div></div>
+<button id="pwaInstallBtn" style="display:none">⬇ Instalar App</button>
+<script>
+(function(){
+let deferredPrompt=null;
+const btn=document.getElementById('pwaInstallBtn');
+const modal=document.getElementById('pwaInstallModal');
+const txt=document.getElementById('pwaText');
+function installed(){return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;}
+if(installed()){return;}
+const isiOS=/iPad|iPhone|iPod/.test(navigator.userAgent);
+if(isiOS){
+ btn.style.display='block';
+ btn.onclick=()=>{txt.textContent='No iPhone/iPad toque em Compartilhar e depois em Adicionar à Tela de Início.';modal.style.display='flex';};
+ document.getElementById('pwaLater').onclick=()=>modal.style.display='none';
+}
+window.addEventListener('beforeinstallprompt',e=>{
+ e.preventDefault(); deferredPrompt=e; btn.style.display='block';
+ btn.onclick=()=>modal.style.display='flex';
+});
+document.getElementById('pwaInstallNow').onclick=async()=>{
+ if(deferredPrompt){await deferredPrompt.prompt(); modal.style.display='none';}
+};
+document.getElementById('pwaLater').onclick=()=>modal.style.display='none';
+window.addEventListener('appinstalled',()=>{btn.style.display='none';modal.style.display='none';});
+})();
+</script>
 </body></html>`); doc.close();
   iframe.onload = () => setTimeout(()=>{ iframe.contentWindow.focus(); iframe.contentWindow.print(); }, 250);
   setTimeout(()=>{ iframe.contentWindow.focus(); iframe.contentWindow.print(); }, 700);
@@ -8219,6 +8252,39 @@ input[data-replace-on-next-type="1"]{caret-color:transparent!important;}
 <!-- v92: restaura menu Adicionar Bigrama do Livro Histórico a partir da versão antiga, sem alterar demais módulos -->
 <!-- v119-horas-campos-selecao-rapida -->
 
+
+<style>
+#pwaInstallBtn{position:fixed;bottom:20px;right:20px;z-index:99999;padding:12px 16px;border-radius:24px}
+#pwaInstallModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100000;align-items:center;justify-content:center}
+#pwaInstallModal .box{background:#fff;padding:20px;border-radius:12px;max-width:320px;margin:20px}
+</style>
+<div id="pwaInstallModal"><div class="box"><h3>Instalar Nautilus</h3><p id="pwaText">Instale o aplicativo para acesso rápido.</p><button id="pwaInstallNow">Instalar Agora</button> <button id="pwaLater">Depois</button></div></div>
+<button id="pwaInstallBtn" style="display:none">⬇ Instalar App</button>
+<script>
+(function(){
+let deferredPrompt=null;
+const btn=document.getElementById('pwaInstallBtn');
+const modal=document.getElementById('pwaInstallModal');
+const txt=document.getElementById('pwaText');
+function installed(){return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;}
+if(installed()){return;}
+const isiOS=/iPad|iPhone|iPod/.test(navigator.userAgent);
+if(isiOS){
+ btn.style.display='block';
+ btn.onclick=()=>{txt.textContent='No iPhone/iPad toque em Compartilhar e depois em Adicionar à Tela de Início.';modal.style.display='flex';};
+ document.getElementById('pwaLater').onclick=()=>modal.style.display='none';
+}
+window.addEventListener('beforeinstallprompt',e=>{
+ e.preventDefault(); deferredPrompt=e; btn.style.display='block';
+ btn.onclick=()=>modal.style.display='flex';
+});
+document.getElementById('pwaInstallNow').onclick=async()=>{
+ if(deferredPrompt){await deferredPrompt.prompt(); modal.style.display='none';}
+};
+document.getElementById('pwaLater').onclick=()=>modal.style.display='none';
+window.addEventListener('appinstalled',()=>{btn.style.display='none';modal.style.display='none';});
+})();
+</script>
 </body>
 </html>`;
     win.document.open();
@@ -8332,6 +8398,39 @@ input[data-replace-on-next-type="1"]{caret-color:transparent!important;}
 <!-- v92: restaura menu Adicionar Bigrama do Livro Histórico a partir da versão antiga, sem alterar demais módulos -->
 <!-- v119-horas-campos-selecao-rapida -->
 
+
+<style>
+#pwaInstallBtn{position:fixed;bottom:20px;right:20px;z-index:99999;padding:12px 16px;border-radius:24px}
+#pwaInstallModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100000;align-items:center;justify-content:center}
+#pwaInstallModal .box{background:#fff;padding:20px;border-radius:12px;max-width:320px;margin:20px}
+</style>
+<div id="pwaInstallModal"><div class="box"><h3>Instalar Nautilus</h3><p id="pwaText">Instale o aplicativo para acesso rápido.</p><button id="pwaInstallNow">Instalar Agora</button> <button id="pwaLater">Depois</button></div></div>
+<button id="pwaInstallBtn" style="display:none">⬇ Instalar App</button>
+<script>
+(function(){
+let deferredPrompt=null;
+const btn=document.getElementById('pwaInstallBtn');
+const modal=document.getElementById('pwaInstallModal');
+const txt=document.getElementById('pwaText');
+function installed(){return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;}
+if(installed()){return;}
+const isiOS=/iPad|iPhone|iPod/.test(navigator.userAgent);
+if(isiOS){
+ btn.style.display='block';
+ btn.onclick=()=>{txt.textContent='No iPhone/iPad toque em Compartilhar e depois em Adicionar à Tela de Início.';modal.style.display='flex';};
+ document.getElementById('pwaLater').onclick=()=>modal.style.display='none';
+}
+window.addEventListener('beforeinstallprompt',e=>{
+ e.preventDefault(); deferredPrompt=e; btn.style.display='block';
+ btn.onclick=()=>modal.style.display='flex';
+});
+document.getElementById('pwaInstallNow').onclick=async()=>{
+ if(deferredPrompt){await deferredPrompt.prompt(); modal.style.display='none';}
+};
+document.getElementById('pwaLater').onclick=()=>modal.style.display='none';
+window.addEventListener('appinstalled',()=>{btn.style.display='none';modal.style.display='none';});
+})();
+</script>
 </body></html>`;
       stage.innerHTML = '<iframe style="width:100vw;height:calc(100vh - 66px);border:0;background:#fff;"></iframe>';
       stage.querySelector('iframe').srcdoc = viewerHtml;
@@ -8427,6 +8526,39 @@ input[data-replace-on-next-type="1"]{caret-color:transparent!important;}
 <!-- v92: restaura menu Adicionar Bigrama do Livro Histórico a partir da versão antiga, sem alterar demais módulos -->
 <!-- v119-horas-campos-selecao-rapida -->
 
+
+<style>
+#pwaInstallBtn{position:fixed;bottom:20px;right:20px;z-index:99999;padding:12px 16px;border-radius:24px}
+#pwaInstallModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100000;align-items:center;justify-content:center}
+#pwaInstallModal .box{background:#fff;padding:20px;border-radius:12px;max-width:320px;margin:20px}
+</style>
+<div id="pwaInstallModal"><div class="box"><h3>Instalar Nautilus</h3><p id="pwaText">Instale o aplicativo para acesso rápido.</p><button id="pwaInstallNow">Instalar Agora</button> <button id="pwaLater">Depois</button></div></div>
+<button id="pwaInstallBtn" style="display:none">⬇ Instalar App</button>
+<script>
+(function(){
+let deferredPrompt=null;
+const btn=document.getElementById('pwaInstallBtn');
+const modal=document.getElementById('pwaInstallModal');
+const txt=document.getElementById('pwaText');
+function installed(){return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;}
+if(installed()){return;}
+const isiOS=/iPad|iPhone|iPod/.test(navigator.userAgent);
+if(isiOS){
+ btn.style.display='block';
+ btn.onclick=()=>{txt.textContent='No iPhone/iPad toque em Compartilhar e depois em Adicionar à Tela de Início.';modal.style.display='flex';};
+ document.getElementById('pwaLater').onclick=()=>modal.style.display='none';
+}
+window.addEventListener('beforeinstallprompt',e=>{
+ e.preventDefault(); deferredPrompt=e; btn.style.display='block';
+ btn.onclick=()=>modal.style.display='flex';
+});
+document.getElementById('pwaInstallNow').onclick=async()=>{
+ if(deferredPrompt){await deferredPrompt.prompt(); modal.style.display='none';}
+};
+document.getElementById('pwaLater').onclick=()=>modal.style.display='none';
+window.addEventListener('appinstalled',()=>{btn.style.display='none';modal.style.display='none';});
+})();
+</script>
 </body></html>`;
     win.document.open();
     win.document.write(viewerHtml);
@@ -8695,6 +8827,39 @@ input[data-replace-on-next-type="1"]{caret-color:transparent!important;}
 <!-- v92: restaura menu Adicionar Bigrama do Livro Histórico a partir da versão antiga, sem alterar demais módulos -->
 <!-- v119-horas-campos-selecao-rapida -->
 
+
+<style>
+#pwaInstallBtn{position:fixed;bottom:20px;right:20px;z-index:99999;padding:12px 16px;border-radius:24px}
+#pwaInstallModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100000;align-items:center;justify-content:center}
+#pwaInstallModal .box{background:#fff;padding:20px;border-radius:12px;max-width:320px;margin:20px}
+</style>
+<div id="pwaInstallModal"><div class="box"><h3>Instalar Nautilus</h3><p id="pwaText">Instale o aplicativo para acesso rápido.</p><button id="pwaInstallNow">Instalar Agora</button> <button id="pwaLater">Depois</button></div></div>
+<button id="pwaInstallBtn" style="display:none">⬇ Instalar App</button>
+<script>
+(function(){
+let deferredPrompt=null;
+const btn=document.getElementById('pwaInstallBtn');
+const modal=document.getElementById('pwaInstallModal');
+const txt=document.getElementById('pwaText');
+function installed(){return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;}
+if(installed()){return;}
+const isiOS=/iPad|iPhone|iPod/.test(navigator.userAgent);
+if(isiOS){
+ btn.style.display='block';
+ btn.onclick=()=>{txt.textContent='No iPhone/iPad toque em Compartilhar e depois em Adicionar à Tela de Início.';modal.style.display='flex';};
+ document.getElementById('pwaLater').onclick=()=>modal.style.display='none';
+}
+window.addEventListener('beforeinstallprompt',e=>{
+ e.preventDefault(); deferredPrompt=e; btn.style.display='block';
+ btn.onclick=()=>modal.style.display='flex';
+});
+document.getElementById('pwaInstallNow').onclick=async()=>{
+ if(deferredPrompt){await deferredPrompt.prompt(); modal.style.display='none';}
+};
+document.getElementById('pwaLater').onclick=()=>modal.style.display='none';
+window.addEventListener('appinstalled',()=>{btn.style.display='none';modal.style.display='none';});
+})();
+</script>
 </body></html>`;
 }
 
@@ -9393,6 +9558,39 @@ input[data-replace-on-next-type="1"]{caret-color:transparent!important;}
 <!-- v92: restaura menu Adicionar Bigrama do Livro Histórico a partir da versão antiga, sem alterar demais módulos -->
 <!-- v119-horas-campos-selecao-rapida -->
 
+
+<style>
+#pwaInstallBtn{position:fixed;bottom:20px;right:20px;z-index:99999;padding:12px 16px;border-radius:24px}
+#pwaInstallModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100000;align-items:center;justify-content:center}
+#pwaInstallModal .box{background:#fff;padding:20px;border-radius:12px;max-width:320px;margin:20px}
+</style>
+<div id="pwaInstallModal"><div class="box"><h3>Instalar Nautilus</h3><p id="pwaText">Instale o aplicativo para acesso rápido.</p><button id="pwaInstallNow">Instalar Agora</button> <button id="pwaLater">Depois</button></div></div>
+<button id="pwaInstallBtn" style="display:none">⬇ Instalar App</button>
+<script>
+(function(){
+let deferredPrompt=null;
+const btn=document.getElementById('pwaInstallBtn');
+const modal=document.getElementById('pwaInstallModal');
+const txt=document.getElementById('pwaText');
+function installed(){return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;}
+if(installed()){return;}
+const isiOS=/iPad|iPhone|iPod/.test(navigator.userAgent);
+if(isiOS){
+ btn.style.display='block';
+ btn.onclick=()=>{txt.textContent='No iPhone/iPad toque em Compartilhar e depois em Adicionar à Tela de Início.';modal.style.display='flex';};
+ document.getElementById('pwaLater').onclick=()=>modal.style.display='none';
+}
+window.addEventListener('beforeinstallprompt',e=>{
+ e.preventDefault(); deferredPrompt=e; btn.style.display='block';
+ btn.onclick=()=>modal.style.display='flex';
+});
+document.getElementById('pwaInstallNow').onclick=async()=>{
+ if(deferredPrompt){await deferredPrompt.prompt(); modal.style.display='none';}
+};
+document.getElementById('pwaLater').onclick=()=>modal.style.display='none';
+window.addEventListener('appinstalled',()=>{btn.style.display='none';modal.style.display='none';});
+})();
+</script>
 </body></html>`;
 }
 async function previewPsPdf(id){
@@ -11051,4 +11249,37 @@ if($('noteForm')) $('noteForm').addEventListener('submit', saveNoteFromForm);
   </div>
 </div>
 
+
+<style>
+#pwaInstallBtn{position:fixed;bottom:20px;right:20px;z-index:99999;padding:12px 16px;border-radius:24px}
+#pwaInstallModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100000;align-items:center;justify-content:center}
+#pwaInstallModal .box{background:#fff;padding:20px;border-radius:12px;max-width:320px;margin:20px}
+</style>
+<div id="pwaInstallModal"><div class="box"><h3>Instalar Nautilus</h3><p id="pwaText">Instale o aplicativo para acesso rápido.</p><button id="pwaInstallNow">Instalar Agora</button> <button id="pwaLater">Depois</button></div></div>
+<button id="pwaInstallBtn" style="display:none">⬇ Instalar App</button>
+<script>
+(function(){
+let deferredPrompt=null;
+const btn=document.getElementById('pwaInstallBtn');
+const modal=document.getElementById('pwaInstallModal');
+const txt=document.getElementById('pwaText');
+function installed(){return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;}
+if(installed()){return;}
+const isiOS=/iPad|iPhone|iPod/.test(navigator.userAgent);
+if(isiOS){
+ btn.style.display='block';
+ btn.onclick=()=>{txt.textContent='No iPhone/iPad toque em Compartilhar e depois em Adicionar à Tela de Início.';modal.style.display='flex';};
+ document.getElementById('pwaLater').onclick=()=>modal.style.display='none';
+}
+window.addEventListener('beforeinstallprompt',e=>{
+ e.preventDefault(); deferredPrompt=e; btn.style.display='block';
+ btn.onclick=()=>modal.style.display='flex';
+});
+document.getElementById('pwaInstallNow').onclick=async()=>{
+ if(deferredPrompt){await deferredPrompt.prompt(); modal.style.display='none';}
+};
+document.getElementById('pwaLater').onclick=()=>modal.style.display='none';
+window.addEventListener('appinstalled',()=>{btn.style.display='none';modal.style.display='none';});
+})();
+</script>
 </body>
