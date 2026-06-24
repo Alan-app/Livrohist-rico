@@ -1,2 +1,1 @@
-V.Beta.01 - Numeração de versão zerada. Revisão completa do Kill Card: corrigidos compartimentos trocados, descrições de equipamento fragmentadas/truncadas e códigos de busca ausentes, com base em conferência linha a linha do documento original (21 páginas).
 v482 - Ajustada abertura para manter a logo fixa: mesmo centro absoluto, sem display none imediato, com fade por opacidade. Mantida base v481 sem tela branca/tela de instalação.
