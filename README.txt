@@ -1,2 +1,2 @@
-Nautilus V.Beta.17
-LDS: busca deixou de disparar em tempo real a cada tecla digitada. Agora confirma com a lupa do teclado ou apertando Enter. Limpar o campo de busca continua limpando os resultados na hora, sem precisar confirmar.
+Nautilus V.Beta.18
+LDS: ao buscar (lupa do teclado ou Enter), o teclado fecha e o campo perde o foco automaticamente. O termo buscado agora aparece destacado em amarelo nos resultados (Functional Mark, Parent Functional Mark, Reference Number e Equipment Code).
