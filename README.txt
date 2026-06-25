@@ -1,2 +1,2 @@
-Nautilus V.Beta.12
-Re-publicação forçada para corrigir falha de deploy anterior no GitHub Pages (deploy #429 falhou e o site ficou travado em versão antiga). Conteúdo idêntico à V.Beta.11: suporte a vídeos no Histórico (armazenados no IndexedDB do app, sobrevivem à exclusão da galeria) e correção de cache do service worker.
+Nautilus V.Beta.13
+Restaurada a tela de instalação original (index.html leve, separado do app.html), que tinha sido substituída por engano por uma cópia inteira do app em uma versão anterior. Agora, ao acessar o link no navegador, aparece de novo a tela com logo, botão "Instalar aplicativo" e instrução específica para iPhone (Safari → Compartilhar → Adicionar à Tela de Início). Quando já instalado e aberto pelo ícone, o app continua abrindo direto em app.html, sem passar pela tela de instalação.
