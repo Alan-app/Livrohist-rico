@@ -1,2 +1,2 @@
-Nautilus V.Beta.19
-Notas: corrigido bug ao digitar em itens de checklist (caixa de seleção). A cada tecla, o app forçava a página a rolar de volta para a posição salva do toque inicial, dando a sensação de "voltar pro início e esconder o texto digitado" — só aparecia certo depois de salvar e saí da edição. Removida a correção de rolagem repetida durante a digitação nos itens de checklist; o ajuste de posição acima do teclado continua acontecendo apenas quando o campo recebe foco, não a cada caractere.
+Nautilus V.Beta.20
+LDS: removida a duplicação de resultados na busca. Dois registros só são tratados como duplicados quando todos os campos visíveis no card são idênticos (Functional Mark, Parent Functional Mark, NSN, Equipment Code, descrições, etc.) — se houver qualquer diferença real entre eles (por exemplo, mesmo Functional Mark com NSN diferente), ambos continuam aparecendo, pois representam aplicações distintas.
