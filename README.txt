@@ -1,2 +1,2 @@
-Nautilus V.Beta.13
-Restaurada a tela de instalação original (index.html leve, separado do app.html), que tinha sido substituída por engano por uma cópia inteira do app em uma versão anterior. Agora, ao acessar o link no navegador, aparece de novo a tela com logo, botão "Instalar aplicativo" e instrução específica para iPhone (Safari → Compartilhar → Adicionar à Tela de Início). Quando já instalado e aberto pelo ícone, o app continua abrindo direto em app.html, sem passar pela tela de instalação.
+Nautilus V.Beta.14
+Corrigido bug pré-existente no Pedido de Serviço: os botões "Visualizar/Baixar" (PDF e DOCX) buscavam o pedido usando o bigrama atualmente selecionado na tela, mas os pedidos são armazenados numa lista própria (independente de bigrama). Com qualquer bigrama selecionado, a busca falhava e mostrava "Pedido não encontrado". Agora os 3 pontos afetados (exportPsPdf, downloadPsDocxById, previewPsPdf) usam a mesma chave da lista exibida.
