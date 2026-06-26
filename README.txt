@@ -1,2 +1,2 @@
-Nautilus V.Beta.21
-LDS: corrigido travamento/fechamento do app ao importar a planilha no iPhone (Safari). O parser de XLSX usava DOMParser para montar a árvore completa do XML de cada aba, o que para planilhas grandes (a aba "Configured Items Tree" chega a ~130MB de XML descompactado) consumia memória excessiva e fazia o Safari encerrar a aba/app sem aviso. Substituído por um parser leve baseado em varredura sequencial de texto, que nunca mantém a árvore DOM inteira em memória. Validado extensivamente: extração idêntica, célula por célula, em mais de 1,3 milhão de comparações contra o parser anterior, sem nenhuma diferença, e mesmo resultado de busca (144→107 com a planilha de teste real).
+Nautilus V.Beta.23
+LDS: removido o botão de menu/importação manual da tela, já que a base vem embutida e carrega automaticamente. Para atualizar a planilha no futuro, será necessária uma nova versão do app.
