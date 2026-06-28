@@ -1,2 +1,2 @@
-Nautilus V.Beta.37
-Corrige o erro "Invalid page request" durante o processamento do Atlas: o índice de páginas dos esquemas foi recalculado para corresponder ao PDF reduzido (317 páginas), eliminando referências a páginas de legenda que foram removidas. Veja CHANGELOG.txt para o histórico completo de mudanças.
+Nautilus V.Beta.39
+Corrige regressão da V.Beta.38: páginas mais densas do Atlas (ex.: grades de baterias) podiam travar a tela em preto por vários segundos. Restaurada a sequência correta de frames de animação antes do processamento pesado. Veja CHANGELOG.txt para o histórico completo de mudanças.
