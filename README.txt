@@ -1,2 +1,2 @@
-Nautilus V.Beta.39
-Corrige regressão da V.Beta.38: páginas mais densas do Atlas (ex.: grades de baterias) podiam travar a tela em preto por vários segundos. Restaurada a sequência correta de frames de animação antes do processamento pesado. Veja CHANGELOG.txt para o histórico completo de mudanças.
+Nautilus V.Beta.41
+Corrigida a causa real de 6 páginas de esquema faltando no Atlas (308 esperadas, só 302 pré-renderizadas): um corte adicional baseado no "Folio: X/Y" do documento original cortava esquemas válidos por engano. Agora as 308 páginas são processadas corretamente. Veja CHANGELOG.txt para o histórico completo de mudanças.
