@@ -1,3 +1,23 @@
+V.Beta.55 - CORREÇÃO: duas mensagens diferentes apareciam para o mesmo caso (busca sem resultado); modal pontilhado desalinhado no card
+- Relatado: ao fazer uma busca sem resultado, apareciam duas mensagens diferentes na tela -- "Nenhum resultado encontrado." na linha de status (acima da lista) e "Nenhum resultado para exibir." no modal pontilhado (dentro da área de resultados) -- redundante e confuso. Pedido para manter só uma mensagem ("Nenhum resultado encontrado.") e centralizar o modal pontilhado dentro do card.
+- Corrigido:
+  - A linha de status acima da lista não mostra mais texto quando a busca não encontra nada (fica em branco); a única mensagem exibida agora é "Nenhum resultado encontrado." dentro do modal pontilhado.
+  - O modal pontilhado agora é centralizado (horizontal e verticalmente) dentro da área de resultados do card, em vez de ficar esticado e colado no topo.
+  - Mantido o comportamento da V.Beta.54: o modal pontilhado só aparece depois de uma busca de verdade sem resultado -- continua não aparecendo ao abrir a tela ou ao limpar a busca.
+- Nenhuma outra tela ou fluxo foi alterada (mudança isolada na tela do LDS).
+- Validação: sintaxe JS de todo o app.html validada (node --check).
+- Base oficial: vBeta54.
+
+V.Beta.54 - CORREÇÃO: mensagem "Nenhum resultado para exibir." aparecia mesmo sem nenhuma busca ter sido feita; barra de busca colada na topbar
+- Relatado (1): a mensagem "Nenhum resultado para exibir." aparecia na tela do LDS assim que ela era aberta, antes de qualquer busca -- deveria aparecer só depois de uma busca que não encontrou nada.
+- Relatado (2): a caixa de busca deveria ficar colada na topbar, sem vão entre elas.
+- Investigado: a função que desenha os resultados (ldsRenderResults) mostrava a mensagem de "nenhum resultado" sempre que a lista estava vazia, sem diferenciar "ainda não buscou nada" de "buscou e não encontrou nada". Sobre o vão da topbar: a tela do LDS usa o mesmo espaçamento padrão de 30px abaixo da barra dourada que todas as outras telas do app usam (para não ficar colado nelas) -- só que aqui, com a busca fixa, esse espaçamento ficava visível como um vão indesejado.
+- Corrigido (1): a mensagem "Nenhum resultado para exibir." agora só aparece quando uma busca de verdade foi realizada (termo digitado) e não encontrou nada; ao abrir a tela do LDS ou limpar a busca, a área de resultados fica em branco, sem mensagem.
+- Corrigido (2): removido, só para a tela do LDS, o espaçamento padrão de 30px abaixo da barra dourada -- o card (e a barra de busca fixa que o "tampa") agora ficam colados direto na topbar, sem vão.
+- Nenhuma outra tela ou fluxo foi alterada (mudança isolada na tela do LDS).
+- Validação: sintaxe JS de todo o app.html validada (node --check).
+- Base oficial: vBeta53.
+
 V.Beta.53 - CORREÇÃO: a barra de busca fixa ficava visualmente separada do card de resultados, e removida a mensagem inicial "Digite e toque na lupa..."
 - Relatado (1): a barra de busca fixa ficava com aparência de elemento solto/flutuante, desconectada do card de resultados abaixo -- cor de fundo diferente do card, largura de tela inteira (enquanto o card tem margens), e um vão vazio entre a topbar e a barra.
 - Relatado (2): remover o texto "Digite e toque na lupa (ou Enter) para buscar na base LDS." que aparecia antes de qualquer busca.

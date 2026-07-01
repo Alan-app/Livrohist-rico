@@ -1,2 +1,2 @@
-Nautilus V.Beta.53
-Corrigido o visual "flutuante" da barra de busca: agora ela usa a mesma cor e cantos arredondados do card, com posição e largura medidas via JS para bater exatamente com o card -- fica parecendo parte dele, sem vão em relação à topbar nem desalinhamento. Removida também a mensagem inicial "Digite e toque na lupa...". Veja CHANGELOG.txt para o histórico completo de mudanças.
+Nautilus V.Beta.55
+Corrigida a mensagem duplicada de "nenhum resultado": agora aparece só uma vez ("Nenhum resultado encontrado."), no modal pontilhado, centralizado dentro do card. Veja CHANGELOG.txt para o histórico completo de mudanças.
