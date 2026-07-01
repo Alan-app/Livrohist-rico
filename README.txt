@@ -1,2 +1,2 @@
-Nautilus V.Beta.52
-Corrigido o visual quebrado da V.Beta.51: a barra de busca fixa estava sobrepondo o texto de descrição do LDS, com um vão vazio grande antes dos resultados. Removido o texto redundante e a posição da barra agora é calculada dinamicamente (medindo o topo real do card), garantindo alinhamento correto. Veja CHANGELOG.txt para o histórico completo de mudanças.
+Nautilus V.Beta.53
+Corrigido o visual "flutuante" da barra de busca: agora ela usa a mesma cor e cantos arredondados do card, com posição e largura medidas via JS para bater exatamente com o card -- fica parecendo parte dele, sem vão em relação à topbar nem desalinhamento. Removida também a mensagem inicial "Digite e toque na lupa...". Veja CHANGELOG.txt para o histórico completo de mudanças.

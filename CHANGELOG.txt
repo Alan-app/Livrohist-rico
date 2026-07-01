@@ -1,3 +1,12 @@
+V.Beta.53 - CORREÇÃO: a barra de busca fixa ficava visualmente separada do card de resultados, e removida a mensagem inicial "Digite e toque na lupa..."
+- Relatado (1): a barra de busca fixa ficava com aparência de elemento solto/flutuante, desconectada do card de resultados abaixo -- cor de fundo diferente do card, largura de tela inteira (enquanto o card tem margens), e um vão vazio entre a topbar e a barra.
+- Relatado (2): remover o texto "Digite e toque na lupa (ou Enter) para buscar na base LDS." que aparecia antes de qualquer busca.
+- Corrigido (1): a barra agora usa exatamente a mesma cor de fundo e o mesmo raio de borda (cantos arredondados) do card, e sua posição/largura são medidas em tempo real via JavaScript para bater exatamente com a largura e a posição horizontal do card -- o resultado é que ela "tampa" o topo do card de forma contínua, parecendo parte dele, sem vão nem desalinhamento, tanto em relação à topbar quanto em relação ao card.
+- Corrigido (2): removida a mensagem inicial; a tela do LDS agora começa limpa, sem texto de instrução antes da primeira busca.
+- Nenhuma outra tela ou fluxo foi alterada (mudança isolada na tela do LDS).
+- Validação: sintaxe JS de todo o app.html validada (node --check); confirmado que as funções de posicionamento (ldsPositionSearchBar, ldsSyncSearchSpacer) têm só uma declaração cada, sem duplicidade.
+- Base oficial: vBeta52.
+
 V.Beta.52 - CORREÇÃO: a barra de busca fixa da V.Beta.51 sobrepunha o texto de descrição do LDS e deixava um vão vazio enorme antes dos resultados
 - Relatado: depois de trocar a busca para position:fixed (V.Beta.51), a caixa de busca ficou sobreposta ao parágrafo de descrição ("Busca por Functional Mark..."), com o texto cortado atrás dela, e sobrou um espaço vazio grande antes da mensagem "Nenhum resultado para exibir.".
 - Investigado: o parágrafo de descrição continuava no fluxo normal da página (a busca virou fixa e "flutua" por cima de tudo), então ele passou a ocupar espaço logo abaixo da topbar exatamente onde a barra fixa também estava posicionada -- daí a sobreposição visual. Ao mesmo tempo, o espaçador que reserva espaço para a barra fixa se somava à altura do próprio parágrafo (que continuava lá, só escondido atrás da barra), dobrando o espaço em branco antes dos resultados.
