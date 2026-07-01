@@ -1,3 +1,13 @@
+V.Beta.52 - CORREÇÃO: a barra de busca fixa da V.Beta.51 sobrepunha o texto de descrição do LDS e deixava um vão vazio enorme antes dos resultados
+- Relatado: depois de trocar a busca para position:fixed (V.Beta.51), a caixa de busca ficou sobreposta ao parágrafo de descrição ("Busca por Functional Mark..."), com o texto cortado atrás dela, e sobrou um espaço vazio grande antes da mensagem "Nenhum resultado para exibir.".
+- Investigado: o parágrafo de descrição continuava no fluxo normal da página (a busca virou fixa e "flutua" por cima de tudo), então ele passou a ocupar espaço logo abaixo da topbar exatamente onde a barra fixa também estava posicionada -- daí a sobreposição visual. Ao mesmo tempo, o espaçador que reserva espaço para a barra fixa se somava à altura do próprio parágrafo (que continuava lá, só escondido atrás da barra), dobrando o espaço em branco antes dos resultados.
+- Corrigido:
+  - Removido o parágrafo de descrição, que já era redundante com o texto do placeholder da própria caixa de busca ("Buscar Functional Mark, Parent Functional Mark, Reference Number ou Equipment Code").
+  - A posição vertical da barra fixa agora é calculada dinamicamente via JavaScript, medindo a posição real do topo do card (em vez de um valor fixo "chutado" no CSS) -- assim ela sempre se alinha certinho mesmo se a altura da topbar mudar (por exemplo, com nomes de bigrama grandes que quebram em 2 linhas).
+- Nenhuma outra tela ou fluxo foi alterada (mudança isolada na tela do LDS).
+- Validação: sintaxe JS de todo o app.html validada (node --check); confirmado que só existe uma declaração de cada função nova (ldsPositionSearchBar, ldsSyncSearchSpacer), sem duplicidade.
+- Base oficial: vBeta51.
+
 V.Beta.51 - CORREÇÃO: a caixa de busca do LDS não ficava fixa (congelada), rolava junto com a página mesmo depois da V.Beta.49
 - Relatado: a caixa de busca do LDS continuava rolando junto com os resultados, mesmo já tendo sido implementada como "sticky" na V.Beta.49.
 - Investigado: o container que envolve a busca (.card) tem `overflow-x:hidden` aplicado no `html`/`body` do app inteiro sem `overflow-y` explícito. Por especificação do CSS, isso faz o navegador computar `overflow-y` como `auto` automaticamente nesses elementos -- e quando um ancestral tem qualquer overflow diferente de `visible`, o `position:sticky` perde a referência de "grudar" na rolagem real da página, especialmente em navegadores mobile. Esse é um problema conhecido do CSS, não um erro de digitação no código anterior.
