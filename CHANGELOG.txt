@@ -1,3 +1,14 @@
+V.Beta.62 - CORREÇÃO: retângulo claro ainda aparecia ao carregar o Atlas; compartilhamento do LDS parava em "Allow ShoreBase" e não incluía "Aplicação em outros Equipamentos"
+- Relatado (1): depois de remover a logo da tela de carregamento do Atlas, ainda aparecia um retângulo claro -- deveria ficar na mesma cor de fundo do esquema.
+- Investigado (1): o elemento `<canvas>` que desenha a página do Atlas tinha um fundo branco fixo no CSS (`background:#fff`), independente do conteúdo já ter sido desenhado ou não -- então, no instante entre o canvas aparecer na tela e o desenho da página terminar, esse branco ficava visível por baixo, formando o retângulo claro. (O preenchimento branco usado ao desenhar a própria página do esquema foi mantido intacto -- afinal a página do Atlas é um documento branco de verdade; só o fundo do elemento antes de desenhar é que mudou.)
+- Corrigido (1): o fundo do canvas agora é a mesma cor escura usada na tela de carregamento (#101014) -- assim que o desenho real da página termina, ele preenche tudo (inclusive as bordas) e o resultado final continua idêntico a antes; só não aparece mais nenhum flash claro enquanto carrega.
+- Relatado (2): ao compartilhar um resultado do LDS, o texto gerado ia até "Allow ShoreBase" e não incluía a seção "Aplicação em outros Equipamentos" que aparece no card.
+- Investigado (2): a função que monta o texto de compartilhamento (ldsShareText) simplesmente não tinha essa seção -- foi um campo esquecido na hora de montar a lista original, não um bug de lógica.
+- Corrigido (2): adicionada a seção "Aplicação em outros Equipamentos" ao final do texto de compartilhamento, reaproveitando a mesma lógica já usada para mostrar essa informação no card (incluindo a mensagem "Nenhuma outra aplicação encontrada." quando não há nenhuma).
+- Nenhuma outra tela ou fluxo foi alterada.
+- Validação: sintaxe JS de todo o app.html validada (node --check); confirmado que o payload de compartilhamento já continha todos os campos necessários (id, NSN, Functional Mark, Parent Functional Mark) para recalcular a lista de outras aplicações corretamente.
+- Base oficial: vBeta61.
+
 V.Beta.61 - AJUSTE VISUAL: removida a logo e o brilho pulsante da tela de carregamento do Atlas, deixando só um fundo sólido
 - Solicitado: depois de já ter tirado a bolinha de carregamento (vBeta59), tirar também a logo e deixar só o fundo, na mesma cor do fundo do visualizador da página, sem dar impressão de nada "piscando" além do próprio esquema carregando.
 - Feito: removidos o ícone do app e o brilho pulsante (glow) que ficavam no centro da tela de carregamento. A tela de carregamento agora é só uma cor sólida (#101014), a mesma cor de fundo do visualizador de página do Atlas -- quando o esquema termina de carregar, a transição fica suave e sem nenhum elemento adicional piscando ou pulsando por cima.
