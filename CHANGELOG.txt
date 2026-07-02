@@ -1,3 +1,30 @@
+V.Beta.58 - MELHORIA DE DESEMPENHO: PDF.js agora roda com Web Worker (thread separada), sem alterar resolução/qualidade de imagem
+- Perguntado: se a logo do app aparecendo na tela de carregamento do Atlas pesava no processamento, e se tirá-la (ou deixar só preto) deixaria mais rápido.
+- Respondido: não teria efeito -- a logo é uma imagem estática já em cache, e as animações (spinner girando, logo "flutuando") usam só transform no CSS, que roda na GPU via compositor, praticamente sem custo. O gargalo real está na renderização do PDF em si.
+- Investigado o código de renderização do Atlas em busca de otimizações que não mexem em resolução/qualidade: encontrado que o pdf.js estava configurado com `disableWorker:true` nas duas chamadas que abrem o documento PDF -- ou seja, todo o trabalho de interpretar e decodificar o PDF (não o desenho em si no canvas, que é sempre feito na thread principal por natureza da API de Canvas) rodava na thread principal, competindo diretamente com a interface (incluindo a animação do spinner de carregamento), deixando tudo mais lento e menos fluido.
+- Corrigido: configurado corretamente o `workerSrc` do pdf.js (apontando para o arquivo `pdf.worker.min.js` da mesma versão já usada, no cdnjs) e removido o `disableWorker:true` das duas chamadas -- agora a interpretação/decodificação do PDF roda numa thread separada (Web Worker), liberando a thread principal para manter a interface fluida durante o carregamento. O pdf.js tem fallback automático embutido: se por algum motivo o worker não conseguir carregar, ele volta sozinho a rodar na thread principal (como estava antes), sem quebrar nada.
+- Nenhuma escala, resolução, DPI ou qualidade de imagem foi alterada -- o resultado visual final é idêntico, só o carregamento tende a ficar mais fluido.
+- Validação: sintaxe JS de todo o app.html validada (node --check); confirmado que não há política de segurança de conteúdo (CSP) nem regras do service worker bloqueando o carregamento do worker via CDN.
+- Base oficial: vBeta57.
+
+V.Beta.57 - AJUSTE VISUAL: card do LDS sem cantos arredondados, preenchendo a tela toda (topbar até o fim da tela)
+- Solicitado: remover os cantos arredondados do card do LDS (tanto em cima quanto embaixo) e fazer o card preencher a tela inteira verticalmente -- terminando exatamente na topbar em cima e ocupando até o final da tela embaixo, sem mexer na largura -- para que, ao rolar a lista de resultados, não pareça que a página está "passando por trás" da barra de busca fixa (que antes tinha cantos arredondados e um fundo mais estreito que o resto da tela).
+- Feito:
+  - Removidos os cantos arredondados do card e da barra de busca fixa (que "tampa" o topo do card) -- ambos agora são retos.
+  - O card agora ocupa toda a altura disponível da tela, de cima a baixo, mesmo quando há poucos ou nenhum resultado -- cancelado também o espaçamento inferior de 90px que o app aplica por padrão em todas as telas (compartilhado por um wrapper comum), que deixava uma faixa escura visível abaixo do card antes do fim real da página.
+  - A largura do card não foi alterada, como pedido.
+- Nenhuma outra tela foi afetada (as mudanças usam seletores específicos da tela do LDS).
+- Validação: sintaxe JS de todo o app.html validada (node --check).
+- Base oficial: vBeta56.
+
+V.Beta.56 - CORREÇÃO: highlight amarelo não aparecia em resultados encontrados por busca "compacta" (ex.: "oring" achando "O-Ring", "ej" achando "E-J...")
+- Relatado: buscar "oring" encontra corretamente os itens com "O-Ring", mas sem highlight amarelo; buscar "EJ" encontra itens com "E-J" (com hífen) sem highlight, e dava a impressão de não encontrar itens com "EJ" sem hífen (na verdade encontrava, só que sem destaque visível).
+- Investigado: a busca do LDS aceita termos "compactos" -- ela remove espaços, hífens e outras pontuações tanto do termo digitado quanto do texto dos itens antes de comparar, para permitir que "oring" ache "O-Ring" e "ej" ache "E-J...". Só que a função de highlight (a mesma usada na tela do Kill Card) comparava o texto de um jeito diferente -- preservando a pontuação -- então quando um item só batia pela via "compacta" (ex.: "oring" contra "O-Ring", que tem um hífen no meio), o highlight não achava correspondência e não destacava nada, mesmo o item aparecendo corretamente no resultado.
+- Corrigido: criada uma função de highlight própria para o LDS que usa exatamente a mesma lógica "compacta" da busca -- primeiro tenta achar o termo digitado direto no texto; se não achar, tenta achar a versão sem pontuação (a mesma que a busca usa) e, ao encontrar, destaca o trecho correspondente no texto original (preservando hífens/pontuação no que aparece destacado, ex.: destaca "E-J" e não só "EJ"). Agora busca e highlight usam sempre a mesma lógica, nunca mais ficam dessincronizados.
+- Validado isoladamente com os 3 casos relatados: "oring" contra "O-RING 8,90X1,90 20A8 GN" (destaca "O-RING" inteiro), "EJ" contra "E-JB000L20059" (destaca "E-J"), "EJ" contra "FITTED VALVE EJ00124" (destaca "EJ").
+- Nenhuma outra tela foi alterada (a tela do Kill Card usa sua própria lógica de busca, sem compactação de pontuação, e não tinha esse problema).
+- Base oficial: vBeta55.
+
 V.Beta.55 - CORREÇÃO: duas mensagens diferentes apareciam para o mesmo caso (busca sem resultado); modal pontilhado desalinhado no card
 - Relatado: ao fazer uma busca sem resultado, apareciam duas mensagens diferentes na tela -- "Nenhum resultado encontrado." na linha de status (acima da lista) e "Nenhum resultado para exibir." no modal pontilhado (dentro da área de resultados) -- redundante e confuso. Pedido para manter só uma mensagem ("Nenhum resultado encontrado.") e centralizar o modal pontilhado dentro do card.
 - Corrigido:
