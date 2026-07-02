@@ -1,3 +1,10 @@
+V.Beta.59 - AJUSTE VISUAL: removida a bolinha de carregamento do Atlas, deixando só a logo
+- Relatado: a melhoria de desempenho da vBeta58 não foi perceptível na prática, e a bolinha girando junto com a logo na tela de carregamento do Atlas ficava poluída visualmente, incomodando ao abrir vários esquemas seguidos.
+- Corrigido: removida a bolinha de carregamento (spinner). A tela de carregamento agora mostra só a logo do Nautilus com a animação de flutuação suave que já existia, sem o elemento girando ao lado.
+- Nenhuma outra tela foi alterada.
+- Validação: sintaxe JS de todo o app.html validada (node --check); confirmado que nenhum outro trecho do código faz referência ao elemento removido.
+- Base oficial: vBeta58.
+
 V.Beta.58 - MELHORIA DE DESEMPENHO: PDF.js agora roda com Web Worker (thread separada), sem alterar resolução/qualidade de imagem
 - Perguntado: se a logo do app aparecendo na tela de carregamento do Atlas pesava no processamento, e se tirá-la (ou deixar só preto) deixaria mais rápido.
 - Respondido: não teria efeito -- a logo é uma imagem estática já em cache, e as animações (spinner girando, logo "flutuando") usam só transform no CSS, que roda na GPU via compositor, praticamente sem custo. O gargalo real está na renderização do PDF em si.
